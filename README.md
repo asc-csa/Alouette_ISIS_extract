@@ -96,6 +96,12 @@ The feature detection works using a few steps. The output from process_directory
 	- Select parameters were extracted i.e. fmin (see /scan2data/ionogram_content_extraction
 
 
+Créateur | Creators
+Jenisha Patel
+Etienne Low-Décarie
+Wasiq Mohammad
+
+
 
 
 
