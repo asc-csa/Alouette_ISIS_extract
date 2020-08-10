@@ -1,4 +1,6 @@
-﻿## TODO
+## TODO
+
+
 -  Optimize an OCR to translate metadata located on the bottom: 
 	- Starting code can be found in /scan2data/metadata_translation/bottom_metadata
 - Develop a method to assess noisy ionograms
