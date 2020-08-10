@@ -9,9 +9,9 @@
 ## Contexte
 Le satellite [Alouette-I](https://www.asc-csa.gc.ca/fra/satellites/alouette.asp)  a été le premier satellite canadien lancé dans l'espace. Le but de son expérience principale était de comprendre la structure de la haute ionosphère.
 
-![ionogram](ionogram.png)
-
 Les données ont été enregistrées sur un film de 35 mm. L'ASC a numérisé 884952 (44,25\%) des 2 000 000 d'images d'ionogram brutes estimées.
+
+ ![ionogram](ionogram.png)
 
 Ce code sert a extraire les données et les métadonnées des ionograms numérisés.
 
@@ -62,6 +62,8 @@ La détection des caractéristiques fonctionne en quelques étapes. La sortie de
 
 ## Background
 The [Alouette-I satellite](https://www.asc-csa.gc.ca/eng/satellites/alouette.asp) was the first Canadian satellite launched into space. The goal of its main experiment was to understand the structure of the upper ionosphere. The data was recorded on 35-mm film. The CSA has scanned 884952 (44.25\%) of  the 2 000 000 estimated raw images.
+
+![ionogram](ionogram.png)
 
 This code is an effort to extract data and metadata from the scanned ionogram images.
 
