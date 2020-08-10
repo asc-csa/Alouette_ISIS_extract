@@ -1,10 +1,19 @@
-﻿
+
+![alouette satellite](alouette.jpg)
+
+
 - [En Français](#logiciel-de-traitement-de-l-ensemble-des-donn-es-alouette-i)
 - [In English](#software-to-process-the-alouette-i-dataset)
 
 # Logiciel de traitement de l'ensemble des données Alouette-I
 ## Contexte
-Le satellite Alouette-I (dates d'exploitation : 1962-1972) a été le premier satellite canadien lancé dans l'espace. Le but de son expérience principale était de comprendre la structure de la haute ionosphère. Les données ont été enregistrées sur un film de 35 mm. Bien que les données aient initialement donné lieu à de nombreux articles de recherche, elles ont été laissées intactes pendant plusieurs décennies. L'ASC a récemment investi dans la numérisation des films. Sur les 2 000 000 d'images brutes estimées, 884952 (44,25\%) ont été scannées. Les images sont organisées en 45 répertoires (par exemple R014207815/) et 2638 sous-répertoires (par exemple R014207815/3546-21A). **Il y a un développement en cours pour automatiser le traitement des scans bruts en informations utilisables**
+Le satellite [Alouette-I](https://www.asc-csa.gc.ca/fra/satellites/alouette.asp)  a été le premier satellite canadien lancé dans l'espace. Le but de son expérience principale était de comprendre la structure de la haute ionosphère.
+
+![ionogram](ionogram.png)
+
+Les données ont été enregistrées sur un film de 35 mm. L'ASC a numérisé 884952 (44,25\%) des 2 000 000 d'images d'ionogram brutes estimées.
+
+Ce code sert a extraire les données et les métadonnées des ionograms numérisés.
 
 ## Démarrage rapide
 ```python
@@ -52,7 +61,9 @@ La détection des caractéristiques fonctionne en quelques étapes. La sortie de
 # Software to process the Alouette-I dataset
 
 ## Background
-The Alouette-I satellite (dates of operation: 1962-1972) was the first Canadian satellite launched into space. The goal of its main experiment was to understand the structure of the upper ionosphere. The data was recorded on 35-mm film. While the data initially lead to numerous research articles, it was left untouched for several decades. The CSA has recently invested in scanning the films. Out of the 2 000 000 estimated raw images, 884952 (44.25\%) have been scanned. The images are organized into 45 directories (e.g. R014207815/) and 2638 subdirectories (e.g. R014207815/3546-21A). **There is ongoing development to automate the processing of raw scans into usable information**
+The [Alouette-I satellite](https://www.asc-csa.gc.ca/eng/satellites/alouette.asp) was the first Canadian satellite launched into space. The goal of its main experiment was to understand the structure of the upper ionosphere. The data was recorded on 35-mm film. The CSA has scanned 884952 (44.25\%) of  the 2 000 000 estimated raw images.
+
+This code is an effort to extract data and metadata from the scanned ionogram images.
 
 ## Quick start
 ```python
@@ -96,10 +107,10 @@ The feature detection works using a few steps. The output from process_directory
 	- Select parameters were extracted i.e. fmin (see /scan2data/ionogram_content_extraction
 
 
-Créateur | Creators
-Jenisha Patel
-Etienne Low-Décarie
-Wasiq Mohammad
+## Créateur | Creators
+Jenisha Patel  
+Etienne Low-Décarie  
+Wasiq Mohammad  
 
 
 
