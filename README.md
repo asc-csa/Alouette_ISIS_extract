@@ -13,7 +13,7 @@ Les données ont été enregistrées sur un film de 35 mm. L'ASC a numérisé 88
 
  ![ionogram](ionogram.png)
 
-Ce code sert a extraire les données et les métadonnées des ionograms numérisés.
+Ce code sert à extraire les données et les métadonnées des ionograms numérisés.
 
 ## Démarrage rapide
 ```python
