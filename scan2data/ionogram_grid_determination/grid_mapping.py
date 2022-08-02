@@ -46,7 +46,7 @@ def all_stack(df_img):
     #Weighed sum of the ionograms in a subdirectory
     weight = len(df_img.index)
     weighed_sum = weight * np.sum((df_img["padded"]).tolist(), axis = 0)
-    
+    median_h = median_h if max_h>median_h else median_h-1
 
     return weighed_sum[0:-(max_h-median_h),0:-(max_w-median_w)]
 
@@ -197,9 +197,3 @@ def get_grid_mappings(weighed_sum,
     mapping_km = {100:row_100,200:row_200}
 
     return col_peaks,row_peaks,mapping_Hz, mapping_km
-
-
-
-
-
-    

@@ -4,7 +4,7 @@ Code to extract ionogram part of a raw scanned image
 """
 # Library imports
 import numpy as np
-
+import cv2
 
 def limits_ionogram(raw_img, row_or_col,
                     starting_index_col=15):
@@ -58,6 +58,12 @@ def extract_ionogram(raw_img_array):
 
         # Extract ionogram part
         ionogram = raw_img_array[y_axis_upper_limit:y_axis_lower_limit,x_axis_left_limit:x_axis_right_limit]
+
+        #Just added for checking the metadata part of image
+        imgMetadataPart = raw_img_array[y_axis_upper_limit:y_axis_lower_limit, 15:x_axis_left_limit - 1]
+        # cv2.imshow("test Metadata", imgMetadataPart)
+        # cv2.waitKey(0)
+
         limits = [x_axis_left_limit ,x_axis_right_limit, y_axis_upper_limit, y_axis_lower_limit]
         return (limits, ionogram)
     
