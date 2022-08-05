@@ -222,9 +222,12 @@ def trimming_metadata(raw_metadata,type_metadata,
         if type_metadata == 'left':
             trimmed_metadata = leftside_metadata_trimming(connected_meta,meta_binary)
         else:
-            trimmed_metadata =  bottomside_metadata_trimming(connected_meta,opened_meta)
-    
-    
+            trimmed_metadata =  bottomside_metadata_trimming(connected_meta,meta_binary)
+
+        # These lines were added just for checking the extracted metadata
+        # cv2.imshow("test", trimmed_metadata)
+        # cv2.waitKey(0)
+
         return trimmed_metadata
     except:
         return np.nan

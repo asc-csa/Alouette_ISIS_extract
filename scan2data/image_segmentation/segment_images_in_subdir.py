@@ -174,12 +174,3 @@ def segment_images(subdir_location, regex_img,
     df_outlier = pd.concat([df_outlier_ionogram,df_outlier_metadata_location,df_outlier_metadata_size])
     
     return df_img,df_loss,df_outlier
-
-
-
-
-
-
-    
-
-    

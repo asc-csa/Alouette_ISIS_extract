@@ -67,7 +67,9 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
         area_centroids =area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]    
         median_area = np.median(area_centroids)
         is_dot = False
-        if any([dir_dot in file_name for dir_dot in LIST_DIRECTORY_DOTS]) and median_area < max_area_dot:
+        #The line below is commented to prevent giving the dot items manually
+        #if any([dir_dot in file_name for dir_dot in LIST_DIRECTORY_DOTS]) and median_area < max_area_dot:
+        if median_area < max_area_dot:
             is_dot = True
         return col_centroids,row_centroids,is_dot
     except:
