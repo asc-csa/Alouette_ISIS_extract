@@ -64,7 +64,7 @@ def segment_images(subdir_location, regex_img,
     .. todo:: complete flip_vertical ie list of subdirectories requiring flipping
     """
     # List of raw image files in subdirectory
-    regex_raw_image= subdir_location+regex_img
+    regex_raw_image = subdir_location + regex_img
     list_images = glob.glob(regex_raw_image)
     
     # If flipping/rotating is required for all the images in the subdirectory
@@ -109,9 +109,9 @@ def segment_images(subdir_location, regex_img,
     # Log outlier
     if not df_outlier_ionogram.empty:
         df_outlier_ionogram[ 'details'] = df_outlier_ionogram.apply(lambda row: 'height: ' + str(row['height'])+',width: ' + str(row['width']), 1)
-        df_outlier_ionogram =df_outlier_ionogram[['file_name','func_name','subdir_name','details']]
+        df_outlier_ionogram = df_outlier_ionogram[['file_name','func_name','subdir_name','details']]
     else:
-        df_outlier_ionogram =df_outlier_ionogram[['file_name','func_name','subdir_name']]
+        df_outlier_ionogram = df_outlier_ionogram[['file_name','func_name','subdir_name']]
     
     # Remove outlier
     df_img = df_img[~outlier_ionogram]
@@ -123,7 +123,7 @@ def segment_images(subdir_location, regex_img,
         df_img['raw_metadata'] = df_img['raw_metadata'].map(lambda raw_metadata: np.rot90(raw_metadata, 2))
     
     # There should be no metadata on left and top, especially after flipping
-    outlier_metadata_location = np.any([df_img['metadata_type'] == 'right',df_img['metadata_type']=='top'],axis=0)
+    outlier_metadata_location = np.any([df_img['metadata_type'] == 'right', df_img['metadata_type']=='top'], axis=0)
     df_outlier_metadata_location ,_ =  record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: metadata not on left or bottom',subdir_location,
                                          ['file_name','metadata_type'],outlier_metadata_location )
 
@@ -173,13 +173,4 @@ def segment_images(subdir_location, regex_img,
     # Dataframe recording loss from various filters i.e. metadata too small, ionogram too small/big
     df_outlier = pd.concat([df_outlier_ionogram,df_outlier_metadata_location,df_outlier_metadata_size])
     
-    return df_img,df_loss,df_outlier
-
-
-
-
-
-
-    
-
-    
+    return df_img, df_loss, df_outlier

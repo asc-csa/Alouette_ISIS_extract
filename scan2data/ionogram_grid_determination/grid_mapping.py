@@ -23,7 +23,7 @@ KM_DEFAULT_200 = 110
 
 def all_stack(df_img):
     """Returns the equally weighed sum of all the correctly extracted ionogram plot areas in a subsubdirectory 
-    
+    z
     :param df_img: Dataframe contaning all the correctly extracted ionogram plot areas in a subsubdirectory (output of image_segmentation.segment_images_in_subdir.segment_images)
     :type df_img: class: `pandas.core.frame.DataFrame`
     :param cutoff_width: the width of an ionogram should be within cutoff_width of the median width of all the ionogram in a subdirectory (should be the same as the one used in scan2data.image_segmentation.segment_images_in_subdir.segment_images)
@@ -43,16 +43,16 @@ def all_stack(df_img):
 
     df_img["padded"] = df_img["ionogram"].apply(lambda img: np.pad( img, ((0,max_h-img.shape[0]),(0,max_w-img.shape[1])),mode="constant",constant_values=1))
     
-    #Weighed sum of the ionograms in a subdirectory
+    #Weighed sum of the ionograms in a subdirectory <-- Q: WHY DO WE HAVE TO TAKE THE WEIGHTED SUM OF ALL OF THE IONOGRAMS? SHOULDN'T EACH IONOGRAM BE ANALYZED INDIVIDUALLY?
     weight = len(df_img.index)
     weighed_sum = weight * np.sum((df_img["padded"]).tolist(), axis = 0)
-    
+    median_h = median_h if max_h>median_h else median_h-1
 
     return weighed_sum[0:-(max_h-median_h),0:-(max_w-median_w)]
 
 
 def indices_highest_peaks(img, row_or_col,
-                      peak_prominence_threshold=0.1,distance_between_peaks=5):
+                      peak_prominence_threshold=0.1, distance_between_peaks=5):
     """Determines and returns the indices of peak median values from the rows or column of an image
     
     :param img: grayscale image in the form of an 2D uint8 array
@@ -65,9 +65,8 @@ def indices_highest_peaks(img, row_or_col,
     :type distance_between_peaks: int, optional
     :returns: select_peaks i.e. array of the indices of peak median values from the rows or column of an image
     :rtype: class: `numpy.ndarray`
-    
-    
     """
+    
     # Median values along each row or column
     median_values = np.median(img,row_or_col)
     
@@ -78,7 +77,7 @@ def indices_highest_peaks(img, row_or_col,
     peaks_function = 1 + -1*median_values_normalized 
     
     # Detect all peaks
-    select_peaks,_ = signal.find_peaks(peaks_function,distance=distance_between_peaks,prominence = peak_prominence_threshold)
+    select_peaks, _ = signal.find_peaks(peaks_function, distance=distance_between_peaks, prominence=peak_prominence_threshold) #from scipy.signal
     
     #Remove edges from peaks
     h,w = img.shape
@@ -89,6 +88,7 @@ def indices_highest_peaks(img, row_or_col,
 
     return select_peaks
     
+
 def adjust_arr_peaks(weighed_sum,arr_peaks,desired_length,row_or_col,
                   distance_between_peaks=30,peak_prominence_threshold=0.1,n_tries=1000,update_amount=0.01):
     """Adjust an array of peaks to the desired length and returns it. 
@@ -114,8 +114,7 @@ def adjust_arr_peaks(weighed_sum,arr_peaks,desired_length,row_or_col,
      ..note:: To prevent infinite loops, the script only runs for a maximum of n_tries times
     """
     
-    
-    arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,peak_prominence_threshold,distance_between_peaks)
+    arr_peaks = indices_highest_peaks(weighed_sum, row_or_col, peak_prominence_threshold, distance_between_peaks)  #Q: WHY IS THE FUNCTION TAKING IN arr_peaks IF IT IS ALREADY CALCULATING IT HERE?
     
     # Adjust if lenght is not the desired length by re-running indices_highest_peaks with different parameters
     while len(arr_peaks) != desired_length and n_tries !=0:
@@ -124,12 +123,12 @@ def adjust_arr_peaks(weighed_sum,arr_peaks,desired_length,row_or_col,
             # increase peak_prominence_threshold 
             peak_prominence_threshold = peak_prominence_threshold + update_amount
             arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,
-                                               peak_prominence_threshold,distance_between_peaks)
+                                               peak_prominence_threshold, distance_between_peaks)
         else:
             # decrease peak_prominence_threshold
             peak_prominence_threshold = peak_prominence_threshold - update_amount
             arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,
-                                               peak_prominence_threshold,distance_between_peaks)
+                                               peak_prominence_threshold, distance_between_peaks)
         n_tries = n_tries - 1
     
 
@@ -137,7 +136,7 @@ def adjust_arr_peaks(weighed_sum,arr_peaks,desired_length,row_or_col,
 
 
 def get_grid_mappings(weighed_sum,
-                      use_defaults=True,min_index_row_peaks =40): 
+                      use_defaults=True,min_index_row_peaks=40): 
     """Determines and returns the the mapping between coordinate values and frequency/depth values in a subdirectory
     
     :param weighed_sum: equally weighed sum of all the image plot areas in a subsubdirectory 
@@ -161,7 +160,7 @@ def get_grid_mappings(weighed_sum,
     # Map adjusted col_peaks to Hz values
     else:
         try: 
-            col_peaks =adjust_arr_peaks(weighed_sum,col_peaks,len(HZ),0)
+            col_peaks = adjust_arr_peaks(weighed_sum, col_peaks, len(HZ), 0)
             mapping_Hz = dict(zip(HZ,col_peaks)) 
             
             # Map adjusted HZ values to default coordinates if need be
@@ -171,7 +170,7 @@ def get_grid_mappings(weighed_sum,
                         mapping_Hz[key] = DEFAULT_HZ_COORD[i]
         except:
             if use_defaults:
-                 mapping_Hz = dict(zip(HZ,DEFAULT_HZ_COORD )) 
+                 mapping_Hz = dict(zip(HZ,DEFAULT_HZ_COORD)) 
             else:    
                 return np.nan,np.nan,np.nan,np.nan
     
@@ -196,10 +195,4 @@ def get_grid_mappings(weighed_sum,
     
     mapping_km = {100:row_100,200:row_200}
 
-    return col_peaks,row_peaks,mapping_Hz, mapping_km
-
-
-
-
-
-    
+    return col_peaks, row_peaks, mapping_Hz, mapping_km

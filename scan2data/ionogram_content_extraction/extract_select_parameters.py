@@ -10,7 +10,7 @@ import numpy as np
 sys.path.append('../')
 from ionogram_grid_determination.grid_mapping import KM_DEFAULT_100
 
-def extract_fmin_and_max_depth(arr_adjusted_coord,min_depth=50,if_raw=False):
+def extract_fmin_and_max_depth(arr_adjusted_coord, min_depth=50, if_raw=False):
     """Extract the minimum detected frequency value and maximum detected depth
     
     :param arr_raw_coord:  one-dimmensional array of values of all the pixels corresponding to the ionogram trace
