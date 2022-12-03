@@ -7,12 +7,16 @@ import glob
 import ntpath
 import numpy as np
 import process_directory
+import sys
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 def main():
     processAllSubdirectories = True #will not pass to process-extract-management
-    master_dir = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/01_intake/' #input('Type directory with all the raw data ex: E:/master/: ')
-    dir_csv_output ='C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/02_result/' #input('Type directory for outputs of processing ex: C:/Users/JPatel/Desktop/: ')
+    master_dir = sys.argv[1] #'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/01_intake/' #input('Type directory with all the raw data ex: E:/master/: ')
+    dir_csv_output = sys.argv[2] #'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/02_result/' #input('Type directory for outputs of processing ex: C:/Users/JPatel/Desktop/: ')
     regex_raw = '*.png'
     desire_pickle = False #enter True if you want to save it as a pickle file.
     desire_only_leftside = False #Enter False for it to analyze the bottom data.

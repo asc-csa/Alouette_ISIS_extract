@@ -305,6 +305,9 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         path = path.replace('\\', '/')
         parts = path.split('/')
         parts[2] = parts[2].replace('.png', '')
-        np.save(dir_csv_output + 'mapped_coords-' + parts[0] + '_' + parts[1] + '_' + parts[2], processed['mapped_coord'].iloc[i])
+        newDir = dir_csv_output + parts[0] + '/' + parts[1] + '/'
+        os.makedirs(newDir, exist_ok=True)
+        np.save(newDir + 'mapped_coords-' + parts[0] + '_' + parts[1] + '_' + parts[2], processed['mapped_coord'].iloc[i])
+        
 
 
