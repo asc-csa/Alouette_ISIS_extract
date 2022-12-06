@@ -278,6 +278,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
                                                         dir_csv_output,
                                                         only_ionogram_content_extraction_on_leftside_metadata=only_leftside_input,
                                                         to_pickle=to_pickle_input)
+    processed.to_csv(dir_csv_output + 'df_processed.csv')
 
     list_metadata_type = processed['metadata_type'].tolist()
     type_metadata_subdir = max(set(list_metadata_type), key=list_metadata_type.count)
