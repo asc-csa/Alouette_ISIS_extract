@@ -346,7 +346,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         start, subdir_name = ntpath.split(sample_subdir[:-1])
         df_loss = pd.concat([df_loss, df_dot_subset]) #df_dot_subset = process_df_bottomside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
         df_num_subset = process_df_bottomside_metadata(df_num_subset, subdir_name, master_dir)
-        df_dot = pd.concat([df_dot, df_dot_subset])
+        #df_dot = pd.concat([df_dot, df_dot_subset])
         df_num = pd.concat([df_num, df_num_subset])
 
     #Save dataframes
