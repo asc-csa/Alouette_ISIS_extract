@@ -113,6 +113,7 @@ def get_leftside_metadata(df_img,subdir_location,
     dict_mapping,dict_hist = get_leftside_metadata_grid_mapping(list_x_dot,list_y_dot,list_x_digit,list_y_digit,subdir_location)
 
     # Determine the value of metadata based on the mappings
+    df_img['dict_metadata'] = 'empty'
     df_img['dict_metadata'] = df_img.apply(lambda row: 
         map_coord_to_metadata(row['x_centroids'],row['y_centroids'],dict_mapping['dict_cat_dot'], dict_mapping['dict_num_dot']) if row['is_dot'] 
         else map_coord_to_metadata(row['x_centroids'],row['y_centroids'],dict_mapping['dict_cat_digit'], dict_mapping['dict_num_digit']),1)
@@ -123,7 +124,8 @@ def get_leftside_metadata(df_img,subdir_location,
     
     return df_img, df_loss,dict_mapping, dict_hist
 
-def get_bottonside_metadata(df_img, subdir_location,
+
+def get_bottomside_metadata(df_img, subdir_location,
                             dilation_kernel_size=(1, 1)):
     """Reads metadata located on the botton of ionograms
 
@@ -167,6 +169,7 @@ def get_bottonside_metadata(df_img, subdir_location,
                                                                  subdir_location)
 
     # Determine the value of metadata based on the mappings
+    df_img['dict_metadata'] = 'empty'
     df_img['dict_metadata'] = df_img.apply(lambda row:
                                            map_coord_to_metadata(row['x_centroids'], row['y_centroids'],
                                                                  dict_mapping['dict_cat_dot'],

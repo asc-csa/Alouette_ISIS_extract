@@ -21,13 +21,72 @@ import pandas as pd
 from image_segmentation.segment_images_in_subdir import segment_images
 from ionogram_content_extraction.extract_all_coordinates_ionogram_trace import extract_coord_subdir_and_param
 from ionogram_grid_determination.grid_mapping import all_stack, get_grid_mappings
-from metadata_translation.translate_leftside_metadata import get_leftside_metadata, get_bottonside_metadata
+from metadata_translation.translate_leftside_metadata import get_leftside_metadata, get_bottomside_metadata
 
 
 # from helper_functions import record_loss, generate_random_subdirectory, generate_random_image_from_subdirectory
 
 
-def process_subdirectory(subdir_path,
+def process_subdirectory(subdir_path, regex_images):
+    """Transform raw scanned images in a subdirectory into information
+
+    :param subdir_path: path of subdir_path
+    :type subdir_path: str
+    :param regex_img: regular expression to extract images ex: '*.png'
+    :type regex_img: str
+    :param output_folder_if_pickle: output folder for pickle, use None if no pickle
+    :type output_folder_if_pickle: string
+    :param min_n_leftside_metadata: minimum number of ionograms with metadata on the left to be able to call metadata_translation.leftside_metadata_grid_mapping, defaults to 10
+    :type min_n_leftside_metadata: int, optional
+    :returns: df_processed, df_loss, df_outlier: :  dataframe containing data from running the full processing pipeline,dataframe containing file names leading to runtime errors, dataframe containing file names that do not pass pre-established filters (metadata size, ionogram size)
+    :rtype: class: `pandas.core.frame.DataFrame`,class: `pandas.core.frame.DataFrame`,class: `pandas.core.frame.DataFrame`
+    """
+    # Run segment_images on the subdirectory
+    df_img, df_loss, df_outlier = segment_images(subdir_path, regex_images) #from image_segmentation.segment_images_in_subdir.py
+
+    # Determine ionogram grid mappings used to map (x,y) pixel coordinates of ionogram trace to (Hz, km) values
+    stack = all_stack(df_img) #from grid_mapping.py
+    # Roksana comment: the logic should be reviewed
+    # if stack would be empty the below function faced with error. It happens when the directory has only one file.
+    col_peaks, row_peaks, mapping_Hz, mapping_km = get_grid_mappings(stack) #from grid_mapping
+
+    # Split left from bottom-side metadata
+    df_img_left = df_img.loc[df_img['metadata_type'] == 'left']
+    df_img_bottom = df_img.loc[df_img['metadata_type'] == 'bottom']
+    
+    if len(df_img_left) > 9:
+        #Get metadata
+        df_img_left, df_loss_meta_left, dict_mapping_left, dict_hist_left = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
+        df_loss = df_loss.append(df_loss_meta_left)
+        #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
+        df_processed_left, df_loss_coord_left = extract_coord_subdir_and_param(df_img_left, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
+    else:
+        df_loss = df_loss.append(df_img_left)
+        df_processed_left = pd.DataFrame()
+        df_loss_coord_left = pd.DataFrame()
+    
+    if len(df_img_bottom) > 9:
+        df_img_bottom, df_loss_meta_bottom, dict_mapping_bottom, dict_hist_bottom = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_leftside_metadata
+        df_loss = df_loss.append(df_loss_meta_bottom)
+        #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
+        df_processed_bottom, df_loss_coord_bottom = extract_coord_subdir_and_param(df_img_bottom, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
+    else:
+        df_loss = df_loss.append(df_img_bottom)
+        df_processed_bottom = pd.DataFrame()
+        df_loss_coord_bottom = pd.DataFrame()
+
+    #Recombine left and bottom-side metadata images
+    df_processed = pd.concat([df_processed_left, df_processed_bottom])
+    df_loss_coord = pd.concat([df_loss_coord_left, df_loss_coord_bottom])
+    
+    df_processed['mapping_Hz'] = [mapping_Hz] * len(df_processed.index)
+    df_processed['mapping_km'] = [mapping_km] * len(df_processed.index)
+
+    df_loss = df_loss.append(df_loss_coord)
+    return df_processed, df_loss, df_outlier
+
+
+'''def process_subdirectory_OLD(subdir_path,
                          regex_images,
                          output_folder_if_pickle,
                          min_n_leftside_metadata=10,
@@ -60,14 +119,16 @@ def process_subdirectory(subdir_path,
     col_peaks, row_peaks, mapping_Hz, mapping_km = get_grid_mappings(stack) #from grid_mapping
 
     # Translate metadata located on the left
-    df_img_left = df_img[df_img['metadata_type'] == 'left']
-
-    if len(df_img_left.index) >= 1:  # min_n_leftside_metadata:
+    df_img_left = df_img.loc[df_img['metadata_type'] == 'left']
+    
+    #If there is any leftside metadata, then get_leftside_metadata, otherwise get_bottomside_metadata
+    ##BUT, why not split df_img into df_img_left and df_img_bottom, and process them separately, then recombine? ****
+    if len(df_img_left) > 0:  # min_n_leftside_metadata:
         # Determine leftside metadata grid (pixel coordinates to number, category mappings)
         df_img_left, df_loss_meta, dict_mapping, dict_hist = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
         df_all_loss = df_loss.append(df_loss_meta)
     else:
-        df_img, df_loss_meta, dict_mapping, dict_hist = get_bottonside_metadata(df_img, subdir_path) #from metadata_translation.translate_leftside_metadata
+        df_img, df_loss_meta, dict_mapping, dict_hist = get_bottomside_metadata(df_img, subdir_path) #from metadata_translation.translate_leftside_metadata
         df_all_loss = df_loss
 
     #  Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values and Extract select parameters i.e. fmin
@@ -87,7 +148,7 @@ def process_subdirectory(subdir_path,
         df_processed.to_pickle(os.pardir + '/pickle/' + str(dir_name) + '_' + str(subdir_name) + '.pkl')
 
     df_all_loss = df_all_loss.append(df_loss_coord)
-    return df_processed, df_all_loss, df_outlier
+    return df_processed, df_all_loss, df_outlier'''
 
 
 def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
@@ -214,22 +275,16 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
     return df_final_result
 
 
-def append_to_csv(csv_path, df):
-    '''Append select data from a dataframe to a master CSV
-
-    :param csv_path: path of csv to append data to
-    :type: str
-    :param df: dataframe to extract data from to add to a csv
-    :type df: class:  `pandas.core.frame.DataFrame`
-    '''
+'''def append_to_csv(csv_path, df):
+    #Append select data from a dataframe to a master CSV
     
     if os.path.exists(csv_path):
         df.to_csv(csv_path, mode='a', header=False, index=False)
     else:
-        df.to_csv(csv_path, mode='a', index=False)
+        df.to_csv(csv_path, mode='a', index=False)'''
 
 
-if __name__ == '__main__':
+'''if __name__ == '__main__':
     #    subdir_path = generate_random_subdirectory(regex_subdirectory='E:/master/R*/[0-9]*/')
 
     list_all_subdir = glob.glob('C:/Users/Hansen/Desktop/Projects/CSA Internship/AlouetteIonogramsRawData/R*/[0-9]*/')
@@ -259,16 +314,67 @@ if __name__ == '__main__':
             append_to_csv(dir_csv_output + 'num_data.csv', df_num_subset)
 
         append_to_csv(dir_csv_output + 'loss.csv', all_loss)
-        append_to_csv(dir_csv_output + 'outlier.csv', outlier)
+        append_to_csv(dir_csv_output + 'outlier.csv', outlier)'''
 
 
-def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir, desire_pickle=False,
+#Remove only leftside processing
+def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir):
+    
+    df_processed, df_loss, df_outlier = process_subdirectory(sample_subdir, regex_raw)
+
+    # Split left from bottom-side metadata
+    df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
+    df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
+
+    df_dot = pd.DataFrame()
+    df_num = pd.DataFrame()
+    if len(df_processed_left) > 0:
+        is_dot = np.array(df_processed_left['is_dot'])
+        df_dot_subset = df_processed_left[is_dot]
+        df_num_subset = df_processed_left[np.invert(is_dot)]
+        start, subdir_name = ntpath.split(sample_subdir[:-1])
+        df_dot_subset = process_df_leftside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
+        df_num_subset = process_df_leftside_metadata(df_num_subset, subdir_name, master_dir, is_dot=False)
+        df_dot = pd.concat([df_dot, df_dot_subset])
+        df_num = pd.concat([df_num, df_num_subset])
+    
+    #***Is there bottom-side dot metadata?***
+    if len(df_processed_bottom) > 0:
+        is_dot = np.array(df_processed_bottom['is_dot'])
+        df_dot_subset = df_processed_bottom[is_dot]
+        df_num_subset = df_processed_bottom[np.invert(is_dot)]
+        start, subdir_name = ntpath.split(sample_subdir[:-1])
+        df_loss = pd.concat([df_loss, df_dot_subset]) #df_dot_subset = process_df_bottomside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
+        df_num_subset = process_df_bottomside_metadata(df_num_subset, subdir_name, master_dir)
+        df_dot = pd.concat([df_dot, df_dot_subset])
+        df_num = pd.concat([df_num, df_num_subset])
+
+    #Save dataframes
+    df_dot.to_csv(dir_csv_output + 'df_dot.csv', index=False)
+    df_num.to_csv(dir_csv_output + 'df_num.csv', index=False)
+    df_loss.to_csv(dir_csv_output + 'df_loss.csv', index=False)
+    df_outlier.to_csv(dir_csv_output + 'df_outlier.csv', index=False)
+    
+    #Save mapped coordinates
+    for i in range(0, len(df_processed)):
+        path = df_processed['file_name'].iloc[i].replace(master_dir, '')
+        path = path.replace('/', '\\')
+        path = path.replace('\\', '/')
+        parts = path.split('/')
+        parts[2] = parts[2].replace('.png', '')
+        newDir = dir_csv_output + 'mapped_coords/' + parts[0] + '/' + parts[1] + '/'
+        os.makedirs(newDir, exist_ok=True)
+        np.save(newDir + 'mapped_coords-' + parts[0] + '_' + parts[1] + '_' + parts[2], df_processed['mapped_coord'].iloc[i])
+        
+        
+        
+
+'''def process_extract_management_OLD(dir_csv_output, master_dir, regex_raw, sample_subdir, desire_pickle=False,
                                desire_only_leftside=True):
     if desire_pickle:
         to_pickle_input = True
     else:
         to_pickle_input = False
-
     if desire_only_leftside:
         only_leftside_input = True
     else:
@@ -278,10 +384,10 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
                                                         dir_csv_output,
                                                         only_ionogram_content_extraction_on_leftside_metadata=only_leftside_input,
                                                         to_pickle=to_pickle_input)
-    processed.to_csv(dir_csv_output + 'df_processed.csv')
+    #processed.to_csv(dir_csv_output + 'df_processed.csv')
 
-    list_metadata_type = processed['metadata_type'].tolist()
-    type_metadata_subdir = max(set(list_metadata_type), key=list_metadata_type.count)
+    #list_metadata_type = processed['metadata_type'].tolist()
+    #type_metadata_subdir = max(set(list_metadata_type), key=list_metadata_type.count)
     
     if type_metadata_subdir == 'left':
         is_dot = np.array(processed['is_dot'])
@@ -308,7 +414,4 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         parts[2] = parts[2].replace('.png', '')
         newDir = dir_csv_output + parts[0] + '/' + parts[1] + '/'
         os.makedirs(newDir, exist_ok=True)
-        np.save(newDir + 'mapped_coords-' + parts[0] + '_' + parts[1] + '_' + parts[2], processed['mapped_coord'].iloc[i])
-        
-
-
+        np.save(newDir + 'mapped_coords-' + parts[0] + '_' + parts[1] + '_' + parts[2], processed['mapped_coord'].iloc[i])'''

@@ -118,7 +118,7 @@ def segment_images(subdir_location, regex_img,
     
 
     # Raw metadata
-    df_img['metadata_type'],df_img['raw_metadata'] = zip(*df_img.apply(lambda row: extract_metadata(row['raw'], row['limits']),1))
+    df_img['metadata_type'],df_img['raw_metadata'] = zip(*df_img.apply(lambda row: extract_metadata(row['raw'], row['limits']),1)) #from extract_metadata_from_scan
     if rotate_180 == True:
         df_img['raw_metadata'] = df_img['raw_metadata'].map(lambda raw_metadata: np.rot90(raw_metadata, 2))
     
