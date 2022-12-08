@@ -9,7 +9,7 @@ import ftplib
 from random import randrange
 
 
-process_on_VDI = False
+process_on_VDI = True
 
 #Set-up Directories
 rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/' #files on C:/ are not persistent on VDI
