@@ -1,25 +1,29 @@
 #Process Subdirectories
 
+import sys
 import pandas as pd
 import os
 import shutil
 import time
 from datetime import datetime
 from random import randrange
-from scan2data import user_input2
+#from scan2data import user_input
+import subprocess
 
 import warnings
 warnings.filterwarnings('ignore')
 
 
-process_on_VDI = False
+process_from = sys.argv[1]
+
 
 #Set-up Directories
+codeDir = sys.argv[2]
 rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/' #C: is not persistent on VDI
 rootDir_U = 'U:/Data_Science/Projects_data/Alouette_I/'
 downloadedDir = rootDir_local + '02_downloaded/'
 processingDir = rootDir_local + '03_processing/'
-if process_on_VDI:
+if process_from == 'VDI':
     processedDir = rootDir_U + '04_processed/' 
     resultDir = rootDir_U + '05_result/' 
     logDir = '//scientific/L-MP-Data/Massive files/Python/rnaidoo/Alouette_I/' #DO NOT CHANGE
@@ -60,7 +64,7 @@ for roll in os.listdir(downloadedDir):
             
             #Process
             print('Processing ' + subdir_path_end + ' subdirectory...')
-            user_input2.main(processingDir, resultDir)
+            subprocess.run(['python', codeDir + 'scan2data/user_input.py', processingDir, resultDir])
 
             #Consolidate results
             if os.path.exists(resultDir + 'df_dot.csv'):

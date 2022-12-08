@@ -1,5 +1,6 @@
 #Download Subdirectories from FTP
 
+import sys
 import pandas as pd
 import os
 import shutil
@@ -9,17 +10,19 @@ import ftplib
 from random import randrange
 
 
-process_on_VDI = True
+process_from = sys.argv[1]
+
 
 #Set-up Directories
 rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/' #files on C:/ are not persistent on VDI
 downloadingDir = rootDir_local + '01_downloading/'
 downloadedDir = rootDir_local + '02_downloaded/'
-if process_on_VDI:
+print(process_from)
+if process_from == 'VDI':
     logDir = '//scientific/L-MP-Data/Massive files/Python/rnaidoo/Alouette_I/' #DO NOT CHANGE
 else:
     logDir = rootDir_local + '05_result/'
-   
+print(logDir) 
     
 # Connect to FTP Server
 HOSTNAME = "donnees-data.asc-csa.gc.ca"
