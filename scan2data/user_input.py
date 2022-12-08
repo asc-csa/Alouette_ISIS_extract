@@ -29,9 +29,8 @@ def main():
         process_directory.process_extract_management(dir_csv_output,
                                                      master_dir,
                                                      regex_raw,
-                                                     sample_subdir,
-                                                     desire_pickle,
-                                                     desire_only_leftside)
+                                                     sample_subdir)
+
 if __name__ == "__main__":
         main()
             

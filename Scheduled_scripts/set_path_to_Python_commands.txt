@@ -1,0 +1,6 @@
+CSA Laptop:
+$env:path="$env:Path;C:\DevSoftware\Anaconda38"
+$env:path="$env:Path;C:\DevSoftware\Anaconda38\Scripts"
+$env:path="$env:Path;C:\DevSoftware\Anaconda38\Library\bin"
+
+VDI HP:

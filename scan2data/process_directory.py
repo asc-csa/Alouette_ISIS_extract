@@ -11,7 +11,7 @@ Process all the raw images in a subdirectory
     - Map the (x,y) pixel coordinates to (Hz, km) values
     - Extract select parameters i.e. fmin
 """
-import glob
+#import glob
 import ntpath
 import os
 
@@ -350,10 +350,14 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         df_num = pd.concat([df_num, df_num_subset])
 
     #Save dataframes
-    df_dot.to_csv(dir_csv_output + 'df_dot.csv', index=False)
-    df_num.to_csv(dir_csv_output + 'df_num.csv', index=False)
-    df_loss.to_csv(dir_csv_output + 'df_loss.csv', index=False)
-    df_outlier.to_csv(dir_csv_output + 'df_outlier.csv', index=False)
+    if len(df_dot) > 0:
+        df_dot.to_csv(dir_csv_output + 'df_dot.csv', index=False)
+    if len(df_num) > 0:
+        df_num.to_csv(dir_csv_output + 'df_num.csv', index=False)
+    if len(df_loss) > 0:
+        df_loss.to_csv(dir_csv_output + 'df_loss.csv', index=False)
+    if len(df_outlier) > 0:
+        df_outlier.to_csv(dir_csv_output + 'df_outlier.csv', index=False)
     
     #Save mapped coordinates
     for i in range(0, len(df_processed)):
