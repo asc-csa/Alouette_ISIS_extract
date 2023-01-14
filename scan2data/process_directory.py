@@ -122,6 +122,11 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
         df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
         df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
         df_final_data['station_number'] = df_final_data['station_code']
+        df_final_data['day'] = df_final_data['day'].astype(int)
+        df_final_data['hour'] = df_final_data['hour'].astype(int)
+        df_final_data['minute'] = df_final_data['minute'].astype(int)
+        df_final_data['second'] = df_final_data['second'].astype(int)
+        df_final_data['station_number'] = df_final_data['station_number'].astype(int)
         #df_final_data.drop(
         #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
         #    axis=1, inplace=True)
@@ -134,6 +139,11 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
         df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
         df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
         df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        df_final_data['day'] = df_final_data['day'].astype(int)
+        df_final_data['hour'] = df_final_data['hour'].astype(int)
+        df_final_data['minute'] = df_final_data['minute'].astype(int)
+        df_final_data['second'] = df_final_data['second'].astype(int)
+        df_final_data['station_number'] = df_final_data['station_number'].astype(int)
         #df_final_data.drop(columns=['station_number_1', 'station_number_2'], axis=1, inplace=True)
         #df_final_data.drop(
         #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
@@ -187,6 +197,11 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
     df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
     df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
     df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    df_final_data['day'] = df_final_data['day'].astype(int)
+    df_final_data['hour'] = df_final_data['hour'].astype(int)
+    df_final_data['minute'] = df_final_data['minute'].astype(int)
+    df_final_data['second'] = df_final_data['second'].astype(int)
+    df_final_data['station_number'] = df_final_data['station_number'].astype(int)
     #df_final_data.drop(columns=['station_number_1', 'station_number_2'], axis=1, inplace=True)
     #df_final_data.drop(
     #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
