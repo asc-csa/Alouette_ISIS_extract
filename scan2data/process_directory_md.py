@@ -174,6 +174,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
     if len(df_processed_left) > 0:
+        df_processed.to_csv(dir_csv_output + 'df_processed.csv', index=False)
         is_dot = np.array(df_processed_left['is_dot'])
         df_dot_subset = df_processed_left[is_dot]
         df_num_subset = df_processed_left[np.invert(is_dot)]
