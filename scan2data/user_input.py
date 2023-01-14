@@ -13,8 +13,8 @@ warnings.filterwarnings('ignore')
 
 def main():
     processAllSubdirectories = True #will not pass to process-extract-management
-    master_dir = sys.argv[1] #01_intake/
-    dir_csv_output = sys.argv[2] #05_result/
+    master_dir = sys.argv[1] #03_processing
+    dir_csv_output = sys.argv[2] #05a_result_local
     regex_raw = '*.png'
 
     if processAllSubdirectories:
