@@ -166,6 +166,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
 def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir):
     
     df_processed, df_loss, df_outlier = process_subdirectory_md(sample_subdir, regex_raw)
+    df_processed['is_dot'] = df_processed['is_dot'].fillna(False)
 
     # Split left from bottom-side metadata
     df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
@@ -174,7 +175,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
     if len(df_processed_left) > 0:
-        df_processed.to_csv(dir_csv_output + 'df_processed.csv', index=False)
+        df_processed.to_csv(dir_csv_output + 'df_processed.csv', index=False) #TEST
         is_dot = np.array(df_processed_left['is_dot'])
         df_dot_subset = df_processed_left[is_dot]
         df_num_subset = df_processed_left[np.invert(is_dot)]
