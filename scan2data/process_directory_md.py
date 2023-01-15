@@ -28,24 +28,24 @@ def process_subdirectory_md(subdir_path, regex_images):
     df_img_left = df_img.loc[df_img['metadata_type'] == 'left']
     df_img_bottom = df_img.loc[df_img['metadata_type'] == 'bottom']
     
-    if len(df_img_left) > 9:
+    #if len(df_img_left) > 9:
         #Get metadata
-        df_img_left, df_loss_meta_left, dict_mapping_left, dict_hist_left = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
-        df_loss = df_loss.append(df_loss_meta_left)
+    df_img_left, df_loss_meta_left, dict_mapping_left, dict_hist_left = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
+    df_loss = df_loss.append(df_loss_meta_left)
         #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
         #df_processed_left, df_loss_coord_left = extract_coord_subdir_and_param(df_img_left, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
-    else:
-        df_loss = df_loss.append(df_img_left)
+    #else:
+        #df_loss = df_loss.append(df_img_left)
         #df_processed_left = pd.DataFrame()
         #df_loss_coord_left = pd.DataFrame()
     
-    if len(df_img_bottom) > 9:
-        df_img_bottom, df_loss_meta_bottom, dict_mapping_bottom, dict_hist_bottom = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_leftside_metadata
-        df_loss = df_loss.append(df_loss_meta_bottom)
+    #if len(df_img_bottom) > 9:
+    df_img_bottom, df_loss_meta_bottom, dict_mapping_bottom, dict_hist_bottom = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_leftside_metadata
+    df_loss = df_loss.append(df_loss_meta_bottom)
         #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
         #df_processed_bottom, df_loss_coord_bottom = extract_coord_subdir_and_param(df_img_bottom, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
-    else:
-        df_loss = df_loss.append(df_img_bottom)
+    #else:
+        #df_loss = df_loss.append(df_img_bottom)
         #df_processed_bottom = pd.DataFrame()
         #df_loss_coord_bottom = pd.DataFrame()
 
