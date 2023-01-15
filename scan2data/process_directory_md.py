@@ -3,6 +3,8 @@
 
 """
 import ntpath
+import os
+import numpy as np
 import pandas as pd
 
 from image_segmentation.segment_images_in_subdir import segment_images
