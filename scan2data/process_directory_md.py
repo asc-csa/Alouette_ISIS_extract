@@ -105,7 +105,7 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
         df_final_data['second'] = df_final_data['second'].astype(int)
         df_final_data['station_number'] = df_final_data['station_number'].astype(int)
 
-    if len(df_final_data) > 0:          
+    '''if len(df_final_data) > 0:          
         code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
         code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
         code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
@@ -117,8 +117,24 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True)) #Why was pd.concat not used?
     else:
-        df_final_result = pd.DataFrame()
-
+        df_final_result = pd.DataFrame()'''
+        
+    if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
+        code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
+    else:
+        code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
+    df_final_result = pd.merge(df_final_data,code_list_of_station, on='station_number')
+    code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
+    code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
+    code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
+    df_result_after1965 = pd.merge(df_final_data.loc[df_final_data['year'] >= 1965], code_list_of_station_after1965,
+                                   on='station_number')
+    df_result_before1963 = pd.merge(df_final_data.loc[df_final_data['year'] <= 1963],
+                                    code_list_of_station_before1963, on='station_number')
+    df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
+                                    code_list_of_station_between1963_1964, on = 'station_number')
+    df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))
+    
     return df_final_result
 
 
@@ -148,7 +164,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
     df_final_data['second'] = df_final_data['second'].astype(int)
     df_final_data['station_number'] = df_final_data['station_number'].astype(int)
 
-    if len(df_final_data) > 0:          
+    '''if len(df_final_data) > 0:          
         code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
         code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
         code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
@@ -160,7 +176,23 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True)) #Why was pd.concat not used?        
     else:
-        df_final_result = pd.DataFrame()
+        df_final_result = pd.DataFrame()'''
+    
+    if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
+        code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
+    else:
+        code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
+    df_final_result = pd.merge(df_final_data,code_list_of_station, on='station_number')
+    code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
+    code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
+    code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
+    df_result_after1965 = pd.merge(df_final_data.loc[df_final_data['year'] >= 1965], code_list_of_station_after1965,
+                                   on='station_number')
+    df_result_before1963 = pd.merge(df_final_data.loc[df_final_data['year'] <= 1963],
+                                    code_list_of_station_before1963, on='station_number')
+    df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
+                                    code_list_of_station_between1963_1964, on = 'station_number')
+    df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))
     
     return df_final_result
 
