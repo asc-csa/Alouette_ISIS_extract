@@ -116,7 +116,8 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
         df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True)) #Why was pd.concat not used?
-       
+    else:
+        df_final_result = pd.DataFrame()
 
     return df_final_result
 
@@ -158,6 +159,8 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
         df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True)) #Why was pd.concat not used?        
+    else:
+        df_final_result = pd.DataFrame()
     
     return df_final_result
 
