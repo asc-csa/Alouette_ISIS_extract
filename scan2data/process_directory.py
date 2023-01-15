@@ -160,8 +160,8 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
         
         if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
             code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
-        else:
-            code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
+        #else:
+        #   code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
         df_final_result = pd.merge(df_final_data,code_list_of_station, on='station_number')
         code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
         code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
@@ -230,8 +230,8 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
     
     if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
         code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
-    else:
-        code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
+    #else:
+    #    code_list_of_station = pd.read_csv(source_dir + 'Pre_July_1_1965_Code_List_Station.csv')
     df_final_result = pd.merge(df_final_data,code_list_of_station, on='station_number')
     code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
     code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
