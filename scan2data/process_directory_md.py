@@ -166,6 +166,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
 def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir):
     
     df_processed, df_loss, df_outlier = process_subdirectory_md(sample_subdir, regex_raw)
+    df_processed['is_dot'] = df_processed['is_dot'].fillna(False)
     df_processed = df_processed.dropna(subset=['dict_metadata'])
     df_processed.to_csv(dir_csv_output + 'df_processed.csv', index=False) #TEST
     
