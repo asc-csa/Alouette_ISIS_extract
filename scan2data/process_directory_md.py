@@ -177,9 +177,9 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
     if len(df_processed_left) > 0: 
-        is_dot = df_processed_left['is_dot'] #np.array(df_processed_left['is_dot'])
-        df_dot_subset = df_processed_left[is_dot]
-        df_num_subset = df_processed_left[~is_dot]
+        #is_dot = df_processed_left['is_dot'] #np.array(df_processed_left['is_dot'])
+        df_dot_subset = df_processed_left.loc[df_processed_left['is_dot'] == True] #df_processed_left[is_dot]
+        df_num_subset = df_processed_left.loc[df_processed_left['is_dot'] == False] #df_processed_left[~is_dot]
         start, subdir_name = ntpath.split(sample_subdir[:-1])
         df_dot_subset = process_df_leftside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
         df_num_subset = process_df_leftside_metadata(df_num_subset, subdir_name, master_dir, is_dot=False)
@@ -188,10 +188,10 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
     
     #***Is there bottom-side dot metadata?***
     if len(df_processed_bottom) > 0:
-        is_dot = df_processed_bottom['is_dot'] #np.array(df_processed_bottom['is_dot'])
-        print(is_dot)
-        df_dot_subset = df_processed_bottom[is_dot]
-        df_num_subset = df_processed_bottom[~is_dot]
+        #is_dot =  #df_processed_bottom['is_dot'] #np.array(df_processed_bottom['is_dot'])
+        #print(is_dot)
+        df_dot_subset = df_processed_bottom.loc[df_processed_left['is_dot'] == True] #df_processed_bottom[is_dot]
+        df_num_subset = df_processed_bottom.loc[df_processed_left['is_dot'] == False] #df_processed_bottom[~is_dot]
         start, subdir_name = ntpath.split(sample_subdir[:-1])
         df_loss = pd.concat([df_loss, df_dot_subset]) #df_dot_subset = process_df_bottomside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
         df_num_subset = process_df_bottomside_metadata(df_num_subset, subdir_name, master_dir)
