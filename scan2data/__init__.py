@@ -2,7 +2,6 @@
 """
 Contains code to transform raw scans into a data form that can be used by computers
 """
-# test comment from Ashley
 
 import image_segmentation
 import ionogram_content_extraction
