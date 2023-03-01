@@ -101,7 +101,7 @@ for subdir in reprocess_list:
     #Process
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory...')
-    subprocess.call('user_input.py' + ' ' + processingDir + ' ' + result_localDir, shell=True, cwd='scan2data/')
+    subprocess.run('user_input.py' + ' ' + processingDir + ' ' + result_localDir, shell=True, cwd='scan2data/')
 
     #Consolidate results
     if os.path.exists(result_localDir + 'df_dot.csv'):
