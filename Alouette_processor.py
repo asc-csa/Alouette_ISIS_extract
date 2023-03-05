@@ -18,7 +18,7 @@ user = 'Rav Super' + instance #e.g: 'Rav Super2'
 process_on_VDI = True
 
 #Set directories
-rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' #'U:/Data_Science/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' 
+rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_II_Run1/' #'U:/Data_Science/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' 
 #rootDir_L_ = 'L:/DATA/Alouette_I/BATCH_I_Run1/'
 dataDir_L = 'L:/DATA/Alouette_I/BATCH_II_raw_ftp/'
 rootDir_L = 'L:/DATA/Alouette_I/BATCH_II_Run1/'
