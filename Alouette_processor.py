@@ -19,14 +19,15 @@ process_on_VDI = True
 
 #Set directories
 rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' #'U:/Data_Science/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' 
-rootDir_L_ = 'L:/DATA/Alouette_I/BATCH_I_Run1/'
-rootDir_L = 'L:/DATA/Alouette_I/BATCH_I_Run1_rp/'
+#rootDir_L_ = 'L:/DATA/Alouette_I/BATCH_I_Run1/'
+dataDir_L = 'L:/DATA/Alouette_I/BATCH_II_raw_ftp/'
+rootDir_L = 'L:/DATA/Alouette_I/BATCH_II_Run1/'
 downloadedDir = rootDir_local + '02_downloaded/'
 processingDir = rootDir_local + '03_processing/'
 result_localDir = rootDir_local + '05a_result_local/'
 if process_on_VDI:
-    processedDir = rootDir_L_ + '04_processed/' 
-    unprocessedDir = rootDir_L_ + '04a_unprocessed/'
+    processedDir = rootDir_L + '04_processed/' 
+    unprocessedDir = rootDir_L + '04a_unprocessed/'
     resultDir = rootDir_L + '05_result/' 
     logDir = rootDir_L + '06_log/'
     move_to_L = True
@@ -61,20 +62,43 @@ def move_images(old_dir, new_dir, roll, subdir, copy_to_other_drive=False, delet
                 shutil.rmtree(old_dir + roll + '/')
                 
 
+def draw_random_subdir(subdir_ids_list, logDir):
+    
+    subdir_id = subdir_ids_list[randrange(len(subdir_ids_list))]
+    subdir_id_parts = subdir_id.split('_')
+    roll = subdir_id_parts[0]
+    subdirectory = subdir_id_parts[1]
+    
+    #Check randomly-selected roll and subdirectory against the 'process_log'
+    if os.path.exists(logDir + 'process_log.csv'):
+        df_log = pd.read_csv(logDir + 'process_log.csv')
+        df_search = df_log.loc[(df_log['Roll'] == roll) & (df_log['Subdirectory'] == subdirectory)]
+        if len(df_search) > 0:
+            print(roll + '/' + subdirectory + ' already processed!')
+            return ''
+        else:
+            return roll, subdirectory
+    else:
+        return roll, subdirectory
+    
 
-#Re-process list of subdirectories
-df_reprocess = pd.read_csv(logDir + 'image_inventory.csv') #reprocess_list.csv
-df_reprocess = df_reprocess.sample(frac=1)
-print(len(df_reprocess))
-reprocess_list = df_reprocess['subdir_id']
 
-for subdir in reprocess_list:
+#Process list of subdirectories
+df_process = pd.read_csv(logDir + 'image_inventory.csv') #reprocess_list.csv
+#df_process = df_process.sample(frac=1)
+print(len(df_process))
+process_list = df_process['subdir_id']
+
+for subdir in process_list:
     
     start = time.time()
     
-    subdir_id_parts = subdir.split('_')
-    roll = subdir_id_parts[0]
-    subdirectory = subdir_id_parts[1]
+    #subdir_id_parts = subdir.split('_')
+    #roll = subdir_id_parts[0]
+    #subdirectory = subdir_id_parts[1]
+    
+    #Draw random, yet to be processed subdirectory, to process
+    roll, subdirectory = draw_random_subdir(subdir_ids_list=process_list, logDir=logDir)
     subdir_path_end = roll + '/' + subdirectory + '/'
     
     #Clear any old subdirectories in processingDir
@@ -90,10 +114,10 @@ for subdir in reprocess_list:
             shutil.rmtree(result_localDir + file)
     
     #Retrieve subdirectory
-    if os.path.exists(processedDir + subdir_path_end):
-        move_images(old_dir=processedDir, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
-    elif os.path.exists(unprocessedDir + subdir_path_end):
-        move_images(old_dir=unprocessedDir, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
+    if os.path.exists(dataDir_L + subdir_path_end):
+        move_images(old_dir=dataDir_L, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
+    #elif os.path.exists(unprocessedDir + subdir_path_end):
+    #    move_images(old_dir=unprocessedDir, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
     else:
         print('Cannot find subdirectory ' + subdir + '!')
         continue

@@ -86,16 +86,6 @@ def process_subdirectory(subdir_path, regex_images):
 
 def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
     """Process dataframe of subdirectory containing raw scanned images with leftside metadata
-
-    :param df_processed: regular expression to extract images ex: '*.png'
-    :type df_processed: class: `pandas.core.frame.DataFrame`
-    :param subdir_name: name of subdirectory
-    :type subdir_path: str
-    :param is_dot: whether the dataframe contains metadata
-    :type is_dot: bool
-
-    :returns: df_final_data :  dataframe containing data
-    :rtype: class: `pandas.core.frame.DataFrame`
     """
 
     df_final_data = df_processed[['file_name', 'fmin', 'max_depth', 'dict_metadata', 'mapped_coord']]
@@ -114,39 +104,39 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
     del df_final_data['dict_metadata']
 
     if is_dot:
-        df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
         df_final_data['station_number'] = df_final_data['station_code']
-        df_final_data['day'] = df_final_data['day'].astype(int)
-        df_final_data['hour'] = df_final_data['hour'].astype(int)
-        df_final_data['minute'] = df_final_data['minute'].astype(int)
-        df_final_data['second'] = df_final_data['second'].astype(int)
+        #df_final_data['day'] = df_final_data['day'].astype(int)
+        #df_final_data['hour'] = df_final_data['hour'].astype(int)
+        #df_final_data['minute'] = df_final_data['minute'].astype(int)
+        #df_final_data['second'] = df_final_data['second'].astype(int)
         df_final_data['station_number'] = df_final_data['station_number'].astype(int)
         #df_final_data.drop(
         #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
         #    axis=1, inplace=True)
-        code_list_of_station = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
-        df_final_result = pd.merge(df_final_data, code_list_of_station, on='station_number')
-    else:
-        df_final_data['year'] = df_final_data['year'] + 1960
-        df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-        df_final_data['day'] = df_final_data['day'].astype(int)
-        df_final_data['hour'] = df_final_data['hour'].astype(int)
-        df_final_data['minute'] = df_final_data['minute'].astype(int)
-        df_final_data['second'] = df_final_data['second'].astype(int)
-        df_final_data['station_number'] = df_final_data['station_number'].astype(int)
+        #code_list_of_station = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
+        #df_final_result = pd.merge(df_final_data, code_list_of_station, on='station_number')
+    #else:
+        #df_final_data['year'] = df_final_data['year'] + 1960
+        #df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+        #df_final_data['day'] = df_final_data['day'].astype(int)
+        #df_final_data['hour'] = df_final_data['hour'].astype(int)
+        #df_final_data['minute'] = df_final_data['minute'].astype(int)
+        #df_final_data['second'] = df_final_data['second'].astype(int)
+        #df_final_data['station_number'] = df_final_data['station_number'].astype(int)
         #df_final_data.drop(columns=['station_number_1', 'station_number_2'], axis=1, inplace=True)
         #df_final_data.drop(
         #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
         #    axis=1, inplace=True)
         
-        if len(df_final_data) > 0:          
+        '''if len(df_final_data) > 0:          
             code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
             code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
             code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
@@ -157,7 +147,7 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
             df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
                                             code_list_of_station_between1963_1964, on = 'station_number')
             df_final_result = pd.concat([df_result_before1963, df_result_mid1964, df_result_after1965]).reset_index(drop=True)
-            #df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))
+            #df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))'''
         
         '''if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
             code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
@@ -175,19 +165,11 @@ def process_df_leftside_metadata(df_processed, subdir_name, source_dir, is_dot):
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))'''
 
-    return df_final_result
+    return df_final_data
 
 
 def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
-    """Process dataframe of subdirectory containing raw scanned images with leftside metadata
-
-    :param df_processed: regular expression to extract images ex: '*.png'
-    :type df_processed: class: `pandas.core.frame.DataFrame`
-    :param subdir_name: name of subdirectory
-    :type subdir_path: str
-
-    :returns: df_final_data :  dataframe containing data
-    :rtype: class: `pandas.core.frame.DataFrame`
+    """Process dataframe of subdirectory containing raw scanned images with bottomside metadata
     """
 
     df_final_data = df_processed[['file_name', 'fmin', 'max_depth', 'dict_metadata', 'mapped_coord']]
@@ -201,23 +183,23 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
 
     del df_final_data['dict_metadata']
 
-    df_final_data['year'] = df_final_data['year'] + 1960
-    df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-    df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-    df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-    df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-    df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
-    df_final_data['day'] = df_final_data['day'].astype(int)
-    df_final_data['hour'] = df_final_data['hour'].astype(int)
-    df_final_data['minute'] = df_final_data['minute'].astype(int)
-    df_final_data['second'] = df_final_data['second'].astype(int)
-    df_final_data['station_number'] = df_final_data['station_number'].astype(int)
+    #df_final_data['year'] = df_final_data['year'] + 1960
+    #df_final_data['day'] = df_final_data['day_1'].astype(str) + df_final_data['day_2'].astype(str) + df_final_data['day_3'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    #df_final_data['hour'] = df_final_data['hour_1'].astype(str) + df_final_data['hour_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    #df_final_data['minute'] = df_final_data['minute_1'].astype(str) + df_final_data['minute_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    #df_final_data['second'] = df_final_data['second_1'].astype(str) + df_final_data['second_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    #df_final_data['station_number'] = df_final_data['station_number_1'].astype(str) + df_final_data['station_number_2'].astype(str) #THESE NEED TO BE STRING CONCATENATED, NOT NUMERICALLY SUMMED!
+    #df_final_data['day'] = df_final_data['day'].astype(int)
+    #df_final_data['hour'] = df_final_data['hour'].astype(int)
+    #df_final_data['minute'] = df_final_data['minute'].astype(int)
+    #df_final_data['second'] = df_final_data['second'].astype(int)
+    #df_final_data['station_number'] = df_final_data['station_number'].astype(int)
     #df_final_data.drop(columns=['station_number_1', 'station_number_2'], axis=1, inplace=True)
     #df_final_data.drop(
     #    columns=['day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 'second_2'],
     #    axis=1, inplace=True)
     
-    if len(df_final_data) > 0:          
+    '''if len(df_final_data) > 0:          
         code_list_of_station_after1965 = pd.read_csv(source_dir + 'Post_July_1_1965_Code_List_Station.csv')
         code_list_of_station_before1963 = pd.read_csv(source_dir + 'Pre_1963_Code_List_Station.csv')
         code_list_of_station_between1963_1964 = pd.read_csv(source_dir + '1963_1964.csv')
@@ -228,7 +210,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
         df_result_mid1964 = pd.merge (df_final_data.loc[df_final_data['year'] == 1964],
                                         code_list_of_station_between1963_1964, on = 'station_number')
         df_final_result = pd.concat([df_result_before1963, df_result_mid1964, df_result_after1965]).reset_index(drop=True)
-        #df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True)) 
+        #df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))''' 
     
     '''if len(df_final_data['year']) != 0:  # and df_final_data['year'] >= 1965:
         code_list_of_station = pd.read_csv(source_dir+'Post_July_1_1965_Code_List_Station.csv')
@@ -246,7 +228,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
                                     code_list_of_station_between1963_1964, on = 'station_number')
     df_final_result = df_result_before1963.append(df_result_after1965.append(df_result_mid1964, ignore_index=True))'''
 
-    return df_final_result
+    return df_final_data
 
 
 
