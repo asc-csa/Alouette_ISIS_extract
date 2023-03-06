@@ -16,6 +16,7 @@ warnings.filterwarnings('ignore')
 instance = sys.argv[1]
 user = 'Rav Super' + instance #e.g: 'Rav Super2'
 process_on_VDI = True
+stop_loop_threshold = 2640 #max while loops to prevent infinite loop
 
 #Set directories
 rootDir_local = 'C:/Users/rnaidoo/Documents/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_II_Run1/' #'U:/Data_Science/Projects_data/Alouette_I/SuperVDI' + instance + '/BATCH_I_Run1_rp/' 
@@ -83,22 +84,23 @@ def draw_random_subdir(subdir_ids_list, logDir):
     
 
 
-#Process list of subdirectories
-df_process = pd.read_csv(logDir + 'image_inventory.csv') #reprocess_list.csv
-#df_process = df_process.sample(frac=1)
-print(len(df_process))
-process_list = df_process['subdir_id']
+#Process remaining subdirectories with while loop
+stop_condition = False
+stop_condition_counter = 0
 
-for subdir in process_list:
-    
+while stop_condition == False:
     start = time.time()
     
-    #subdir_id_parts = subdir.split('_')
-    #roll = subdir_id_parts[0]
-    #subdirectory = subdir_id_parts[1]
-    
     #Draw random, yet to be processed subdirectory, to process
-    roll, subdirectory = draw_random_subdir(subdir_ids_list=process_list, logDir=logDir)
+    df_inventory = pd.read_csv(logDir + 'image_inventory.csv')
+    subdir_ids_tot = df_inventory['subdir_id'].unique()
+    if os.path.exists(logDir + 'process_log.csv'):
+        df_log = pd.read_csv(logDir + 'process_log.csv')
+        subdir_ids_proc = df_log['subdir_id'].unique()
+    else:
+        subdir_ids_proc = []
+    subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
+    roll, subdirectory = draw_random_subdir(subdir_ids_list=subdir_ids_rem, logDir=logDir)
     subdir_path_end = roll + '/' + subdirectory + '/'
     
     #Clear any old subdirectories in processingDir
@@ -119,7 +121,7 @@ for subdir in process_list:
     #elif os.path.exists(unprocessedDir + subdir_path_end):
     #    move_images(old_dir=unprocessedDir, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
     else:
-        print('Cannot find subdirectory ' + subdir + '!')
+        print('Cannot find subdirectory ' + subdirectory + '!')
         continue
     
     #Process
@@ -183,7 +185,7 @@ for subdir in process_list:
     mapped_coords_localDir = result_localDir + 'mapped_coords/'
     mapped_coordsDir = resultDir + 'mapped_coords/'
     move_images(old_dir=mapped_coords_localDir, new_dir=mapped_coordsDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L)
-    
+
     end = time.time()
     t = end - start
     print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
@@ -225,3 +227,10 @@ for subdir in process_list:
     else:
         move_images(old_dir=processingDir, new_dir=unprocessedDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
     
+    #Check stop conditions
+    if len(subdir_ids_rem) == 1:
+        print('Stop!')
+        stop_condition = True
+    if stop_condition_counter == stop_loop_threshold:
+        print('Stop!')
+        stop_condition = True
