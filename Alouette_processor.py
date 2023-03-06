@@ -228,7 +228,7 @@ while stop_condition == False:
         move_images(old_dir=processingDir, new_dir=unprocessedDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
     
     #Check stop conditions
-    if len(subdir_ids_rem) == 1:
+    if len(subdir_ids_rem) < 2:
         print('Stop!')
         stop_condition = True
     if stop_condition_counter == stop_loop_threshold:
