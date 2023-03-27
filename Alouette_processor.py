@@ -42,9 +42,9 @@ else:
 
 
 #Functions
-def move_images(old_dir, new_dir, roll, subdir, copy_to_other_drive=False, delete_old_dir=False):
-    oldDir = old_dir + roll + '/' + subdir + '/'
-    newDir = new_dir + roll + '/' + subdir + '/'
+def move_images(old_dir, new_dir, directory, subdir, copy_to_other_drive=False, delete_old_dir=False):
+    oldDir = old_dir + directory + '/' + subdir + '/'
+    newDir = new_dir + directory + '/' + subdir + '/'
     os.makedirs(newDir, exist_ok=True)
     
     if copy_to_other_drive:
@@ -58,29 +58,29 @@ def move_images(old_dir, new_dir, roll, subdir, copy_to_other_drive=False, delet
     
     if delete_old_dir:
         if os.path.exists(oldDir):
-            shutil.rmtree(old_dir + roll + '/' + subdir + '/')
-            if len(os.listdir(old_dir + roll + '/')) == 0:
-                shutil.rmtree(old_dir + roll + '/')
+            shutil.rmtree(old_dir + directory + '/' + subdir + '/')
+            if len(os.listdir(old_dir + directory + '/')) == 0:
+                shutil.rmtree(old_dir + directory + '/')
                 
 
 def draw_random_subdir(subdir_ids_list, logDir):
     
     subdir_id = subdir_ids_list[randrange(len(subdir_ids_list))]
     subdir_id_parts = subdir_id.split('_')
-    roll = subdir_id_parts[0]
+    directory = subdir_id_parts[0]
     subdirectory = subdir_id_parts[1]
     
-    #Check randomly-selected roll and subdirectory against the 'process_log'
+    #Check randomly-selected directory and subdirectory against the 'process_log'
     if os.path.exists(logDir + 'process_log.csv'):
         df_log = pd.read_csv(logDir + 'process_log.csv')
-        df_search = df_log.loc[(df_log['Roll'] == roll) & (df_log['Subdirectory'] == subdirectory)]
+        df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
         if len(df_search) > 0:
-            print(roll + '/' + subdirectory + ' already processed!')
+            print(directory + '/' + subdirectory + ' already processed!')
             return ''
         else:
-            return roll, subdirectory
+            return directory, subdirectory
     else:
-        return roll, subdirectory
+        return directory, subdirectory
     
 
 
@@ -100,8 +100,8 @@ while stop_condition == False:
     else:
         subdir_ids_proc = []
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
-    roll, subdirectory = draw_random_subdir(subdir_ids_list=subdir_ids_rem, logDir=logDir)
-    subdir_path_end = roll + '/' + subdirectory + '/'
+    directory, subdirectory = draw_random_subdir(subdir_ids_list=subdir_ids_rem, logDir=logDir)
+    subdir_path_end = directory + '/' + subdirectory + '/'
     
     #Clear any old subdirectories in processingDir
     for file in os.listdir(processingDir):
@@ -117,9 +117,9 @@ while stop_condition == False:
     
     #Retrieve subdirectory
     if os.path.exists(dataDir_L + subdir_path_end):
-        move_images(old_dir=dataDir_L, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
+        move_images(old_dir=dataDir_L, new_dir=processingDir, directory=directory, subdir=subdirectory, copy_to_other_drive=True)
     #elif os.path.exists(unprocessedDir + subdir_path_end):
-    #    move_images(old_dir=unprocessedDir, new_dir=processingDir, roll=roll, subdir=subdirectory, copy_to_other_drive=True)
+    #    move_images(old_dir=unprocessedDir, new_dir=processingDir, directory=directory, subdir=subdirectory, copy_to_other_drive=True)
     else:
         print('Cannot find subdirectory ' + subdirectory + '!')
         continue
@@ -168,23 +168,23 @@ while stop_condition == False:
 
     df_tot = pd.concat([df_dot, df_num, df_loss, df_outlier])
     if len(df_tot) > 0:
-        df_tot['Roll'] = roll
+        df_tot['Directory'] = directory
         df_tot['Subdirectory'] = subdirectory
         if 'file_name' in df_tot.columns:
-            df_tot['filename'] = df_tot['file_name'].str.replace(processingDir + roll + '/' + subdirectory, '')
+            df_tot['filename'] = df_tot['file_name'].str.replace(processingDir + directory + '/' + subdirectory, '')
             df_tot['filename'] = df_tot['filename'].str.replace('\\', '')
             df_tot['filename'] = df_tot['filename'].str.replace('/', '')
         else:
             df_tot['filename'] = 'unknown'
         df_tot = df_tot.drop(columns=['file_name', 'mapped_coord', 'subdir_name', 'raw', 'ionogram', 'raw_metadata', 
                                       'trimmed_metadata', 'padded', 'dilated_metadata'], errors='ignore')
-    os.makedirs(resultDir + roll + '/', exist_ok=True)
-    df_tot.to_csv(resultDir + roll + '/' + 'result-' + roll + '_' + subdirectory + '.csv', index=False)
+    os.makedirs(resultDir + directory + '/', exist_ok=True)
+    df_tot.to_csv(resultDir + directory + '/' + 'result-' + directory + '_' + subdirectory + '.csv', index=False)
 
     #move mapped_coords to '05_result'
     mapped_coords_localDir = result_localDir + 'mapped_coords/'
     mapped_coordsDir = resultDir + 'mapped_coords/'
-    move_images(old_dir=mapped_coords_localDir, new_dir=mapped_coordsDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L)
+    move_images(old_dir=mapped_coords_localDir, new_dir=mapped_coordsDir, directory=directory, subdir=subdirectory, copy_to_other_drive=move_to_L)
 
     end = time.time()
     t = end - start
@@ -194,7 +194,7 @@ while stop_condition == False:
     #Record performance
     n_processed = n_dot + n_num + n_loss + n_outlier
     df_result_ = pd.DataFrame({
-        'Roll': roll,
+        'Directory': directory,
         'Subdirectory': subdirectory,
         'Images_processed': n_processed,
         'Images_dot': n_dot,
@@ -204,7 +204,7 @@ while stop_condition == False:
         'Process_time': t,
         'Process_timestamp': datetime.fromtimestamp(end),
         'User': user,
-        'subdir_id': roll + '_' + subdirectory
+        'subdir_id': directory + '_' + subdirectory
     }, index=[0])
     if os.path.exists(logDir + 'process_log.csv'):
         df_log = pd.read_csv(logDir + 'process_log.csv')
@@ -223,9 +223,9 @@ while stop_condition == False:
 
     #Move to '04_processed' or '04a_unprocessed'
     if n_processed > 0:
-        move_images(old_dir=processingDir, new_dir=processedDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
+        move_images(old_dir=processingDir, new_dir=processedDir, directory=directory, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
     else:
-        move_images(old_dir=processingDir, new_dir=unprocessedDir, roll=roll, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
+        move_images(old_dir=processingDir, new_dir=unprocessedDir, directory=directory, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
     
     #Check stop conditions
     if len(subdir_ids_rem) < 2:
