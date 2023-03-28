@@ -14,7 +14,7 @@ LIST_DIRECTORY_DOTS = ['R014207907F','R014207908F','R014207909F','R014207929F','
 # Labelling of coordinates
 LABELS_NUM = [1,2,4,8]
 LABELS_CAT_DOT = ['day_1','day_2','day_3','hour_1','hour_2','minute_1','minute_2','second_1', 'second_2','station_code']
-LABELS_CAT_DIGIT = ['satellite_number','year','day_1','day_2','day_3','hour_1','hour_2','minute_1','minute_2',
+LABELS_CAT_NUM = ['satellite_number','year','day_1','day_2','day_3','hour_1','hour_2','minute_1','minute_2',
                     'second_1', 'second_2', 'station_number_1','station_number_2']
 LABELS_DICT = ['dict_cat_dot','dict_num_dot','dict_cat_digit','dict_num_digit']
 
@@ -114,7 +114,7 @@ def indices_highest_peaks_hist_binning(list_coord,
 
 # Check y_peaks >0
 # TODO: DEFAULTS
-def get_leftside_metadata_grid_mapping(list_x_dot,list_y_dot,list_x_digit,list_y_digit,dir_name,
+def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, list_y_digit, dir_name,
                       difference_ratio=0.75,use_defaults=True):
     
     """Determines and returns the the mapping between coordinate values on a metadata image and metadata labels in a subdirectory, for metadata of types dot and digits, as well as returns the histogram used to generate each mapping
@@ -136,8 +136,9 @@ def get_leftside_metadata_grid_mapping(list_x_dot,list_y_dot,list_x_digit,list_y
     :returns: all_dict_mapping,all_dict_hist: dictionary of dictionaries where each dictionary correspond to a mapping between coordinates on the image and metadata labels, dictionary of histograms used to generated each dictionary in all_dict_mapping
     :rtype: dict, dict
     """
+    
     # Dictionary of dictionaries that map labels to coordinate point in metadata
-    all_labels = [LABELS_CAT_DOT,LABELS_NUM ,LABELS_CAT_DIGIT,LABELS_NUM]
+    all_labels = [LABELS_CAT_DOT, LABELS_NUM, LABELS_CAT_NUM, LABELS_NUM]
     all_dict_mapping = {}
     all_dict_hist = {}
     # Different protocols depending on the type of dictionary mappings

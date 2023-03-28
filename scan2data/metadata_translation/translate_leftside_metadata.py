@@ -23,7 +23,7 @@ except ModuleNotFoundError:
 
 LABELS_DICT = ['dict_cat_dot','dict_num_dot','dict_cat_digit','dict_num_digit']
 
-def map_coord_to_metadata(list_cat_coord,list_num_coord,dict_mapping_cat, dict_mapping_num):
+def map_coord_to_metadata(list_cat_coord, list_num_coord, dict_mapping_cat, dict_mapping_num):
     """Map coordinate of metadata centroids to information
     
     :param list_cat_coord: list of metadata positions to map to categories   
@@ -166,7 +166,7 @@ def get_bottomside_metadata(df_img, subdir_location,
         list_x_digit = list(chain(*df_num_subset['x_centroids'].tolist()))
         list_y_digit = list(chain(*df_num_subset['y_centroids'].tolist()))
     dict_mapping, dict_hist = get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, list_y_digit,
-                                                                 subdir_location)
+                                                                 subdir_location) #from metadata_translation.leftside_metadata_grid_mapping
 
     # Determine the value of metadata based on the mappings
     df_img['dict_metadata'] = 'empty'
