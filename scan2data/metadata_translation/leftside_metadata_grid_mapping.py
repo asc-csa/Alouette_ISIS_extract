@@ -64,7 +64,7 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
         row_centroids = list(map(round,row_centroids))
         
         #Determine if dot leftside metadata 
-        area_centroids =area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]    
+        area_centroids = area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]    
         median_area = np.median(area_centroids)
         is_dot = False
         #The line below is commented to prevent giving the dot items manually

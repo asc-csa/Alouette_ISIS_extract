@@ -145,7 +145,7 @@ def get_bottomside_metadata(df_img, subdir_location,
     df_img['dilated_metadata'] = df_img['trimmed_metadata'].map(
         lambda trimmed_meta: cv2.dilate(trimmed_meta, kernel_dilation))
     df_img['x_centroids'], df_img['y_centroids'], df_img['is_dot'] = zip(
-        *df_img.apply(lambda row: extract_centroids_and_determine_type(row['dilated_metadata'], row['file_name']), 1))
+        *df_img.apply(lambda row: extract_centroids_and_determine_type(row['dilated_metadata'], row['file_name']), 1)) #from leftside_metadata_grid_mapping.py
     df_loss_centroids_extraction, loss_centroids_extraction = record_loss(df_img,
                                                                           'metadata_translation.determine_leftside_metadata_grid_mapping.extract_centroids_and_determine_type',
                                                                           subdir_location)
