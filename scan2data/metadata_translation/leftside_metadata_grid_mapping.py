@@ -52,7 +52,7 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
     try:
   
         # Use connected component algorithm to determine the centroids
-        _, _, stats, centroids	=	cv2.connectedComponentsWithStats(dilated_meta)
+        _, _, stats, centroids = cv2.connectedComponentsWithStats(dilated_meta)
         area_centroids = stats[:,-1]
         
         # Remove centroids who are probably not associated with metadata num/dot
@@ -69,7 +69,7 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
         is_dot = False
         #The line below is commented to prevent giving the dot items manually
         #if any([dir_dot in file_name for dir_dot in LIST_DIRECTORY_DOTS]) and median_area < max_area_dot:
-        if median_area < max_area_dot:
+        if median_area < max_area_dot: #max_area_dot is manually specified as a function input
             is_dot = True
         return col_centroids,row_centroids,is_dot
     except:

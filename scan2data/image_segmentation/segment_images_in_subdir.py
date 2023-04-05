@@ -82,7 +82,7 @@ def segment_images(subdir_location, regex_img,
         df_img['raw'] = df_img['file_name'].map(lambda file_name: cv2.imread(file_name,0))
     
     # Extract ionogram and coordinates delimiting its limits
-    df_img['limits'],df_img['ionogram'] = zip(*df_img['raw'].map(lambda raw_img: extract_ionogram(raw_img)))
+    df_img['limits'], df_img['ionogram'] = zip(*df_img['raw'].map(lambda raw_img: extract_ionogram(raw_img))) #from extract_ionogram_from_scan.py
     
     # Record the files whose ionogram extraction was not successful
     df_loss_ion_extraction, loss_ion_extraction = record_loss(df_img,'image_segmentation.extract_ionogram_from_scan.extract_ionogram',subdir_location)
@@ -101,7 +101,7 @@ def segment_images(subdir_location, regex_img,
     median_width = np.median(df_img['width'])
     
     # Find and remove ionogram outliers    
-    conditional_list_ionogram = [abs(df_img['height'] -median_height)  >cutoff_height,abs(df_img['width'] - median_width) > cutoff_width] 
+    conditional_list_ionogram = [abs(df_img['height'] -median_height) > cutoff_height,abs(df_img['width'] - median_width) > cutoff_width] 
     outlier_ionogram = np.any(conditional_list_ionogram,axis = 0)
     
     df_outlier_ionogram,_ = record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: iono size outlier',subdir_location,['file_name','height','width'],outlier_ionogram)
@@ -118,7 +118,7 @@ def segment_images(subdir_location, regex_img,
     
 
     # Raw metadata
-    df_img['metadata_type'],df_img['raw_metadata'] = zip(*df_img.apply(lambda row: extract_metadata(row['raw'], row['limits']),1)) #from extract_metadata_from_scan
+    df_img['metadata_type'], df_img['raw_metadata'] = zip(*df_img.apply(lambda row: extract_metadata(row['raw'], row['limits']), 1)) #from extract_metadata_from_scan
     if rotate_180 == True:
         df_img['raw_metadata'] = df_img['raw_metadata'].map(lambda raw_metadata: np.rot90(raw_metadata, 2))
     
@@ -137,7 +137,7 @@ def segment_images(subdir_location, regex_img,
     df_img = df_img[~outlier_metadata_location]
     
     # Trimmed metadata
-    df_img['trimmed_metadata'] = df_img.apply(lambda row: trimming_metadata(row['raw_metadata'],row['metadata_type']) , 1)
+    df_img['trimmed_metadata'] = df_img.apply(lambda row: trimming_metadata(row['raw_metadata'], row['metadata_type']), 1) #from trim_raw_metadata.py
     df_loss_trim,loss_trim = record_loss(df_img,'image_segmentation.trim_raw_metadata.trimming_metadata',subdir_location)
 
     

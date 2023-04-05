@@ -92,7 +92,7 @@ def get_leftside_metadata(df_img,subdir_location,
     # cv2.imshow("test1", df_img['dilated_metadata'][0])
     # cv2.waitKey(0)
 
-    df_img['x_centroids'],df_img['y_centroids'],df_img['is_dot'] = zip(*df_img.apply(lambda row: extract_centroids_and_determine_type(row['dilated_metadata'],row['file_name']),1))
+    df_img['x_centroids'],df_img['y_centroids'],df_img['is_dot'] = zip(*df_img.apply(lambda row: extract_centroids_and_determine_type(row['dilated_metadata'],row['file_name']),1)) #from leftside_metadata_grid_mapping.py
     df_loss_centroids_extraction,loss_centroids_extraction = record_loss(df_img,'metadata_translation.determine_leftside_metadata_grid_mapping.extract_centroids_and_determine_type',subdir_location)
       
     # Remove files whose centroid metadata extraction was not successful
@@ -110,7 +110,7 @@ def get_leftside_metadata(df_img,subdir_location,
     if not df_num_subset.empty:
         list_x_digit = list(chain(*df_num_subset['x_centroids'].tolist()))
         list_y_digit = list(chain(*df_num_subset['y_centroids'].tolist()))
-    dict_mapping,dict_hist = get_leftside_metadata_grid_mapping(list_x_dot,list_y_dot,list_x_digit,list_y_digit,subdir_location)
+    dict_mapping,dict_hist = get_leftside_metadata_grid_mapping(list_x_dot,list_y_dot,list_x_digit,list_y_digit,subdir_location) #from metadata_translation.leftside_metadata_grid_mapping
 
     # Determine the value of metadata based on the mappings
     df_img['dict_metadata'] = 'empty'
