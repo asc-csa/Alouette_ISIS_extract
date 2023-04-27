@@ -17,7 +17,7 @@ pipeline = keras_ocr.pipeline.Pipeline()
 #Set parameters
 instance = sys.argv[1]
 user = 'Rav Super' + instance #e.g: 'Rav Super2'
-batch_size = 8
+batch_size = sys.argv[2]
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
