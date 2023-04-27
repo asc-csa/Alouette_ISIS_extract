@@ -114,6 +114,8 @@ while stop_condition == False:
     subdir_path_end = directory + '/' + subdirectory + '/'
 
     #Process subdirectory
+    print('')
+    print('Processing ' + subdir_path_end + ' subdirectory...')
     img_fns = []
     for file in os.listdir(processedDir + subdir_path_end):
         img_fns.append(processedDir + subdir_path_end + file)
