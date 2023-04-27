@@ -6,6 +6,7 @@ import numpy as np
 import os
 from random import randrange
 import time
+from datetime import datetime
 import keras_ocr
 
 pipeline = keras_ocr.pipeline.Pipeline()
@@ -15,6 +16,7 @@ instance = sys.argv[1]
 user = 'Rav Super' + instance #e.g: 'Rav Super2'
 batch_size = 8
 process_on_VDI = True
+stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
 rootDir = 'L:/DATA/Alouette_I/BATCH_II_Run1/'
@@ -211,3 +213,40 @@ while stop_condition == False:
     
     #Save:
     df_merge.to_csv(resultDir + directory + '/' + 'result_OCRpass-' + directory + '_' + subdirectory + '.csv', index=False)
+    
+    end = time.time()
+    t = end - start
+    print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
+    print('')
+
+    #Record performance
+    df_result_ = pd.DataFrame({
+        'Directory': directory,
+        'Subdirectory': subdirectory,
+        'Process_time': t,
+        'Process_timestamp': datetime.fromtimestamp(end),
+        'User': user,
+        'subdir_id': directory + '_' + subdirectory
+    }, index=[0])
+    if os.path.exists(logDir + 'process_log_OCR.csv'):
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        df_update = pd.concat([df_log, df_result_], axis=0, ignore_index=True)
+        df_update.to_csv(logDir + 'process_log_OCR.csv', index=False)
+    else:
+        if len(df_result_) > 0:
+            df_result_.to_csv(logDir + 'process_log_OCR.csv', index=False)
+
+    #Backup 'process_log' (10% of the time)
+    if randrange(10) == 7:
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        datetime_str = datetime.now().strftime("%Y%m%d_%Hh%M")
+        os.makedirs(logDir + 'backups/', exist_ok=True)
+        df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
+
+    #Check stop conditions
+    if len(subdir_ids_rem) < 2:
+        print('Stop!')
+        stop_condition = True
+    if stop_condition_counter == stop_loop_threshold:
+        print('Stop!')
+        stop_condition = True
