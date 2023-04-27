@@ -7,8 +7,11 @@ import os
 from random import randrange
 import time
 from datetime import datetime
-import keras_ocr
 
+import warnings
+warnings.filterwarnings('ignore')
+
+import keras_ocr
 pipeline = keras_ocr.pipeline.Pipeline()
 
 #Set parameters
