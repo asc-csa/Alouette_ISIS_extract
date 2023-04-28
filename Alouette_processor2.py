@@ -201,22 +201,22 @@ while stop_condition == False:
     if len(df_read) == 0:
         n_num = len(df_merge.loc[df_merge['processed_image_class'] == 'num'])
         n_dot = len(df_merge.loc[df_merge['processed_image_class'] == 'dot'])
-    #If num type metadata is the majority, classify dot type images as loss:
-    if n_num > n_dot:
-        for i in range(0, len(df_merge)):
-            if df_merge['processed_image_class'].iloc[i] == 'dot':
-                df_merge['processed_image_class'].iloc[i] = 'loss'
-                df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
-                for col in md_cols:
-                    df_merge[col].iloc[i] = np.nan
-    #If dot type metadata is the majority, classify num type images as loss:
-    if n_dot > n_num:
-        for i in range(0, len(df_merge)):
-            if df_merge['processed_image_class'].iloc[i] == 'num':
-                df_merge['processed_image_class'].iloc[i] = 'loss'
-                df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'
-                for col in md_cols:
-                    df_merge[col].iloc[i] = np.nan   
+        #If num type metadata is the majority, classify dot type images as loss:
+        if n_num > n_dot:
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] == 'dot':
+                    df_merge['processed_image_class'].iloc[i] = 'loss'
+                    df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
+                    for col in md_cols:
+                        df_merge[col].iloc[i] = np.nan
+        #If dot type metadata is the majority, classify num type images as loss:
+        if n_dot > n_num:
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] == 'num':
+                    df_merge['processed_image_class'].iloc[i] = 'loss'
+                    df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'
+                    for col in md_cols:
+                        df_merge[col].iloc[i] = np.nan   
     
     #Save:
     df_merge.to_csv(resultDir + directory + '/' + 'result_OCRpass-' + directory + '_' + subdirectory + '.csv', index=False)
