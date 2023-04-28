@@ -175,10 +175,12 @@ while stop_condition == False:
         if df_merge['processed_image_class'].iloc[i] == 'loss':
             if df_merge['details'].iloc[i] == 'OCR read metadata contains letters':
                 for col in md_cols:
-                    df_merge[col].iloc[i] = np.nan
+                    if col in df_merge.columns:
+                        df_merge[col].iloc[i] = np.nan
         elif df_merge['processed_image_class'].iloc[i] == 'num2':
             for col in md_cols:
-                df_merge[col].iloc[i] = np.nan
+                if col in df_merge.columns:
+                    df_merge[col].iloc[i] = np.nan
             n_OCR_read += 1
     
     #If num2 metadata type is detected, classify images with all other metadata types as loss:
