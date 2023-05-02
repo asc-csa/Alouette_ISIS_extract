@@ -155,7 +155,11 @@ while stop_condition == False:
     if len(df_result) > 0:
         if len(df_read) > 0:
             df_merge = df_result.merge(df_read, how='left', on='filename')
-            df_merge.loc[~pd.isna(df_merge['day_of_year_OCR']), 'processed_image_class'] = 'num2'
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] != 'loss':
+                    if ~np.isnan(df_merge['day_of_year_OCR'].iloc[i]):
+                        df_merge['processed_image_class'].iloc[i] = 'num2'
+            #df_merge.loc[~pd.isna(df_merge['day_of_year_OCR']), 'processed_image_class'] = 'num2'
         else:
             df_merge = df_result
     else:
