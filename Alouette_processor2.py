@@ -119,6 +119,7 @@ while stop_condition == False:
     #Process subdirectory
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory...')
+    print(str(len(subdir_ids_rem)) + ' subdirectories to go!')
     img_fns = []
     for file in os.listdir(processedDir + subdir_path_end):
         img_fns.append(processedDir + subdir_path_end + file)
@@ -157,7 +158,7 @@ while stop_condition == False:
             df_merge = df_result.merge(df_read, how='left', on='filename')
             for i in range(0, len(df_merge)):
                 if df_merge['processed_image_class'].iloc[i] != 'loss':
-                    if ~np.isnan(df_merge['day_of_year_OCR'].iloc[i]):
+                    if ~pd.isna(df_merge['day_of_year_OCR'].iloc[i]):
                         df_merge['processed_image_class'].iloc[i] = 'num2'
             #df_merge.loc[~pd.isna(df_merge['day_of_year_OCR']), 'processed_image_class'] = 'num2'
         else:
