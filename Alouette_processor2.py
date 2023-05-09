@@ -114,6 +114,8 @@ while stop_condition == False:
         subdir_ids_proc = []
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
     directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
+    if len(directory) == 0:
+        continue
     subdir_path_end = directory + '/' + subdirectory + '/'
 
     #Process subdirectory
