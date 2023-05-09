@@ -89,7 +89,7 @@ def draw_random_subdir(processedDir, logDir):
         df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
         if len(df_search) > 0:
             print(directory + '/' + subdirectory + ' already processed!')
-            return ''
+            return '', ''
         else:
             return directory, subdirectory
     else:
