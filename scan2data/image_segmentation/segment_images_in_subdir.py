@@ -123,7 +123,7 @@ def segment_images(subdir_location, regex_img,
         df_img['raw_metadata'] = df_img['raw_metadata'].map(lambda raw_metadata: np.rot90(raw_metadata, 2))
     
     # There should be no metadata on left and top, especially after flipping
-    outlier_metadata_location = np.any([df_img['metadata_type'] == 'right', df_img['metadata_type']=='top'], axis=0)
+    '''outlier_metadata_location = np.any([df_img['metadata_type'] == 'right', df_img['metadata_type']=='top'], axis=0)
     df_outlier_metadata_location ,_ =  record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: metadata not on left or bottom',subdir_location,
                                          ['file_name','metadata_type'],outlier_metadata_location )
 
@@ -134,7 +134,7 @@ def segment_images(subdir_location, regex_img,
         df_outlier_metadata_location = df_outlier_metadata_location[['file_name','func_name','subdir_name']]
     
     # Remove loss from detected metadata not being on the left or bottom
-    df_img = df_img[~outlier_metadata_location]
+    df_img = df_img[~outlier_metadata_location]'''
     
     # Trimmed metadata
     df_img['trimmed_metadata'] = df_img.apply(lambda row: trimming_metadata(row['raw_metadata'], row['metadata_type']), 1) #from trim_raw_metadata.py
