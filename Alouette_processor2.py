@@ -161,10 +161,8 @@ while stop_condition == False:
             for i in range(0, len(df_merge)):
                 if df_merge['processed_image_class'].iloc[i] != 'loss':
                     if df_merge['processed_image_class'].iloc[i] != 'outlier':
-                        #if ~pd.isna(df_merge['day_of_year_OCR'].iloc[i]):
-                        if int(df_merge['day_of_year_OCR'].iloc[i]) > 0:
+                        if pd.isna(df_merge['day_of_year_OCR'].iloc[i]) == False:
                             df_merge['processed_image_class'].iloc[i] = 'num2'
-            #df_merge.loc[~pd.isna(df_merge['day_of_year_OCR']), 'processed_image_class'] = 'num2'
         else:
             df_merge = df_result
     else:
