@@ -154,8 +154,10 @@ def get_bottomside_metadata(df_img, subdir_location,
     df_img = df_img[~loss_centroids_extraction]
 
     # Determine metadata mapping for dot-type metadata and num-type metadata
-    df_dot_subset = df_img[np.array(df_img['is_dot'])]
-    df_num_subset = df_img[np.invert(np.array(df_img['is_dot']))]
+    #df_dot_subset = df_img[np.array(df_img['is_dot'])]
+    df_dot_subset = df_img.loc[df_img['is_dot'] == True]
+    #df_num_subset = df_img[np.invert(np.array(df_img['is_dot']))]
+    df_num_subset = df_img.loc[df_img['is_dot'] != True]
 
     list_x_dot, list_y_dot, list_x_digit, list_y_digit = [0], [0], [0], [0]
     if not df_dot_subset.empty:
