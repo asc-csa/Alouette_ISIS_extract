@@ -22,7 +22,7 @@ process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir = 'L:/DATA/Alouette_I/BATCH_II_Run1/'
+rootDir = 'L:/DATA/Alouette_I/BATCH_II_Run2/'
 processedDir = rootDir + '04_processed/'
 resultDir = rootDir + '05_result/'
 logDir = rootDir + '06_log/'
