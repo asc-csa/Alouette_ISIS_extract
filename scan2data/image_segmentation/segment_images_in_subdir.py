@@ -171,6 +171,6 @@ def segment_images(subdir_location, regex_img,
     df_loss = pd.concat([df_loss_ion_extraction,df_loss_trim])
     
     # Dataframe recording loss from various filters i.e. metadata too small, ionogram too small/big
-    df_outlier = pd.concat([df_outlier_ionogram,df_outlier_metadata_location,df_outlier_metadata_size])
+    df_outlier = pd.concat([df_outlier_ionogram,df_outlier_metadata_size]) #df_outlier_metadata_location
     
     return df_img, df_loss, df_outlier
