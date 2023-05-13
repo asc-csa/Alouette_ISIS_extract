@@ -44,7 +44,7 @@ LIST_ROTATE_180 = ["R014207962/1502-3A",
 
 def segment_images(subdir_location, regex_img,
                   cutoff_width = 300, cutoff_height=150,
-                  min_leftside_meta_width = 50, min_bottomside_meta_height=25):
+                  min_leftside_meta_width = 50, min_bottomside_meta_height=100): #min_bottomside_meta_height=25
     """From all the raw images in a subsubdirectory, extract the ionogram and trimmed metadata while handling errors and recording loss of data
     
     :param subdir_location: full path of the subdir
