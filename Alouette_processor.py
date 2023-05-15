@@ -126,6 +126,7 @@ while stop_condition == False:
     #Process
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory...')
+    print(str(len(subdir_ids_rem)) + ' subdirectories to go!')
     subprocess.run('python user_input.py' + ' ' + processingDir + ' ' + result_localDir, shell=True, cwd='scan2data/')
 
     #Consolidate results
