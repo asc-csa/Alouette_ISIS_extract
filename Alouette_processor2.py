@@ -232,6 +232,7 @@ while stop_condition == False:
     end = time.time()
     t = end - start
     print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
+    print('Processing rate: ' + str(round(t/len(img_fns), 2)) + ' s/img')
     print('')
 
     #Record performance
