@@ -7,6 +7,7 @@ import os
 from random import randrange
 import time
 from datetime import datetime
+import gc
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -250,12 +251,13 @@ while stop_condition == False:
         if len(df_result_) > 0:
             df_result_.to_csv(logDir + 'process_log_OCR.csv', index=False)
 
-    #Backup 'process_log' (10% of the time)
+    #Backup 'process_log' (10% of the time), garbage collection
     if randrange(10) == 7:
         df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
         datetime_str = datetime.now().strftime("%Y%m%d_%Hh%M")
         os.makedirs(logDir + 'backups/', exist_ok=True)
         df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
+        gc.collect()
 
     #Check stop conditions
     if len(subdir_ids_rem) < 2:
