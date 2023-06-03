@@ -20,7 +20,7 @@ process_on_VDI = True
 stop_loop_threshold = 2640 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir_local = 'G:/rnaidoo/Alouette_I/SuperVDI' + instance + '/Stage_1/'
+rootDir_local = sys.argv[3] + instance + '/Stage_1/'
 dataDir_L = 'L:/DATA/Alouette_I/BATCH_I_raw/'
 rootDir_L = 'L:/DATA/Alouette_I/BATCH_I_Run2/'
 downloadedDir = rootDir_local + '02_downloaded/'
