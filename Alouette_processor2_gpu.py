@@ -26,7 +26,7 @@ pipeline = keras_ocr.pipeline.Pipeline()
 user_prefix = sys.argv[1]
 instance = sys.argv[2]
 user = user_prefix + instance #e.g: 'Rav Super2'
-batch_size = int(sys.argv[2])
+batch_size = int(sys.argv[3])
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
