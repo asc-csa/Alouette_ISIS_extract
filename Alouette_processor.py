@@ -14,7 +14,7 @@ warnings.filterwarnings('ignore')
 
 #Set parameters
 instance = sys.argv[1]
-if len(sys.argv[2] > 0):
+if len(sys.argv[2]) > 0:
     user_prefix = sys.argv[2]
 else:
     user_prefix = 'Rav_Super'

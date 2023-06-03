@@ -17,7 +17,7 @@ pipeline = keras_ocr.pipeline.Pipeline()
 
 #Set parameters
 instance = sys.argv[1]
-if len(sys.argv[3] > 0):
+if len(sys.argv[3]) > 0:
     user_prefix = sys.argv[3]
 else:
     user_prefix = 'Rav_Super'
