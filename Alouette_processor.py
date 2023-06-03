@@ -13,11 +13,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 #Set parameters
-instance = sys.argv[1]
-if len(sys.argv[2]) > 0:
-    user_prefix = sys.argv[2]
-else:
-    user_prefix = 'Rav_Super'
+user_prefix = sys.argv[1]
+instance = sys.argv[2]
 user = user_prefix + instance #e.g: 'Rav Super2'
 process_on_VDI = True
 stop_loop_threshold = 2640 #max while loops to prevent infinite loop

@@ -16,11 +16,8 @@ import keras_ocr
 pipeline = keras_ocr.pipeline.Pipeline()
 
 #Set parameters
-instance = sys.argv[1]
-if len(sys.argv[3]) > 0:
-    user_prefix = sys.argv[3]
-else:
-    user_prefix = 'Rav_Super'
+user_prefix = sys.argv[1]
+instance = sys.argv[2]
 user = user_prefix + instance #e.g: 'Rav Super2'
 batch_size = int(sys.argv[2])
 process_on_VDI = True
