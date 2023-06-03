@@ -24,7 +24,11 @@ pipeline = keras_ocr.pipeline.Pipeline()
 
 #Set parameters
 instance = sys.argv[1]
-user = 'Rav Super' + instance #e.g: 'Rav Super2'
+if len(sys.argv[3] > 0):
+    user_prefix = sys.argv[3]
+else:
+    user_prefix = 'Rav_Super'
+user = user_prefix + instance #e.g: 'Rav Super2'
 batch_size = int(sys.argv[2])
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
@@ -123,6 +127,13 @@ while stop_condition == False:
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
     directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
     if len(directory) == 0:
+        #Check stop conditions
+        if len(subdir_ids_rem) < 2:
+            print('Stop!')
+            stop_condition = True
+        if stop_condition_counter == stop_loop_threshold:
+            print('Stop!')
+            stop_condition = True
         continue
     subdir_path_end = directory + '/' + subdirectory + '/'
 

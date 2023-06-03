@@ -14,14 +14,18 @@ warnings.filterwarnings('ignore')
 
 #Set parameters
 instance = sys.argv[1]
-user = 'Rav Super' + instance #e.g: 'Rav Super2'
+if len(sys.argv[2] > 0):
+    user_prefix = sys.argv[2]
+else:
+    user_prefix = 'Rav_Super'
+user = user_prefix + instance #e.g: 'Rav Super2'
 process_on_VDI = True
 stop_loop_threshold = 2640 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir_local = 'G:/rnaidoo/Alouette_I/SuperVDI' + instance + '/BATCH_II_Run2/'
-dataDir_L = 'L:/DATA/Alouette_I/BATCH_II_raw/'
-rootDir_L = 'L:/DATA/Alouette_I/BATCH_II_Run2/'
+rootDir_local = 'G:/rnaidoo/Alouette_I/SuperVDI' + instance + '/Stage_1/'
+dataDir_L = 'L:/DATA/Alouette_I/BATCH_I_raw/'
+rootDir_L = 'L:/DATA/Alouette_I/BATCH_I_Run2/'
 downloadedDir = rootDir_local + '02_downloaded/'
 processingDir = rootDir_local + '03_processing/'
 result_localDir = rootDir_local + '05a_result_local/'
