@@ -196,10 +196,11 @@ while stop_condition == False:
     n_OCR_read = 0
     for i in range(0, len(df_merge)):
         if df_merge['processed_image_class'].iloc[i] == 'loss':
-            if df_merge['details'].iloc[i] == 'OCR read metadata contains letters':
-                for col in md_cols:
-                    if col in df_merge.columns:
-                        df_merge[col].iloc[i] = np.nan
+            if 'details' in df_merge.columns:
+                if df_merge['details'].iloc[i] == 'OCR read metadata contains letters':
+                    for col in md_cols:
+                        if col in df_merge.columns:
+                            df_merge[col].iloc[i] = np.nan
         elif df_merge['processed_image_class'].iloc[i] == 'num2':
             for col in md_cols:
                 if col in df_merge.columns:
