@@ -13,16 +13,16 @@ import warnings
 warnings.filterwarnings('ignore')
 
 #Set parameters
-user_prefix = sys.argv[1]
-instance = sys.argv[2]
+user_prefix = sys.argv[4]
+instance = sys.argv[5]
 user = user_prefix + instance #e.g: 'Rav Super2'
 process_on_VDI = True
 stop_loop_threshold = 2640 #max while loops to prevent infinite loop
 
 #Set directories
 rootDir_local = sys.argv[3] + instance + '/Stage_1/'
-dataDir_L = 'L:/DATA/Alouette_I/BATCH_I_raw/'
-rootDir_L = 'L:/DATA/Alouette_I/BATCH_I_Run2/'
+dataDir_L = sys.argv[1]
+rootDir_L = sys.argv[2]
 downloadedDir = rootDir_local + '02_downloaded/'
 processingDir = rootDir_local + '03_processing/'
 result_localDir = rootDir_local + '05a_result_local/'

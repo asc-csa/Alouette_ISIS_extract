@@ -16,15 +16,15 @@ import keras_ocr
 pipeline = keras_ocr.pipeline.Pipeline()
 
 #Set parameters
-user_prefix = sys.argv[1]
-instance = sys.argv[2]
+user_prefix = sys.argv[2]
+instance = sys.argv[3]
 user = user_prefix + instance #e.g: 'Rav Super2'
-batch_size = int(sys.argv[3])
+batch_size = int(sys.argv[4])
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir = 'L:/DATA/Alouette_I/BATCH_I_Run2/'
+rootDir = sys.argv[1]
 processedDir = rootDir + '04_processed/'
 resultDir = rootDir + '05_result/'
 logDir = rootDir + '06_log/'
