@@ -149,21 +149,27 @@ while stop_condition == False:
         print('Starting batch... ' + str(i))
         batch_i = i*batch_size
         batch_f = batch_i + batch_size
-        prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
-        df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
-                                                   img_fns=img_fns)
-        df_read = pd.concat([df_read, df_read_])
-        df_notread = pd.concat([df_notread, df_notread_])
+        try:
+            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
+                                                       img_fns=img_fns)
+            df_read = pd.concat([df_read, df_read_])
+            df_notread = pd.concat([df_notread, df_notread_])
+        except:
+            continue    
     #Remainder
     print('Finishing up...')
     if batch_remainder > 0:
         batch_i = n_batches*batch_size
         batch_f = batch_i + batch_remainder
-        prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
-        df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
-                                                  img_fns=img_fns)
-        df_read = pd.concat([df_read, df_read_])
-        df_notread = pd.concat([df_notread, df_notread_])
+        try:
+            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
+                                                      img_fns=img_fns)
+            df_read = pd.concat([df_read, df_read_])
+            df_notread = pd.concat([df_notread, df_notread_])
+        except:
+            continue
     
     #Integrate OCR read metadata into existing results data for subdirectory
     df_result = pd.read_csv(resultDir + directory + '/' + 'result-' + directory + '_' + subdirectory + '.csv')
