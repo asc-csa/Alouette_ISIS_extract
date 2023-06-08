@@ -205,12 +205,14 @@ while stop_condition == False:
         for i in range(0, len(df_merge)):
             if df_merge['processed_image_class'].iloc[i] == 'num':
                 df_merge['processed_image_class'].iloc[i] = 'loss'
-                df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
+                if 'details' in df_merge.columns:
+                    df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
                 for col in md_cols:
                     df_merge[col].iloc[i] = np.nan
             if df_merge['processed_image_class'].iloc[i] == 'dot':
                 df_merge['processed_image_class'].iloc[i] = 'loss'
-                df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
+                if 'details' in df_merge.columns:
+                    df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
                 for col in md_cols:
                     df_merge[col].iloc[i] = np.nan
     
@@ -223,7 +225,8 @@ while stop_condition == False:
             for i in range(0, len(df_merge)):
                 if df_merge['processed_image_class'].iloc[i] == 'dot':
                     df_merge['processed_image_class'].iloc[i] = 'loss'
-                    df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
+                    if 'details' in df_merge.columns:
+                        df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
                     for col in md_cols:
                         df_merge[col].iloc[i] = np.nan
         #If dot type metadata is the majority, classify num type images as loss:
@@ -231,7 +234,8 @@ while stop_condition == False:
             for i in range(0, len(df_merge)):
                 if df_merge['processed_image_class'].iloc[i] == 'num':
                     df_merge['processed_image_class'].iloc[i] = 'loss'
-                    df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'
+                    if 'details' in df_merge.columns:
+                        df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'
                     for col in md_cols:
                         df_merge[col].iloc[i] = np.nan   
     
