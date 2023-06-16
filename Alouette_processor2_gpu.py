@@ -204,26 +204,14 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
         found = False
         header = False 
 
-        df = pd.read_csv(outFile)
-        last_entry = batchDir + df['Directory'].iloc[-1] + '/' + df['Subdirectory'].iloc[-1] + '/' + df['filename'].iloc[-1]
-        del df 
-
-        # garbage collector
-        collected = gc.collect()
-        print("Garbage collector: collected",
-                "%d objects." % collected)
-
     else: 
         found = True
         header = True
-        last_entry = ''
 
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
     says_isis_lst, user_lst = [], []
-
-    images_saved = 0
     
     # loop over all directories in the batch 2 raw data directory
     raw_contents = os.listdir(batchDir) # random suffle appled
@@ -274,13 +262,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 # save full path of image
                 image_path = batchDir + directory + '/' + subdir + '/' + image
-
-                # skip over image if already analyzed in CSV
-                if found == False and last_entry == image_path:
-                    found = True
-
-                if found == True:
-                    images_saved += 1
 
                 # save id of image
                 directories.append(directory)
