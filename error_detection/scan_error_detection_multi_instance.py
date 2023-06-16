@@ -226,11 +226,13 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     images_saved = 0
     
     # loop over all directories in the batch 2 raw data directory
-    raw_contents = random.shuffle(os.listdir(batchDir)) # random suffle appled
+    raw_contents = os.listdir(batchDir) # random suffle appled
+    random.shuffle(raw_contents) # random suffle applied
     for directory in raw_contents:
 
         # loop over all subdirectories within the directory
-        directory_contents = random.shuffle(os.listdir(batchDir + directory)) # random shuffle applied
+        directory_contents = os.listdir(batchDir + directory) 
+        random.shuffle(directory_contents) # random shuffle applied
         for subdir in directory_contents:
 
             # in this approach we hope that no same subdirectory is found by two instances
