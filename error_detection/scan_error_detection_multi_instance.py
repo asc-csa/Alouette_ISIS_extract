@@ -200,12 +200,10 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
     '''
     # check if there is already data in the output file 
+    # (this may create duplicate headers if instances are run too close together)
     if os.path.exists(outFile) and os.path.getsize(outFile)!=0:
-        found = False
         header = False 
-
     else: 
-        found = True
         header = True
 
     # initialize lists to save values to in loop
@@ -325,7 +323,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 if directory in processed_dirs and subdir in processed_subdirs:
                     print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                    # note: we should check for duplicates in the analysis just incase
+                    # note: we should check for duplicates in the analysis just incase + check all data has been saved
 
                 del df_processed_results
                 del processed_dirs 
