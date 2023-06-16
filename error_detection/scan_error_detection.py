@@ -2,8 +2,8 @@
 
 # notes:
 # - to kill this program: go ctrl+c
-# - cpu version will only work if working within an environemnt with tensorflow > 2.10
 # - reflects the new (more correct) naming convention that roll = directory
+# ^ other code Ashley has created does not yet reflect this
 
 # run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
 # >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
@@ -12,15 +12,9 @@
 
 # imports
 import sys
-import cv2
 import os
-import gc
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 from optparse import OptionParser
 parser = OptionParser()
-
 
 parser.add_option('-d', '--device', dest='device', 
         default='CPU', type='str', 
@@ -32,7 +26,7 @@ parser.add_option('-u', '--username', dest='username',
         
 parser.add_option('-e', '--tf210_env', dest='tf210_env', 
         default='/python/envs/tf210/lib/site-packages', type='str', 
-        help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
+        help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$ (if not just base env), default=%default.')
         
 parser.add_option('-s', '--save', dest='saveDir', 
         default='U:/Downloads/test_runs/', type='str', 
@@ -47,9 +41,17 @@ parser.add_option('-f', '--filename', dest='filename',
 # replace this with your own library path for --user pip installs
 sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
 
+if options.device == 'CPU'
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 if options.device == 'GPU':
     sys.path.insert(0, 'U:/Temp/' + options.username + options.tf210_env)
 
+# more imports
+import cv2
+import gc
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 import tensorflow as tf
 import keras_ocr
 
