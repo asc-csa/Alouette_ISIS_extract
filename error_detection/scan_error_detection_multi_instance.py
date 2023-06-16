@@ -30,7 +30,7 @@ parser.add_option('-e', '--tf210_env', dest='tf210_env',
         help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$ (if not just base env), default=%default.')
         
 parser.add_option('-s', '--save', dest='saveDir', 
-        default='L:/data/alouette_i/BATCH_II_scan_error_detection_Run1/', type='str', 
+        default='L:/DATA/Alouette_I/BATCH_II_scan_error_detection_Run1/', type='str', 
         help='Path to directory where results output file should be saved, default=%default.')
 
 parser.add_option('-f', '--filename', dest='filename', 
