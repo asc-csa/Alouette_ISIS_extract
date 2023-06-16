@@ -222,136 +222,138 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
-    says_isis_lst = []
+    says_isis_lst, user_lst = []
 
     images_saved = 0
     
-        # loop over all directories in the batch 2 raw data directory
-        raw_contents = random.shuffle(os.listdir(batchDir)) # random suffle appled
-        for directory in raw_contents:
+    # loop over all directories in the batch 2 raw data directory
+    raw_contents = random.shuffle(os.listdir(batchDir)) # random suffle appled
+    for directory in raw_contents:
 
-            # loop over all subdirectories within the directory
-            directory_contents = random.shuffle(os.listdir(batchDir + directory)) # random shuffle applied
-            for subdir in directory_contents:
+        # loop over all subdirectories within the directory
+        directory_contents = random.shuffle(os.listdir(batchDir + directory)) # random shuffle applied
+        for subdir in directory_contents:
 
-                # in this approach we hope that no same subdirectory is found by two instances
-                # at similar times but we check before saving to avoid writting duplicates
-                # --> alternatively can sample from an "unprocessed" log
+            # in this approach we hope that no same subdirectory is found by two instances
+            # at similar times but we check before saving to avoid writting duplicates
+            # --> alternatively can sample from an "unprocessed" log
 
-                print('###############################')
-                print('dir:', directory, '\nsubdir:', subdir)
-                if os.path.exists(outFile):
-                    read_safe = False
-                    while read_safe:
-                        try os.rename(outFile, outFile):
-                            read_safe = True 
-                        except OSError as e:
-                            time.sleep(30)
+            print('###############################')
+            print('dir:', directory, '\nsubdir:', subdir)
+            if os.path.exists(outFile):
+                read_safe = False
+                while read_safe:
+                    try os.rename(outFile, outFile):
+                        read_safe = True 
+                    except OSError as e:
+                        time.sleep(30)
 
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
+            # get a list of already processed dirs and subdirs
+            df_processed_results = pd.read_csv(outFile)
+            processed_dirs = df_processed_results['Directory']
+            processed_subdirs = df_processed_results['Subdirectory']
 
-                # check that this specific one hasn't already been processed
-                if directory in processed_dirs and subdir in processed_subdirs:
-                    print('this subdirectory has already been processed, moving on to the next one...')
-                    continue
+            # check that this specific one hasn't already been processed
+            if directory in processed_dirs and subdir in processed_subdirs:
+                print('this subdirectory has already been processed, moving on to the next one...')
+                continue
+        
+            else:
+                print('this subdirectory is not already processed, beginning processing...')
+
+            # clear memory of stuff we don't need
+            del df_processed_results
+            del processed_dirs 
+            del processed_subdirs
             
-                else:
-                    print('this subdirectory is not already processed, beginning processing...')
+            # loop over all images in the subdirectory
+            subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
+            for image in subdir_contents:
 
-                # clear memory of stuff we don't need
+                # save full path of image
+                image_path = batchDir + directory + '/' + subdir + '/' + image
+
+                # skip over image if already analyzed in CSV
+                if found == False and last_entry == image_path:
+                found = True
+
+                if found == True:
+                images_saved += 1
+
+                # save id of image
+                directories.append(directory)
+                subdirs.append(subdir)
+                images.append(image)
+
+                # send to read_image to get aspect ratio, digit count, and isis text
+                num_of_digits, h, w, says_isis = read_image(image_path, plotting=plotting)
+
+                # save values
+                digit_counts.append(num_of_digits)
+                heights.append(h)
+                widths.append(w)
+                says_isis_lst.append(says_isis)
+                user_lst.append(options.username)
+
+
+            ##### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
+            # initialize dataframe and save results to csv
+            # (redoing this each interation to not loose information)
+            df_mapping_results = pd.DataFrame()
+
+            df_mapping_results['Directory'] = directories
+            df_mapping_results['Subdirectory'] = subdirs
+            df_mapping_results['filename'] = images
+            df_mapping_results['digit_count'] = digit_counts
+            df_mapping_results['height'] = heights
+            df_mapping_results['width'] = widths
+            df_mapping_results['says_isis'] = says_isis_lst
+            df_mapping_results['user'] = user_lst
+
+            # mode = 'a' means it will append to existing data within the file
+            if append2outFile == True:
+                mode = 'a' 
+
+                # wipe lists now that they have been saved
+                directories, subdirs, images = [], [], []
+                heights, widths, digit_counts = [], [], []
+                says_isis_lst = []
+                
+            else: 
+                # this overwrites existing file
+                mode = 'w'
+                header = True
+
+            print('subdirectory', subdir, 'processed, attempting to save data...')
+            if os.path.exists(outFile):
+                write_safe = False
+                while write_safe:
+                    try os.rename(outFile, outFile):
+                        write_safe = True 
+                    except OSError as e:
+                        print(outFile, 'currently being used, pausing for 1 minute before another attempt')
+                        time.sleep(60)
+
+            # get a list of already processed dirs and subdirs
+            df_processed_results = pd.read_csv(outFile)
+            processed_dirs = df_processed_results['Directory']
+            processed_subdirs = df_processed_results['Subdirectory']
+
+            if directory in processed_dirs and subdir in processed_subdirs:
+                print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
+                # note: we should check for duplicates in the analysis just incase
+
+            else:
+                df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
+                del df_mapping_results
                 del df_processed_results
                 del processed_dirs 
                 del processed_subdirs
-                
-                # loop over all images in the subdirectory
-                subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
-                for image in subdir_contents:
+                print('data sucessfully saved')
 
-                    # save full path of image
-                    image_path = batchDir + directory + '/' + subdir + '/' + image
-
-                    # skip over image if already analyzed in CSV
-                    if found == False and last_entry == image_path:
-                    found = True
-
-                    if found == True:
-                    images_saved += 1
-
-                    # save id of image
-                    directories.append(directory)
-                    subdirs.append(subdir)
-                    images.append(image)
-
-                    # send to read_image to get aspect ratio, digit count, and isis text
-                    num_of_digits, h, w, says_isis = read_image(image_path, plotting=plotting)
-
-                    # save values
-                    digit_counts.append(num_of_digits)
-                    heights.append(h)
-                    widths.append(w)
-                    says_isis_lst.append(says_isis)
-
-
-                ##### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
-                # initialize dataframe and save results to csv
-                # (redoing this each interation to not loose information)
-                df_mapping_results = pd.DataFrame()
-
-                df_mapping_results['Directory'] = directories
-                df_mapping_results['Subdirectory'] = subdirs
-                df_mapping_results['filename'] = images
-                df_mapping_results['digit_count'] = digit_counts
-                df_mapping_results['height'] = heights
-                df_mapping_results['width'] = widths
-                df_mapping_results['says_isis'] = says_isis_lst
-
-                # mode = 'a' means it will append to existing data within the file
-                if append2outFile == True:
-                    mode = 'a' 
-
-                    # wipe lists now that they have been saved
-                    directories, subdirs, images = [], [], []
-                    heights, widths, digit_counts = [], [], []
-                    says_isis_lst = []
-                    
-                else: 
-                    # this overwrites existing file
-                    mode = 'w'
-                    header = True
-
-                print('subdirectory', subdir, 'processed, attempting to save data...')
-                if os.path.exists(outFile):
-                    write_safe = False
-                    while write_safe:
-                        try os.rename(outFile, outFile):
-                            write_safe = True 
-                        except OSError as e:
-                            print(outFile, 'currently being used, pausing for 1 minute before another attempt')
-                            time.sleep(60)
-
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
-
-                if directory in processed_dirs and subdir in processed_subdirs:
-                    print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                    # note: we should check for duplicates in the analysis just incase
-
-                else:
-                    df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
-                    del df_mapping_results
-                    del df_processed_results
-                    del processed_dirs 
-                    del processed_subdirs
-                    print('data sucessfully saved')
-
-                    collected = gc.collect()
-                    print("Garbage collector: collected",
-                            "%d objects." % collected)
+                collected = gc.collect()
+                print("Garbage collector: collected",
+                        "%d objects." % collected)
 
 
 if __name__ == '__main__':
