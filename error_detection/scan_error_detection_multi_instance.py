@@ -25,9 +25,9 @@ parser.add_option('-u', '--username', dest='username',
         default='aferreira', type='str', 
         help='CSA network username, default=%default.')
         
-parser.add_option('-e', '--tf210_env', dest='tf210_env', 
-        default='/python/envs/tf210/lib/site-packages', type='str', 
-        help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$ (if not just base env), default=%default.')
+parser.add_option('-e', '--env_name', dest='env_name', 
+        default='tf210', type='str', 
+        help='Path of TensorFlow 2.10.* environment to go within $ENV$ in u:/temp/$USERNAME$/python/envs/$ENV$/lib/site-packages (if not just using base env), default=%default.')
         
 parser.add_option('-s', '--save', dest='saveDir', 
         default='L:/DATA/Alouette_I/BATCH_II_scan_error_detection_Run1/', type='str', 
@@ -45,7 +45,7 @@ sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python
 if options.device == 'CPU':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 if options.device == 'GPU':
-    sys.path.insert(0, 'U:/Temp/' + options.username + options.tf210_env)
+    sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.tf210_env + '/lib/site-packages/')
 
 # more imports
 import gc
@@ -204,26 +204,14 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
         found = False
         header = False 
 
-        df = pd.read_csv(outFile)
-        last_entry = batchDir + df['Directory'].iloc[-1] + '/' + df['Subdirectory'].iloc[-1] + '/' + df['filename'].iloc[-1]
-        del df 
-
-        # garbage collector
-        collected = gc.collect()
-        print("Garbage collector: collected",
-                "%d objects." % collected)
-
     else: 
         found = True
         header = True
-        last_entry = ''
 
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
     says_isis_lst, user_lst = [], []
-
-    images_saved = 0
     
     # loop over all directories in the batch 2 raw data directory
     raw_contents = os.listdir(batchDir) # random suffle appled
@@ -274,13 +262,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 # save full path of image
                 image_path = batchDir + directory + '/' + subdir + '/' + image
-
-                # skip over image if already analyzed in CSV
-                if found == False and last_entry == image_path:
-                    found = True
-
-                if found == True:
-                    images_saved += 1
 
                 # save id of image
                 directories.append(directory)
