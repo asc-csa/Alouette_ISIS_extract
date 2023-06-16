@@ -2,9 +2,9 @@
 
 # to kill this program: go ctrl+c
 
-# run these pip commands in anaconda prompt to download non-standard libraries
-# >pip install tensorflow --user
-# >pip install keras_ocr --user
+# run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
+# >pip install tensorflow==2.10
+# >pip install keras_ocr
 
 
 # imports
