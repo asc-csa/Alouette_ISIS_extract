@@ -1,10 +1,11 @@
+# Ashley Ferreira, CSA, June 2023
+
+# to kill this program: go ctrl+c
+
 # run these pip commands in anaconda prompt to download non-standard libraries
 # >pip install tensorflow --user
 # >pip install keras_ocr --user
 
-# enter your network username to have correct paths
-username = 'aferreira'
-tf210_env  = '/python/envs/tf210/lib/site-packages/'
 
 # imports
 import sys
@@ -18,16 +19,30 @@ from threading import Thread
 from optparse import OptionParser
 parser = OptionParser()
 
-# replace this with your own library path for --user pip installs
-sys.path.append('C:/Users/' + username + '/AppData/Roaming/Python/Python38/Scripts')
 
-parser.add_option('-g', '--gpu_use', dest='gpu_use', 
-        default=False, type='bool', 
-        help='True to use GPU, False for CPU, default=%default.')
+parser.add_option('-d', '--device', dest='device', 
+        default='CPU', type='str', 
+        help='Device to run TensorFlow on. Can only be "GPU" or "CPU", default=%default.')
+        
+parser.add_option('-u', '--username', dest='username', 
+        default='aferreira', type='str', 
+        help='CSA network username, default=%default.')
+        
+parser.add_option('-e', '--tf210_env', dest='tf210_env', 
+        default='/python/envs/tf210/lib/site-packages', type='str', 
+        help='Location of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
+        
+parser.add_option('-f', '--filename', dest='filename', 
+        default='scan_error_detection_results.csv', type='str', 
+        help='Location of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
 
 (options, args) = parser.parse_args()
-if options.gpu_use:
-    sys.path.insert(0, 'u:/temp/' + username + tf210_env)
+
+# replace this with your own library path for --user pip installs
+sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
+
+if options.device == 'GPU':
+    sys.path.insert(0, 'U:/Temp/' + options.username + options.tf210_env)
 
 import tensorflow as tf
 import keras_ocr
@@ -42,13 +57,13 @@ pipeline = keras_ocr.pipeline.Pipeline()
 
 # set paths
 batchDir = 'L:/DATA/Alouette_I/BATCH_II_raw/'
-save_dir = 'U:/Downloads/test_runs/' 
-outFile = save_dir + 'notebook20_outputs_v17.csv'
+saveDir = 'U:/Downloads/test_runs/' 
+outFile = saveDir + options.filename
 
 # make the directory to save into  
 # if it doesn't already exist
-if not(os.path.exists(save_dir)):
-    os.makedirs(save_dir)
+if not(os.path.exists(saveDir)):
+    os.makedirs(saveDir)
 
 # set default saving settings
 # (not sure if code works anymore if these are changed)

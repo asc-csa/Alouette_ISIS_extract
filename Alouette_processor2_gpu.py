@@ -1,7 +1,7 @@
 #OCR read 'num2' metadata
 
 import sys
-sys.path.insert(0, "u:/temp/rnaidoo/python/envs/alouette_on_ravsupervdi2/lib/site-packages/")
+sys.path.insert(0, "u:/temp/aferreira/python/envs/tf210/lib/site-packages/")
 
 import tensorflow as tf
 print(tf.__version__)
