@@ -204,7 +204,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
         found = False
         header = False 
 
-
         df = pd.read_csv(outFile)
         last_entry = batchDir + df['Directory'].iloc[-1] + '/' + df['Subdirectory'].iloc[-1] + '/' + df['filename'].iloc[-1]
         del df 
@@ -328,7 +327,8 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             if os.path.exists(outFile):
                 write_safe = False
                 while write_safe:
-                    try os.rename(outFile, outFile):
+                    try:
+                        os.rename(outFile, outFile)
                         write_safe = True 
                     except OSError as e:
                         print(outFile, 'currently being used, pausing for 1 minute before another attempt')
