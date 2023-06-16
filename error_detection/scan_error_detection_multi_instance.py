@@ -177,28 +177,28 @@ def read_image(image_path, plotting=False, just_digits=False):
 
 
 def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False):
-   '''
-   This function loops over all images nested within batchDir
-   and saves the outputs from read_image() to a CSV file.
+    '''
+    This function loops over all images nested within batchDir
+    and saves the outputs from read_image() to a CSV file.
 
-   Parameters:
+    Parameters:
 
-      outFile (str, optional): path to CSV file where results from this 
-                               function can be stored 
+        outFile (str, optional): path to CSV file where results from this 
+                                function can be stored 
 
-      append2outFile (bool, optional): if True will append to data in outFile 
-                                       (if any exists), otherwise overwrites
+        append2outFile (bool, optional): if True will append to data in outFile 
+                                        (if any exists), otherwise overwrites
 
-      batchDir (str, optional): path to directory of entire batch 
-                                of ionogram scan images to analyze
+        batchDir (str, optional): path to directory of entire batch 
+                                    of ionogram scan images to analyze
 
-      plotting (bool, optional): just passes directly to read_image()
+        plotting (bool, optional): just passes directly to read_image()
 
-   Returns:
+    Returns:
 
-      None
+        None
 
-   '''
+    '''
     # check if there is already data in the output file 
     if os.path.exists(outFile) and os.path.getsize(outFile)!=0:
         found = False
