@@ -242,7 +242,8 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             if os.path.exists(outFile):
                 read_safe = False
                 while read_safe:
-                    try os.rename(outFile, outFile):
+                    try:
+                        os.rename(outFile, outFile)
                         read_safe = True 
                     except OSError as e:
                         time.sleep(30)
