@@ -275,10 +275,10 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 # skip over image if already analyzed in CSV
                 if found == False and last_entry == image_path:
-                found = True
+                    found = True
 
                 if found == True:
-                images_saved += 1
+                    images_saved += 1
 
                 # save id of image
                 directories.append(directory)
