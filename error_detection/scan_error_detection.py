@@ -3,6 +3,7 @@
 # notes:
 # - to kill this program: go ctrl+c
 # - cpu version will only work if working within an environemnt with tensorflow > 2.10
+# - reflects the new (more correct) naming convention that roll = directory
 
 # run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
 # >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
@@ -176,7 +177,7 @@ def read_image(image_path, plotting=False, just_digits=False, down_factor=1):
     return digit_count, height, width, says_isis
 
 
-def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False, max_images=None, save_each=100):
+def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False, max_images=None, save_each=100):
    '''
    This function loops over all images nested within batchDir
    and saves the outputs from read_image() to a CSV file.
@@ -210,7 +211,7 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
 
 
       df = pd.read_csv(outFile)
-      last_entry = batchDir + df['roll'].iloc[-1] + '/' + df['subdir'].iloc[-1] + '/' + df['image'].iloc[-1]
+      last_entry = batchDir + df['Directory'].iloc[-1] + '/' + df['Subdirectory'].iloc[-1] + '/' + df['filename'].iloc[-1]
       del df 
 
       # garbage collector
@@ -224,26 +225,26 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
       last_entry = ''
 
    # initialize lists to save values to in loop
-   rolls, subdirs, images = [], [], []
+   directories, subdirs, images = [], [], []
    heights, widths, digit_counts = [], [], []
    says_isis_lst = []
 
    images_saved = 0
    
-   # loop over all rolls in the batch 2 raw data directory
+   # loop over all directories in the batch 2 raw data directory
    raw_contents = os.listdir(batchDir)
-   for roll in raw_contents:
+   for directory in raw_contents:
 
-      # loop over all subdirectories within the roll
-      roll_contents = os.listdir(batchDir + roll) 
-      for subdir in roll_contents:
+      # loop over all subdirectories within the directory
+      directory_contents = os.listdir(batchDir + directory) 
+      for subdir in directory_contents:
          
          # loop over all images in the subdirectory
-         subdir_contents = os.listdir(batchDir + roll + '/' + subdir) 
+         subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
          for image in subdir_contents:
 
             # save full path of image
-            image_path = batchDir + roll + '/' + subdir + '/' + image
+            image_path = batchDir + directory + '/' + subdir + '/' + image
 
             # skip over image if already analyzed in CSV
             if found == False and last_entry == image_path:
@@ -256,7 +257,7 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
                   sys.exit()
 
                # save id of image
-               rolls.append(roll)
+               directories.append(directory)
                subdirs.append(subdir)
                images.append(image)
 
@@ -277,9 +278,9 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
                   # (redoing this each interation to not loose information)
                   df_mapping_results = pd.DataFrame()
 
-                  df_mapping_results['roll'] = rolls
-                  df_mapping_results['subdir'] = subdirs
-                  df_mapping_results['image'] = images
+                  df_mapping_results['Directory'] = directories
+                  df_mapping_results['Subdirectory'] = subdirs
+                  df_mapping_results['filename'] = images
                   df_mapping_results['digit_count'] = digit_counts
                   df_mapping_results['height'] = heights
                   df_mapping_results['width'] = widths
@@ -290,7 +291,7 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
                      mode = 'a' 
 
                      # wipe lists now that they have been saved
-                     rolls, subdirs, images = [], [], []
+                     directories, subdirs, images = [], [], []
                      heights, widths, digit_counts = [], [], []
                      says_isis_lst = []
                      
@@ -308,4 +309,4 @@ def read_all_rolls(outFile=outFile, append2outFile=True, batchDir=batchDir, plot
 
 
 if __name__ == '__main__':
-    read_all_rolls()
+    read_all_directories()
