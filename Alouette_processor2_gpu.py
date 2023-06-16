@@ -1,345 +1,300 @@
-# Ashley Ferreira, CSA, June 2023
+#OCR read 'num2' metadata
 
-# notes:
-# - this is  a version of scan_error_detection which supports multiple instances and users
-#   it works by 
-# - to kill this program: go ctrl+c
-# - reflects the new (more correct) naming convention that roll = directory
-# ^ other code Ashley has created does not yet reflect this
-
-# run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
-# >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
-# >pip install keras_ocr
-
-# imports
 import sys
-import os
-from optparse import OptionParser
-parser = OptionParser()
 
-parser.add_option('-d', '--device', dest='device', 
-        default='CPU', type='str', 
-        help='Device to run TensorFlow on. Can only be "GPU" or "CPU", default=%default.')
-        
-parser.add_option('-u', '--username', dest='username', 
-        default='aferreira', type='str', 
-        help='CSA network username, default=%default.')
-        
-parser.add_option('-e', '--env_name', dest='env_name', 
-        default='tf210', type='str', 
-        help='Path of TensorFlow 2.10.* environment to go within $ENV$ in u:/temp/$USERNAME$/python/envs/$ENV$/lib/site-packages (if not just using base env), default=%default.')
-        
-parser.add_option('-s', '--save', dest='saveDir', 
-        default='L:/DATA/Alouette_I/BATCH_II_scan_error_detection_Run1/', type='str', 
-        help='Path to directory where results output file should be saved, default=%default.')
+# ashley's tf 2.10 path
+#sys.path.insert(0, "u:/temp/aferreira/python/envs/tf210/lib/site-packages/")
 
-parser.add_option('-f', '--filename', dest='filename', 
-        default='results.csv', type='str', 
-        help='Name of file to output results to in the path $SAVEDIR$, default=%default.')
+# rav's tf 2.10 path 
+sys.path.insert(0, "u:/temp/rnaidoo/python/envs/alouette_on_ravsupervdi2/lib/site-packages/")
 
-(options, args) = parser.parse_args()
-
-# replace this with your own library path for --user pip installs (if applicable)
-sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
-
-if options.device == 'CPU':
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-if options.device == 'GPU':
-    sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.tf210_env + '/lib/site-packages/')
-
-# more imports
-import gc
-import time
-import random
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 import tensorflow as tf
+print(tf.__version__)
+
+print(tf.config.list_physical_devices('GPU'))
+
+import pandas as pd
+import numpy as np
+import os
+from random import randrange
+import time
+from datetime import datetime
+import gc
+
+import warnings
+warnings.filterwarnings('ignore')
+
 import keras_ocr
-
-print('tensorflow version (should be 2.10.* for GPU compatibility)', tf.__version__)
-if len(tf.config.list_physical_devices('GPU')) != 0: 
-    print('GPU in use for tensorflor')
-else:
-    print('CPU in use for tensorflow')
-
 pipeline = keras_ocr.pipeline.Pipeline()
 
-# set paths
-batchDir = 'L:/DATA/Alouette_I/BATCH_II_raw/'
-saveDir = options.saveDir 
-outFile = saveDir + options.filename
-print('This program will be saving to results file location:', outFile)
+#Set parameters
+user_prefix = sys.argv[2]
+instance = sys.argv[3]
+user = user_prefix + instance #e.g: 'Rav Super2'
+batch_size = int(sys.argv[4])
+process_on_VDI = True
+stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
-# make the directory to save into  
-# if it doesn't already exist
-if not(os.path.exists(saveDir)):
-    os.makedirs(saveDir)
-
-# set default saving settings
-# (not sure if code works anymore if these are changed)
-append2outFile = True 
-saveImages = False
+#Set directories
+rootDir = sys.argv[1]
+processedDir = rootDir + '04_processed/'
+resultDir = rootDir + '05_result/'
+logDir = rootDir + '06_log/'
 
 
-def read_image(image_path, plotting=False, just_digits=False):
-    '''
-    This function reads in one image a time and outputs the height 
-    and width along with the estimated digit count of the metadata.
-
-    Parameters:
-
-        image_path (str): path to the image
-
-        plotting (bool, optional): True for a verbose display mode to
-                                   illustrate the analysis in detail, 
-                                   False otherwise
-
-        just_digits (bool, optional): if True only count characters that are 
-                                      integers, False to count any characters
-
-    Returns:
-
-        digit_count (int): estimated number of integers in the ionogram
-                          metadata (right now, only looks for numbers along
-                          bottom 20% of the image, usually only 15 expected)
-                          ~~~~ done for cropped portion of image ~~~~
+#Functions
+def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
     
-        height (int): number of pixels along y-axis of original image
+    df_read = pd.DataFrame()
+    df_notread = pd.DataFrame()
+    for i in range(0, len(prediction_groups)):
+        df_ocr = pd.DataFrame()
+        predicted_image = prediction_groups[i]
+        if len(predicted_image) > 0:
+            for text, box in predicted_image:
+                row = pd.DataFrame({
+                    'number': text,
+                    'x': box[1][0],
+                    'y': box[1][1]
+                }, index=[0])
+                df_ocr = pd.concat([df_ocr, row])
+            df_ocr = df_ocr.sort_values('x').reset_index(drop=True)
         
-        width (int): number of pixels along x-axis of origional image
+            #String concatenate, fix string
+            read_str = ''
+            for j in range(0, len(df_ocr)):
+                read_str_ = df_ocr['number'].iloc[j]
+                read_str += read_str_
+            read_str = read_str.replace('o', '0')
 
-        says_isis (bool): True if 'isis' independant of capitalization is 
-                          present within the detected text, False otherwise
-                          ~~~~ done for origional image ~~~~
-    '''
-    try: 
-
-        # read in image using keras_ocr
-        image = keras_ocr.tools.read(image_path) 
-
-        # extract height and width of image in pixels 
-        height, width = image.shape[0], image.shape[1]
-
-        # cut image to just include bottom 20% of pixels
-        cropped_height = height-height//5
-
-        # create predictions for location and value of characters
-        # on the cropped image, will output (word, box) tuples
-        prediction = pipeline.recognize([image])[0]
-
-        # if no characters are found move on
-        if prediction == [[]]:
-            digit_count = 0
-
-        # if characters are found look at the predictions
-        else:
-            if plotting == True:
-                # plot the predictied box and tuples
-                keras_ocr.tools.drawAnnotations(image=image, predictions=prediction)
-                plt.show()
-
-            # loop over predicted (word, box) tuples and count number of digit characters
-            digit_count = 0
-            says_isis = False
-            for p in prediction:
-
-                # select word and box part of the tuple
-                value, box = p[0], p[1]
-
-                # check for 'isis' of any capitalization in image
-                if 'isis' in value.lower(): # may want to check 1, I, 5 variations on this to detect like 15iS
-                    says_isis = True
-                    print('found potential ISIS text')
-                
-                # if word is composed of just integers then 
-                # count how many and incriment digit_count
-                #if just_digits == False or (just_digits == True and value.isdigit()):
-                if True: # do not require it to be an integer, too much of a cut it seems
-
-                    # check that box is within the cropped height
-                    in_bounds = True
-                    for b in box:
-                        if b[1] < cropped_height:
-                            in_bounds = False
-                            break
-                            
-                    if in_bounds:
-                        digit_count += len(value)
-
-        print('digits count:', digit_count)
-
-    except Exception as e:
-        print('ERR:', e)
-        digit_count, height, width, says_isis = 'ERR', 'ERR', 'ERR', 'ERR'
-
-    return digit_count, height, width, says_isis
-
-
-def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False):
-    '''
-    This function loops over all images nested within batchDir
-    and saves the outputs from read_image() to a CSV file.
-
-    Parameters:
-
-        outFile (str, optional): path to CSV file where results from this 
-                                function can be stored 
-
-        append2outFile (bool, optional): if True will append to data in outFile 
-                                        (if any exists), otherwise overwrites
-
-        batchDir (str, optional): path to directory of entire batch 
-                                    of ionogram scan images to analyze
-
-        plotting (bool, optional): just passes directly to read_image()
-
-    Returns:
-
-        None
-
-    '''
-    # check if there is already data in the output file 
-    if os.path.exists(outFile) and os.path.getsize(outFile)!=0:
-        found = False
-        header = False 
-
-    else: 
-        found = True
-        header = True
-
-    # initialize lists to save values to in loop
-    directories, subdirs, images = [], [], []
-    heights, widths, digit_counts = [], [], []
-    says_isis_lst, user_lst = [], []
-    
-    # loop over all directories in the batch 2 raw data directory
-    raw_contents = os.listdir(batchDir) # random suffle appled
-    random.shuffle(raw_contents) # random suffle applied
-    for directory in raw_contents:
-
-        # loop over all subdirectories within the directory
-        directory_contents = os.listdir(batchDir + directory) 
-        random.shuffle(directory_contents) # random shuffle applied
-        for subdir in directory_contents:
-
-            # in this approach we hope that no same subdirectory is found by two instances
-            # at similar times but we check before saving to avoid writting duplicates
-            # --> alternatively can sample from an "unprocessed" log
-
-            print('###############################')
-            print('dir:', directory, '\nsubdir:', subdir)
-            if os.path.exists(outFile):
-                read_safe = False
-                while read_safe:
-                    try:
-                        os.rename(outFile, outFile)
-                        read_safe = True 
-                    except OSError as e:
-                        time.sleep(30)
-
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
-
-                # check that this specific one hasn't already been processed
-                if directory in processed_dirs and subdir in processed_subdirs:
-                    print('this subdirectory has already been processed, moving on to the next one...')
-                    continue
-            
+            #Test for num2
+            if len(read_str) == 15:
+                if read_str[0:2] == '10':
+                    row2 = pd.DataFrame({
+                        'station_number_OCR': read_str[2:4],
+                        'year_OCR': read_str[4:6],
+                        'day_of_year_OCR': read_str[6:9],
+                        'hour_OCR': read_str[9:11],
+                        'minute_OCR': read_str[11:13],
+                        'second_OCR': read_str[13:15],
+                        'filename': img_fns[batch_i + i].replace(subdir_path, '')
+                    }, index=[i])
+                    df_read = pd.concat([df_read, row2])
                 else:
-                    print('this subdirectory is not already processed, beginning processing...')
-
-                # clear memory of stuff we don't need
-                del df_processed_results
-                del processed_dirs 
-                del processed_subdirs
-            
-            # loop over all images in the subdirectory
-            subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
-            for image in subdir_contents:
-
-                # save full path of image
-                image_path = batchDir + directory + '/' + subdir + '/' + image
-
-                # save id of image
-                directories.append(directory)
-                subdirs.append(subdir)
-                images.append(image)
-
-                # send to read_image to get aspect ratio, digit count, and isis text
-                num_of_digits, h, w, says_isis = read_image(image_path, plotting=plotting)
-
-                # save values
-                digit_counts.append(num_of_digits)
-                heights.append(h)
-                widths.append(w)
-                says_isis_lst.append(says_isis)
-                user_lst.append(options.username)
-
-
-            ##### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
-            # initialize dataframe and save results to csv
-            # (redoing this each interation to not loose information)
-            df_mapping_results = pd.DataFrame()
-
-            df_mapping_results['Directory'] = directories
-            df_mapping_results['Subdirectory'] = subdirs
-            df_mapping_results['filename'] = images
-            df_mapping_results['digit_count'] = digit_counts
-            df_mapping_results['height'] = heights
-            df_mapping_results['width'] = widths
-            df_mapping_results['says_isis'] = says_isis_lst
-            df_mapping_results['user'] = user_lst
-
-            # mode = 'a' means it will append to existing data within the file
-            if append2outFile == True:
-                mode = 'a' 
-
-                # wipe lists now that they have been saved
-                directories, subdirs, images = [], [], []
-                heights, widths, digit_counts = [], [], []
-                says_isis_lst, user_lst = [], []
-                
-            else: 
-                # this overwrites existing file
-                mode = 'w'
-                header = True
-
-            print('subdirectory', subdir, 'processed, attempting to save data...')
-            if os.path.exists(outFile):
-                write_safe = False
-                while write_safe:
-                    try:
-                        os.rename(outFile, outFile)
-                        write_safe = True 
-                    except OSError as e:
-                        print(outFile, 'currently being used, pausing for 1 minute before another attempt')
-                        time.sleep(60)
-
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
-
-                if directory in processed_dirs and subdir in processed_subdirs:
-                    print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                    # note: we should check for duplicates in the analysis just incase
-
-                del df_processed_results
-                del processed_dirs 
-                del processed_subdirs
-
+                    df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
+                    df_notread = pd.concat([df_notread, df_ocr])
             else:
-                df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
-                del df_mapping_results
-                print('data sucessfully saved')
-
-                collected = gc.collect()
-                print("Garbage collector: collected",
-                        "%d objects." % collected)
+                df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
+                df_notread = pd.concat([df_notread, df_ocr])
+    
+    return df_read, df_notread
 
 
-if __name__ == '__main__':
-    read_all_directories()
+def draw_random_subdir(processedDir, logDir):
+    
+    directory_list = os.listdir(processedDir)
+    directory = directory_list[randrange(len(directory_list))]
+    subdirectory_list = os.listdir(processedDir + directory + '/')
+    subdirectory = subdirectory_list[randrange(len(subdirectory_list))]
+    
+    #Check randomly-selected directory and subdirectory against the 'process_log_OCR'
+    if os.path.exists(logDir + 'process_log_OCR.csv'):
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
+        if len(df_search) > 0:
+            print(directory + '/' + subdirectory + ' already processed!')
+            return '', ''
+        else:
+            return directory, subdirectory
+    else:
+        return directory, subdirectory
+
+
+
+#Process remaining subdirectories with while loop
+stop_condition = False
+stop_condition_counter = 0
+
+while stop_condition == False:
+    start = time.time()
+    
+    #Draw random, yet to be processed subdirectory, to process
+    df_inventory = pd.read_csv(logDir + 'image_inventory_processed.csv')
+    subdir_ids_tot = df_inventory['subdir_id'].unique()
+    if os.path.exists(logDir + 'process_log_OCR.csv'):
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        subdir_ids_proc = df_log['subdir_id'].unique()
+    else:
+        subdir_ids_proc = []
+    subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
+    directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
+    if len(directory) == 0:
+        #Check stop conditions
+        if len(subdir_ids_rem) < 2:
+            print('Stop!')
+            stop_condition = True
+        if stop_condition_counter == stop_loop_threshold:
+            print('Stop!')
+            stop_condition = True
+        continue
+    subdir_path_end = directory + '/' + subdirectory + '/'
+
+    #Process subdirectory
+    print('')
+    print('Processing ' + subdir_path_end + ' subdirectory...')
+    print(str(len(subdir_ids_rem)) + ' subdirectories to go!')
+    img_fns = []
+    for file in os.listdir(processedDir + subdir_path_end):
+        img_fns.append(processedDir + subdir_path_end + file)
+    n_batches = int(np.floor(len(img_fns)/batch_size))
+    batch_remainder = len(img_fns)%batch_size
+    df_read = pd.DataFrame()
+    df_notread = pd.DataFrame()
+    for i in range(0, n_batches):
+        print('Starting batch... ' + str(i))
+        batch_i = i*batch_size
+        batch_f = batch_i + batch_size
+        try:
+            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
+                                                       img_fns=img_fns)
+            df_read = pd.concat([df_read, df_read_])
+            df_notread = pd.concat([df_notread, df_notread_])
+        except:
+            continue    
+    #Remainder
+    print('Finishing up...')
+    if batch_remainder > 0:
+        batch_i = n_batches*batch_size
+        batch_f = batch_i + batch_remainder
+        try:
+            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
+                                                      img_fns=img_fns)
+            df_read = pd.concat([df_read, df_read_])
+            df_notread = pd.concat([df_notread, df_notread_])
+        except:
+            continue
+    
+    #Integrate OCR read metadata into existing results data for subdirectory
+    df_result = pd.read_csv(resultDir + directory + '/' + 'result-' + directory + '_' + subdirectory + '.csv')
+    #Change 'Roll' to 'Directory':
+    df_result = df_result.rename(columns={
+        'Roll': 'Directory'
+    })
+    if len(df_result) > 0:
+        if len(df_read) > 0:
+            df_merge = df_result.merge(df_read, how='left', on='filename')
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] != 'loss':
+                    if df_merge['processed_image_class'].iloc[i] != 'outlier':
+                        if pd.isna(df_merge['day_of_year_OCR'].iloc[i]) == False:
+                            df_merge['processed_image_class'].iloc[i] = 'num2'
+        else:
+            df_merge = df_result
+    else:
+        df_merge = df_result
+    
+    #Classify rows with OCR letters read as 'loss' and clear metadata:
+    OCR_cols = ['station_number_OCR', 'year_OCR', 'day_of_year_OCR', 'hour_OCR', 'minute_OCR', 'second_OCR']
+    md_cols = ['satellite_number', 'year', 'day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 
+           'second_2', 'station_number_1', 'station_number_2']
+    if len(df_read) > 0:
+        for col in OCR_cols:
+            df_merge[col] = df_merge[col].astype('string')
+            df_merge.loc[df_merge[col].str.contains("[a-zA-Z]"), 'processed_image_class'] = 'loss'
+            df_merge.loc[df_merge[col].str.contains("[a-zA-Z]"), 'details'] = 'OCR read metadata contains letters'   
+    n_OCR_read = 0
+    for i in range(0, len(df_merge)):
+        if df_merge['processed_image_class'].iloc[i] == 'loss':
+            if 'details' in df_merge.columns:
+                if df_merge['details'].iloc[i] == 'OCR read metadata contains letters':
+                    for col in md_cols:
+                        if col in df_merge.columns:
+                            df_merge[col].iloc[i] = np.nan
+        elif df_merge['processed_image_class'].iloc[i] == 'num2':
+            for col in md_cols:
+                if col in df_merge.columns:
+                    df_merge[col].iloc[i] = np.nan
+            n_OCR_read += 1
+    
+    #If num2 metadata type is detected, classify images with all other metadata types as loss:
+    if len(df_read) > 0:
+        for i in range(0, len(df_merge)):
+            if df_merge['processed_image_class'].iloc[i] == 'num':
+                df_merge['processed_image_class'].iloc[i] = 'loss'
+                if 'details' in df_merge.columns:
+                    df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
+                for col in md_cols:
+                    df_merge[col].iloc[i] = np.nan
+            if df_merge['processed_image_class'].iloc[i] == 'dot':
+                df_merge['processed_image_class'].iloc[i] = 'loss'
+                if 'details' in df_merge.columns:
+                    df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
+                for col in md_cols:
+                    df_merge[col].iloc[i] = np.nan
+    
+    #If num2 metadata type is not detected:
+    if len(df_read) == 0:
+        n_num = len(df_merge.loc[df_merge['processed_image_class'] == 'num'])
+        n_dot = len(df_merge.loc[df_merge['processed_image_class'] == 'dot'])
+        #If num type metadata is the majority, classify dot type images as loss:
+        if n_num > n_dot:
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] == 'dot':
+                    df_merge['processed_image_class'].iloc[i] = 'loss'
+                    if 'details' in df_merge.columns:
+                        df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
+                    for col in md_cols:
+                        df_merge[col].iloc[i] = np.nan
+        #If dot type metadata is the majority, classify num type images as loss:
+        if n_dot > n_num:
+            for i in range(0, len(df_merge)):
+                if df_merge['processed_image_class'].iloc[i] == 'num':
+                    df_merge['processed_image_class'].iloc[i] = 'loss'
+                    if 'details' in df_merge.columns:
+                        df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'
+                    for col in md_cols:
+                        df_merge[col].iloc[i] = np.nan   
+    
+    #Save:
+    df_merge.to_csv(resultDir + directory + '/' + 'result_OCRpass-' + directory + '_' + subdirectory + '.csv', index=False)
+    
+    end = time.time()
+    t = end - start
+    print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
+    print('Processing rate: ' + str(round(t/len(img_fns), 2)) + ' s/img')
+    print('')
+
+    #Record performance
+    df_result_ = pd.DataFrame({
+        'Directory': directory,
+        'Subdirectory': subdirectory,
+        'Process_time': t,
+        'Process_timestamp': datetime.fromtimestamp(end),
+        'User': user,
+        'subdir_id': directory + '_' + subdirectory
+    }, index=[0])
+    if os.path.exists(logDir + 'process_log_OCR.csv'):
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        df_update = pd.concat([df_log, df_result_], axis=0, ignore_index=True)
+        df_update.to_csv(logDir + 'process_log_OCR.csv', index=False)
+    else:
+        if len(df_result_) > 0:
+            df_result_.to_csv(logDir + 'process_log_OCR.csv', index=False)
+
+    #Backup 'process_log' (10% of the time), garbage collection
+    if randrange(10) == 7:
+        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        datetime_str = datetime.now().strftime("%Y%m%d_%Hh%M")
+        os.makedirs(logDir + 'backups/', exist_ok=True)
+        df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
+        gc.collect()
+
+    #Check stop conditions
+    if len(subdir_ids_rem) < 2:
+        print('Stop!')
+        stop_condition = True
+    if stop_condition_counter == stop_loop_threshold:
+        print('Stop!')
+        stop_condition = True
