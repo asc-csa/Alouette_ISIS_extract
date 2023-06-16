@@ -29,7 +29,7 @@ parser.add_option('-e', '--tf210_env', dest='tf210_env',
         help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$ (if not just base env), default=%default.')
         
 parser.add_option('-s', '--save', dest='saveDir', 
-        default='U:/Downloads/test_runs/', type='str', 
+        default='U:/Downloads/error_detection/', type='str', 
         help='Path to directory where results output file should be saved, default=%default.')
 
 parser.add_option('-f', '--filename', dest='filename', 
