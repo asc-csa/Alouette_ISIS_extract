@@ -7,7 +7,7 @@
 # run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
 # >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
 # >pip install keras_ocr
-
+# >pip install opencv-python
 
 # imports
 import sys
@@ -17,7 +17,6 @@ import gc
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from threading import Thread
 from optparse import OptionParser
 parser = OptionParser()
 
