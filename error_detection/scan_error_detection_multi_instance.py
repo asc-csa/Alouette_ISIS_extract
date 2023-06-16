@@ -221,7 +221,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
-    says_isis_lst, user_lst = []
+    says_isis_lst, user_lst = [], []
 
     images_saved = 0
     
@@ -317,7 +317,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 # wipe lists now that they have been saved
                 directories, subdirs, images = [], [], []
                 heights, widths, digit_counts = [], [], []
-                says_isis_lst = []
+                says_isis_lst, user_lst = [], []
                 
             else: 
                 # this overwrites existing file
