@@ -59,6 +59,7 @@ pipeline = keras_ocr.pipeline.Pipeline()
 batchDir = 'L:/DATA/Alouette_I/BATCH_II_raw/'
 saveDir = 'U:/Downloads/test_runs/' 
 outFile = saveDir + options.filename
+print('Saving to results file:', outFile)
 
 # make the directory to save into  
 # if it doesn't already exist
