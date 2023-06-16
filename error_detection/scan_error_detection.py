@@ -1,6 +1,8 @@
 # Ashley Ferreira, CSA, June 2023
 
-# to kill this program: go ctrl+c
+# notes:
+# - to kill this program: go ctrl+c
+# - cpu version will only work if working within an environemnt with tensorflow > 2.10
 
 # run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
 # >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
