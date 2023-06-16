@@ -41,7 +41,7 @@ parser.add_option('-f', '--filename', dest='filename',
 # replace this with your own library path for --user pip installs
 sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
 
-if options.device == 'CPU'
+if options.device == 'CPU':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 if options.device == 'GPU':
     sys.path.insert(0, 'U:/Temp/' + options.username + options.tf210_env)
