@@ -45,7 +45,7 @@ sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python
 if options.device == 'CPU':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 if options.device == 'GPU':
-    sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.tf210_env + '/lib/site-packages/')
+    sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.env_name + '/lib/site-packages/')
 
 # more imports
 import gc
