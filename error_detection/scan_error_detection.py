@@ -32,11 +32,15 @@ parser.add_option('-u', '--username', dest='username',
         
 parser.add_option('-e', '--tf210_env', dest='tf210_env', 
         default='/python/envs/tf210/lib/site-packages', type='str', 
-        help='Location of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
+        help='Path of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
         
+parser.add_option('-s', '--save', dest='saveDir', 
+        default='U:/Downloads/test_runs/', type='str', 
+        help='Path to directory where results output file should be saved, default=%default.')
+
 parser.add_option('-f', '--filename', dest='filename', 
         default='scan_error_detection_results.csv', type='str', 
-        help='Location of TensorFlow 2.10.* environment within u:/temp/$USERNAME$, default=%default.')
+        help='Name of file to output results to in the path $SAVEDIR$, default=%default.')
 
 (options, args) = parser.parse_args()
 
@@ -59,7 +63,7 @@ pipeline = keras_ocr.pipeline.Pipeline()
 
 # set paths
 batchDir = 'L:/DATA/Alouette_I/BATCH_II_raw/'
-saveDir = 'U:/Downloads/test_runs/' 
+saveDir = options.saveDir 
 outFile = saveDir + options.filename
 print('Saving to results file:', outFile)
 
