@@ -250,23 +250,23 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                     except OSError as e:
                         time.sleep(30)
 
-            # get a list of already processed dirs and subdirs
-            df_processed_results = pd.read_csv(outFile)
-            processed_dirs = df_processed_results['Directory']
-            processed_subdirs = df_processed_results['Subdirectory']
+                # get a list of already processed dirs and subdirs
+                df_processed_results = pd.read_csv(outFile)
+                processed_dirs = df_processed_results['Directory']
+                processed_subdirs = df_processed_results['Subdirectory']
 
-            # check that this specific one hasn't already been processed
-            if directory in processed_dirs and subdir in processed_subdirs:
-                print('this subdirectory has already been processed, moving on to the next one...')
-                continue
-        
-            else:
-                print('this subdirectory is not already processed, beginning processing...')
+                # check that this specific one hasn't already been processed
+                if directory in processed_dirs and subdir in processed_subdirs:
+                    print('this subdirectory has already been processed, moving on to the next one...')
+                    continue
+            
+                else:
+                    print('this subdirectory is not already processed, beginning processing...')
 
-            # clear memory of stuff we don't need
-            del df_processed_results
-            del processed_dirs 
-            del processed_subdirs
+                # clear memory of stuff we don't need
+                del df_processed_results
+                del processed_dirs 
+                del processed_subdirs
             
             # loop over all images in the subdirectory
             subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
@@ -337,21 +337,22 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                         print(outFile, 'currently being used, pausing for 1 minute before another attempt')
                         time.sleep(60)
 
-            # get a list of already processed dirs and subdirs
-            df_processed_results = pd.read_csv(outFile)
-            processed_dirs = df_processed_results['Directory']
-            processed_subdirs = df_processed_results['Subdirectory']
+                # get a list of already processed dirs and subdirs
+                df_processed_results = pd.read_csv(outFile)
+                processed_dirs = df_processed_results['Directory']
+                processed_subdirs = df_processed_results['Subdirectory']
 
-            if directory in processed_dirs and subdir in processed_subdirs:
-                print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                # note: we should check for duplicates in the analysis just incase
+                if directory in processed_dirs and subdir in processed_subdirs:
+                    print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
+                    # note: we should check for duplicates in the analysis just incase
+
+                del df_processed_results
+                del processed_dirs 
+                del processed_subdirs
 
             else:
                 df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
                 del df_mapping_results
-                del df_processed_results
-                del processed_dirs 
-                del processed_subdirs
                 print('data sucessfully saved')
 
                 collected = gc.collect()
