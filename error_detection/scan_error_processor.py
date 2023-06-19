@@ -196,6 +196,7 @@ while stop_condition == False:
         df_result = pd.concat([df_result, row])
     
     #Save:
+    os.makedirs(resultDir + directory + '/', exist_ok=True)
     df_result.to_csv(resultDir + directory + '/' + 'result_scan_error_detect-' + directory + '_' + subdirectory + '.csv', index=False)
     
     end = time.time()
