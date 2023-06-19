@@ -16,6 +16,10 @@ import os
 from optparse import OptionParser
 parser = OptionParser()
 
+### THE ONLY REQUIRED ARGUMENT IS USERNAME, THEN IF YOU WAN TO USE GPU YOU ALSO ####
+##### NEED TO CHANGE -d TO GPU and -e TO YOUR TENSORFLOW 2.10 ENVIRONMENT NAME #####
+######## ALL INSTANCES SHOULD OUTPUT TO THE SAME FILE TO AVOID DUPLICATIONS ########
+
 parser.add_option('-d', '--device', dest='device', 
         default='CPU', type='str', 
         help='Device to run TensorFlow on. Can only be "GPU" or "CPU", default=%default.')
@@ -30,11 +34,12 @@ parser.add_option('-e', '--env_name', dest='env_name',
         
 parser.add_option('-s', '--save', dest='saveDir', 
         default='L:/DATA/Alouette_I/BATCH_II_scan_error_detection_Run1/', type='str', 
-        help='Path to directory where results output file should be saved, default=%default.')
+        help='Path to directory where results output file should be saved, default=%default. All instances should output to the same path.')
 
 parser.add_option('-f', '--filename', dest='filename', 
         default='results.csv', type='str', 
-        help='Name of file to output results to in the path $SAVEDIR$, default=%default.')
+        help='Name of file to output results to in the path $SAVEDIR$, default=%default. This document is also used to track which subdirectories have \
+              already been processed so to avoid different instances duplicating efforts all instances should be outputting to the same file.')
 
 (options, args) = parser.parse_args()
 
@@ -227,30 +232,31 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 # this is just a trick to make sure file isnt in use
                 read_safe = False
-                while read_safe:
+                while read_safe == False:
                     try:
                         os.rename(outFile, outFile)
+
+                        # get a set of already processed dirs and subdirs
+                        df_processed_results = pd.read_csv(outFile)
+                        subdir_id_lst = set(df_processed_results['Directory'] + ' ' + df_processed_results['Subdirectory'])
+
+                        # clear memory of stuff we don't need
+                        del df_processed_results
+
                         read_safe = True 
-                    except OSError as e:
+
+                    except (OSError, PermissionError) as e:
+                        print(e)
+                        print(outFile, 'currently being used, pausing for 30 seconds before another attempt')
                         time.sleep(30)
 
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
-
-                # check that this specific one has already been processed
-                if directory in processed_dirs and subdir in processed_subdirs:
+                # check that this specific subdir has already been processed
+                if str(directory + ' ' + subdir) in subdir_id_lst:
                     print('this subdirectory has already been processed, moving on to the next one...')
                     continue
             
                 else:
                     print('this subdirectory is not already processed, beginning processing...')
-
-                # clear memory of stuff we don't need
-                del df_processed_results
-                del processed_dirs 
-                del processed_subdirs
             
             # loop over all images in the subdirectory
             subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
@@ -306,39 +312,39 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             save = True
             if os.path.exists(outFile):
                 write_safe = False
-                while write_safe:
+                while write_safe == False:
                     try:
                         os.rename(outFile, outFile)
+
+                        # get a set of already processed dirs and subdirs
+                        df_processed_results = pd.read_csv(outFile)
+                        subdir_id_lst = set(df_processed_results['Directory'] + ' ' + df_processed_results['Subdirectory'])
+
+                        # check that this specific subdir has already been processed
+                        if str(directory + ' ' + subdir) in subdir_id_lst:
+                            print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
+                            # note: we should check for duplicates in the analysis just incase + check all data has been saved
+                            save = False
+                        
+                        if save == True:
+
+                            # check if there is already data in the output file 
+                            # (this may create duplicate headers if instances finish 
+                            # processing their first subdir too close together)
+                            if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
+                                header = False 
+
+                            df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
+                            del df_mapping_results
+                            del df_processed_results
+                            print('data sucessfully saved')
+
                         write_safe = True 
-                    except OSError as e:
+
+                    except (OSError, PermissionError) as e:
+                        print(e)
                         print(outFile, 'currently being used, pausing for 1 minute before another attempt')
                         time.sleep(60)
-
-                # get a list of already processed dirs and subdirs
-                df_processed_results = pd.read_csv(outFile)
-                processed_dirs = df_processed_results['Directory']
-                processed_subdirs = df_processed_results['Subdirectory']
-
-                if directory in processed_dirs and subdir in processed_subdirs:
-                    print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                    # note: we should check for duplicates in the analysis just incase + check all data has been saved
-                    save = False
-
-                del df_processed_results
-                del processed_dirs 
-                del processed_subdirs
-
-            if save == True:
-
-                # check if there is already data in the output file 
-                # (this may create duplicate headers if instances finish 
-                # processing their first subdir too close together)
-                if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
-                    header = False 
-
-                df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
-                del df_mapping_results
-                print('data sucessfully saved')
 
             collected = gc.collect()
             print("Garbage collector: collected",
