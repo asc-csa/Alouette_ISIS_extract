@@ -328,12 +328,12 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 del processed_dirs 
                 del processed_subdirs
 
-            if save:
+            if save == True:
 
                 # check if there is already data in the output file 
                 # (this may create duplicate headers if instances finish 
                 # processing their first subdir too close together)
-                if header = True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
+                if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
                     header = False 
 
                 df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
