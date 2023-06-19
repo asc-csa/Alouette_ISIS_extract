@@ -238,7 +238,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                         # get a set of already processed dirs and subdirs
                         df_processed_results = pd.read_csv(outFile)
-                        subdir_id_lst = set(df_processed_results['Directory'] + ' ' + df_processed_results['Subdirectory'])
+                        subdir_id_lst = set(df_processed_results['Directory'] + ' ' + str(df_processed_results['Subdirectory']))
 
                         # clear memory of stuff we don't need
                         del df_processed_results
