@@ -2,10 +2,9 @@
 
 # notes:
 # - this is  a version of scan_error_detection which supports multiple instances and users
-#   it works by 
 # - to kill this program: go ctrl+c
 # - reflects the new (more correct) naming convention that roll = directory
-# ^ other code Ashley has created does not yet reflect this
+# ^ other code Ashley has created does not yet reflect this update
 
 # run these pip commands in anaconda prompt to download non-standard libraries (may need to add --user)
 # >pip install tensorflow (or for GPU use: >pip install tensorflow==2.10)
@@ -43,7 +42,7 @@ parser.add_option('-f', '--filename', dest='filename',
 sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
 
 if options.device == 'CPU':
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 if options.device == 'GPU':
     sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.env_name + '/lib/site-packages/')
 
@@ -154,9 +153,7 @@ def read_image(image_path, plotting=False, just_digits=False):
                 
                 # if word is composed of just integers then 
                 # count how many and incriment digit_count
-                #if just_digits == False or (just_digits == True and value.isdigit()):
-                if True: # do not require it to be an integer, too much of a cut it seems
-
+                if just_digits == False or (just_digits == True and value.isdigit()):
                     # check that box is within the cropped height
                     in_bounds = True
                     for b in box:
@@ -199,17 +196,13 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
         None
 
     '''
-    # check if there is already data in the output file 
-    # (this may create duplicate headers if instances are run too close together)
-    if os.path.exists(outFile) and os.path.getsize(outFile)!=0:
-        header = False 
-    else: 
-        header = True
-
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
     says_isis_lst, user_lst = [], []
+
+    # assume file has not yet been written to and needs header
+    header = True
     
     # loop over all directories in the batch 2 raw data directory
     raw_contents = os.listdir(batchDir) # random suffle appled
@@ -227,7 +220,12 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
             print('###############################')
             print('dir:', directory, '\nsubdir:', subdir)
+
+            # if path exists we want to see what subdirs are processed
+            # this far and so that is what we check below
             if os.path.exists(outFile):
+
+                # this is just a trick to make sure file isnt in use
                 read_safe = False
                 while read_safe:
                     try:
@@ -241,7 +239,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 processed_dirs = df_processed_results['Directory']
                 processed_subdirs = df_processed_results['Subdirectory']
 
-                # check that this specific one hasn't already been processed
+                # check that this specific one has already been processed
                 if directory in processed_dirs and subdir in processed_subdirs:
                     print('this subdirectory has already been processed, moving on to the next one...')
                     continue
@@ -277,11 +275,10 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 user_lst.append(options.username)
 
 
-            ##### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
+            #### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
             # initialize dataframe and save results to csv
             # (redoing this each interation to not loose information)
             df_mapping_results = pd.DataFrame()
-
             df_mapping_results['Directory'] = directories
             df_mapping_results['Subdirectory'] = subdirs
             df_mapping_results['filename'] = images
@@ -300,12 +297,13 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 heights, widths, digit_counts = [], [], []
                 says_isis_lst, user_lst = [], []
                 
-            else: 
+            else: # append2outFile = False should not be used for multi-instance
                 # this overwrites existing file
                 mode = 'w'
                 header = True
 
             print('subdirectory', subdir, 'processed, attempting to save data...')
+            save = True
             if os.path.exists(outFile):
                 write_safe = False
                 while write_safe:
@@ -324,19 +322,27 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 if directory in processed_dirs and subdir in processed_subdirs:
                     print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
                     # note: we should check for duplicates in the analysis just incase + check all data has been saved
+                    save = False
 
                 del df_processed_results
                 del processed_dirs 
                 del processed_subdirs
 
-            else:
+            if save:
+
+                # check if there is already data in the output file 
+                # (this may create duplicate headers if instances finish 
+                # processing their first subdir too close together)
+                if header = True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
+                    header = False 
+
                 df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
                 del df_mapping_results
                 print('data sucessfully saved')
 
-                collected = gc.collect()
-                print("Garbage collector: collected",
-                        "%d objects." % collected)
+            collected = gc.collect()
+            print("Garbage collector: collected",
+                    "%d objects." % collected)
 
 
 if __name__ == '__main__':
