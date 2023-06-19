@@ -12,7 +12,24 @@ import gc
 import warnings
 warnings.filterwarnings('ignore')
 
+
+#Set directories
+dataDir = sys.argv[1]
+rootDir = sys.argv[2]
+resultDir = rootDir + '01_result/'
+logDir = rootDir + '02_log/'
+
+#Set parameters
+env_name = sys.argv[3]
+user_prefix = sys.argv[4]
+instance = sys.argv[5]
+user = user_prefix + instance #e.g: 'rnaidoo2'
+stop_loop_threshold = 3000 #max while loops to prevent infinite loop
+
+
+sys.path.insert(0, 'U:/temp/' + user_prefix + '/python/envs/' + env_name + '/lib/site-packages/')
 import tensorflow as tf
+print(tf.config.list_physical_devices('GPU'))
 print('tensorflow version (should be 2.10.* for GPU compatibility)', tf.__version__)
 if len(tf.config.list_physical_devices('GPU')) != 0: 
     print('GPU in use for tensorflor')
@@ -22,19 +39,6 @@ else:
 import keras_ocr
 pipeline = keras_ocr.pipeline.Pipeline()
 
-
-#Set parameters
-user_prefix = sys.argv[3]
-instance = sys.argv[4]
-user = user_prefix + instance #e.g: 'Rav Super2'
-process_on_VDI = True
-stop_loop_threshold = 3000 #max while loops to prevent infinite loop
-
-#Set directories
-dataDir = sys.argv[1]
-rootDir = sys.argv[2]
-resultDir = rootDir + '01_result/'
-logDir = rootDir + '02_log/'
 
 
 #Functions
