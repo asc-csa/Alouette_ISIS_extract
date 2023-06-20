@@ -208,6 +208,10 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
     # assume file has not yet been written to and needs header
     header = True
+
+    # set column types for results dataframe (otherwise need to specify low_memory=False in read_csv)
+    types = {'Directory': 'str', 'Subdirectory': 'str', 'filename': 'str', 'digit_count': 'int', \
+             'height': 'float32', 'width': 'float32', 'says_isis': 'str', 'user': 'str'}
     
     # loop over all directories in the batch 2 raw data directory
     raw_contents = os.listdir(batchDir) # random suffle appled
@@ -237,7 +241,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                         os.rename(outFile, outFile)
 
                         # get a set of already processed dirs and subdirs
-                        df_processed_results = pd.read_csv(outFile)
+                        df_processed_results = pd.read_csv(outFile, dtype=types)
                         subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
 
                         # clear memory of stuff we don't need
@@ -317,7 +321,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                         os.rename(outFile, outFile)
 
                         # get a set of already processed dirs and subdirs
-                        df_processed_results = pd.read_csv(outFile)
+                        df_processed_results = pd.read_csv(outFile, dtype=types)
                         subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
 
                         # check that this specific subdir has already been processed
@@ -334,7 +338,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                             if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
                                 header = False 
 
-                            df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
+                            df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header, dtype=types)
                             del df_mapping_results
                             del df_processed_results
                             print('data sucessfully saved')
