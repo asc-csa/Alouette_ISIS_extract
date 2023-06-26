@@ -11,7 +11,7 @@ import gc
 
 import warnings
 warnings.filterwarnings('ignore')
-
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 #Set directories
 dataDir = sys.argv[1]
