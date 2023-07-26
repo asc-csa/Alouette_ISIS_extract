@@ -124,4 +124,4 @@ if __name__ == '__main__':
     df_summary_bottom1,df_summary_left1 = grid_default_values(regex_subdir='L:/DATA/ISIS/raw_upload_20230421/R*/B*/', regex_images='*.png')
     df_merge1 = df_summary_bottom1.append(df_summary_left1)
     df_merge1.name = 'merged'
-    plot_hist_peaks_grids(df_summary_bottom1,df_summary_left1,df_merge1)
+    #plot_hist_peaks_grids(df_summary_bottom1,df_summary_left1,df_merge1)
