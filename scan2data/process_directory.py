@@ -132,7 +132,7 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
 def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir):
     
     df_processed, df_loss, df_outlier = process_subdirectory(sample_subdir, regex_raw)
-
+    
     # Split left from bottom-side metadata
     df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
     df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
