@@ -199,6 +199,10 @@ def extract_coord_subdir_and_param(df_img, subdir_location, col_peaks, row_peaks
 
     """
     # Get (x,y) coordinates of trace
+    if(len(df_img)==1):
+        print('zip line')
+        print(*df_img['ionogram'].map(lambda iono: extract_coord(iono, col_peaks, row_peaks)))
+        
     df_img['raw_coord'], df_img['window_coord'] = zip(
         *df_img['ionogram'].map(lambda iono: extract_coord(iono, col_peaks, row_peaks)))
 
