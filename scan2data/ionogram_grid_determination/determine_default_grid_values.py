@@ -116,7 +116,7 @@ def grid_default_values(regex_subdir, regex_images,min_subset=10):
     return df_summary_bottom,df_summary_left
 
 if __name__ == '__main__':
-    df_summary_bottom1,df_summary_left1 = grid_default_values(regex_subdir='E:/master/R*/[0-9]*/', regex_images='*.png')
+    df_summary_bottom1,df_summary_left1 = grid_default_values(regex_subdir='L:/DATA/Alouette_I/BATCH_II_raw/R014207818/*/', regex_images='*.png')
     df_merge1 = df_summary_bottom1.append(df_summary_left1)
     df_merge1.name = 'merged'
     plot_hist_peaks_grids(df_summary_bottom1,df_summary_left1,df_merge1)
