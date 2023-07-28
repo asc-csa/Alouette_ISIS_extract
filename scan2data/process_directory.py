@@ -65,8 +65,6 @@ def process_subdirectory(subdir_path, regex_images):
     if len(df_img_bottom) > 9:
         df_img_bottom, df_loss_meta_bottom, dict_mapping_bottom, dict_hist_bottom = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_bottomside_metadata
         df_loss = df_loss.append(df_loss_meta_bottom)
-        print('lenght after and ionogram')
-        print(len(df_img_bottom))
         if len(df_img_bottom) > 0:
             #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
             df_processed_bottom, df_loss_coord_bottom = extract_coord_subdir_and_param(df_img_bottom, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
@@ -139,10 +137,14 @@ def process_df_bottomside_metadata(df_processed, subdir_name, source_dir):
 def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_subdir):
     
     df_processed, df_loss, df_outlier = process_subdirectory(sample_subdir, regex_raw)
-    
-    # Split left from bottom-side metadata
-    df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
-    df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
+
+    if(len(df_processed)==0):
+        df_processed_left=pd.DataFrame()
+        df_processed_bottom=pd.DataFrame()
+    else:
+        # Split left from bottom-side metadata
+        df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
+        df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
 
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
