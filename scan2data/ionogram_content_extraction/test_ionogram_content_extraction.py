@@ -215,13 +215,14 @@ def test_extract_coord_subdir_and_param(sample_subdirectory,sample_image_path,re
 
     
 if __name__ == '__main__':
-    sample_subdir = generate_random_subdirectory(regex_subdirectory='L:/DATA/ISIS/raw_upload_20230421/R*/B*/')
-    sample_img_from_subdir = generate_random_image_from_subdirectory(sample_subdir, regex_images='*.png')
     
+    sample_subdir = generate_random_subdirectory(regex_subdirectory='L:/DATA/ISIS/raw_upload_20230421/R014207869/B*/')
+    sample_img_from_subdir = generate_random_image_from_subdirectory(sample_subdir, regex_images='*.png')
+        
     test_coord_extraction(sample_subdir,sample_img_from_subdir,regex_images='*.png',to_overlay=True)
     test_coord_extraction(sample_subdir,sample_img_from_subdir,regex_images='*.png',to_overlay=False)
     test_param_extraction(sample_subdir,sample_img_from_subdir,regex_images='*.png')
-    
+        
     test_extract_coord_subdir_and_param(sample_subdir,sample_img_from_subdir,regex_images='*.png',to_overlay=True)
     test_extract_coord_subdir_and_param(sample_subdir,sample_img_from_subdir,regex_images='*.png',to_overlay=False)
     
