@@ -13,7 +13,10 @@ import warnings
 warnings.filterwarnings('ignore')
 
 import keras_ocr
-pipeline = keras_ocr.pipeline.Pipeline()
+import string
+recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading.h5')
+pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
 user_prefix = sys.argv[2]
@@ -57,23 +60,23 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
 
             #Test for num2
             if len(read_str) == 15:
-                if read_str[0:2] == '10':
-                    row2 = pd.DataFrame({
-                        'station_number_OCR': read_str[2:4],
-                        'year_OCR': read_str[4:6],
-                        'day_of_year_OCR': read_str[6:9],
-                        'hour_OCR': read_str[9:11],
-                        'minute_OCR': read_str[11:13],
-                        'second_OCR': read_str[13:15],
-                        'filename': img_fns[batch_i + i].replace(subdir_path, '')
+                row2 = pd.DataFrame({
+                    'fixed_frequency_OCR': read_str[0:2],
+                    'station_number_OCR': read_str[2:4],
+                    'year_OCR': read_str[4:6],
+                    'day_of_year_OCR': read_str[6:9],
+                    'hour_OCR': read_str[9:11],
+                    'minute_OCR': read_str[11:13],
+                    'second_OCR': read_str[13:15],
+                    'filename': img_fns[batch_i + i].replace(subdir_path, '')
                     }, index=[i])
-                    df_read = pd.concat([df_read, row2])
-                else:
-                    df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
-                    df_notread = pd.concat([df_notread, df_ocr])
+                df_read = pd.concat([df_read, row2])
             else:
                 df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
                 df_notread = pd.concat([df_notread, df_ocr])
+            row3 = pd.DataFrame({'string_read_OCR': read_str}, index=[i])
+            df_read = pd.concat([df_read, row3])
+            df_notread = pd.concat([df_notread,row3])
     
     return df_read, df_notread
 

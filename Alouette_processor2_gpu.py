@@ -25,18 +25,28 @@ import warnings
 warnings.filterwarnings('ignore')
 
 import keras_ocr
-pipeline = keras_ocr.pipeline.Pipeline()
+import string
+recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading.h5')
+pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
-user_prefix = sys.argv[2]
-instance = sys.argv[3]
-user = user_prefix + instance #e.g: 'Rav Super2'
-batch_size = int(sys.argv[4])
+#user_prefix = sys.argv[2]
+#instance = sys.argv[3]
+#user = user_prefix + instance #e.g: 'Rav Super2'
+#batch_size = int(sys.argv[4])
+batch_size=1
+
+user_prefix='mfortier'
+instance='1'
+user='mfortier1'
+
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir = sys.argv[1]
+#rootDir = sys.argv[1]
+rootDir = 'L:/DATA/ISIS/ISIS_test_Run/'
 processedDir = rootDir + '04_processed/'
 resultDir = rootDir + '05_result/'
 logDir = rootDir + '06_log/'
@@ -47,6 +57,7 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
     
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
+
     for i in range(0, len(prediction_groups)):
         df_ocr = pd.DataFrame()
         predicted_image = prediction_groups[i]
@@ -66,26 +77,27 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
                 read_str_ = df_ocr['number'].iloc[j]
                 read_str += read_str_
             read_str = read_str.replace('o', '0')
-
+            
             #Test for num2
             if len(read_str) == 15:
-                if read_str[0:2] == '10':
-                    row2 = pd.DataFrame({
-                        'station_number_OCR': read_str[2:4],
-                        'year_OCR': read_str[4:6],
-                        'day_of_year_OCR': read_str[6:9],
-                        'hour_OCR': read_str[9:11],
-                        'minute_OCR': read_str[11:13],
-                        'second_OCR': read_str[13:15],
-                        'filename': img_fns[batch_i + i].replace(subdir_path, '')
+                row2 = pd.DataFrame({
+                    'fixed_frequency_OCR': read_str[0:2],
+                    'station_number_OCR': read_str[2:4],
+                    'year_OCR': read_str[4:6],
+                    'day_of_year_OCR': read_str[6:9],
+                    'hour_OCR': read_str[9:11],
+                    'minute_OCR': read_str[11:13],
+                    'second_OCR': read_str[13:15],
+                    'filename': img_fns[batch_i + i].replace(subdir_path, '')
                     }, index=[i])
-                    df_read = pd.concat([df_read, row2])
-                else:
-                    df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
-                    df_notread = pd.concat([df_notread, df_ocr])
+                df_read = pd.concat([df_read, row2])
             else:
                 df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
                 df_notread = pd.concat([df_notread, df_ocr])
+            row3 = pd.DataFrame({'string_read_OCR': read_str,
+                                 'filename': img_fns[batch_i + i].replace(subdir_path, '')}, index=[i])
+            df_read = df_read.merge(row3, how='left', on='filename')
+            df_notread = df_notread.merge(row3, how='left', on='filename')
     
     return df_read, df_notread
 
@@ -127,7 +139,9 @@ while stop_condition == False:
     else:
         subdir_ids_proc = []
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
-    directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
+    #directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
+    directory = 'R014207779'
+    subdirectory = 'B1-35-25 ISIS B D-722'
     if len(directory) == 0:
         #Check stop conditions
         if len(subdir_ids_rem) < 2:
@@ -136,7 +150,7 @@ while stop_condition == False:
         if stop_condition_counter == stop_loop_threshold:
             print('Stop!')
             stop_condition = True
-        continue
+        #continue
     subdir_path_end = directory + '/' + subdirectory + '/'
 
     #Process subdirectory
@@ -182,6 +196,7 @@ while stop_condition == False:
     df_result = df_result.rename(columns={
         'Roll': 'Directory'
     })
+    
     if len(df_result) > 0:
         if len(df_read) > 0:
             df_merge = df_result.merge(df_read, how='left', on='filename')
