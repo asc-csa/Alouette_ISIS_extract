@@ -26,27 +26,28 @@ warnings.filterwarnings('ignore')
 
 import keras_ocr
 import string
+
 recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
 recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading.h5')
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
-#user_prefix = sys.argv[2]
-#instance = sys.argv[3]
-#user = user_prefix + instance #e.g: 'Rav Super2'
-#batch_size = int(sys.argv[4])
-batch_size=1
+user_prefix = sys.argv[2]
+instance = sys.argv[3]
+user = user_prefix + instance #e.g: 'Rav Super2'
+batch_size = int(sys.argv[4])
+#batch_size=1
 
-user_prefix='mfortier'
-instance='1'
-user='mfortier1'
+#user_prefix='mfortier'
+#instance='1'
+#user='mfortier1'
 
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
-#rootDir = sys.argv[1]
-rootDir = 'L:/DATA/ISIS/ISIS_test_Run/'
+rootDir = sys.argv[1]
+#rootDir = 'L:/DATA/ISIS/ISIS_test_Run/'
 processedDir = rootDir + '04_processed/'
 resultDir = rootDir + '05_result/'
 logDir = rootDir + '06_log/'
@@ -76,7 +77,6 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
             for j in range(0, len(df_ocr)):
                 read_str_ = df_ocr['number'].iloc[j]
                 read_str += read_str_
-            read_str = read_str.replace('o', '0')
             
             #Test for num2
             if len(read_str) == 15:
@@ -139,9 +139,7 @@ while stop_condition == False:
     else:
         subdir_ids_proc = []
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
-    #directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
-    directory = 'R014207779'
-    subdirectory = 'B1-35-25 ISIS B D-722'
+    directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
     if len(directory) == 0:
         #Check stop conditions
         if len(subdir_ids_rem) < 2:
@@ -169,6 +167,7 @@ while stop_condition == False:
         batch_i = i*batch_size
         batch_f = batch_i + batch_size
         try:
+            print(img_fns[batch_i:batch_f])
             prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
             df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
                                                        img_fns=img_fns)
