@@ -19,7 +19,7 @@ stop_loop_threshold = 6000 #max while loops to prevent infinite loop
 rootDir = sys.argv[1] #The file path to the root directory for your project 
 downloadingDir = rootDir + '01_downloading/'
 downloadedDir = rootDir + '02_downloaded/'
-logDir = rootDir + '05_result/'
+logDir = rootDir + '06_log/'
 
 
 
