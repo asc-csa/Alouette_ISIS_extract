@@ -28,7 +28,7 @@ import keras_ocr
 import string
 
 recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
-recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading.h5')
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading_v2.h5')
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
