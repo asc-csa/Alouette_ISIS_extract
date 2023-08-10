@@ -171,7 +171,7 @@ while stop_condition == False:
         if stop_condition_counter == stop_loop_threshold:
             print('Stop!')
             stop_condition = True
-        #continue
+        continue
     subdir_path_end = directory + '/' + subdirectory + '/'
 
     #Process subdirectory
