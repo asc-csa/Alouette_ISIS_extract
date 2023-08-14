@@ -8,14 +8,16 @@ from random import randrange
 import time
 from datetime import datetime
 import gc
+import cv2
 
 import warnings
 warnings.filterwarnings('ignore')
 
 import keras_ocr
 import string
+
 recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
-recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading.h5')
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr/ISIS_reading_v2.h5')
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
@@ -41,6 +43,9 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
     for i in range(0, len(prediction_groups)):
         df_ocr = pd.DataFrame()
         predicted_image = prediction_groups[i]
+        # Stock the predictions
+        str_array = list(zip(*predicted_image))[0]
+        str_array = '('+', '.join([str(elem) for elem in str_array])+')'
         if len(predicted_image) > 0:
             for text, box in predicted_image:
                 row = pd.DataFrame({
@@ -56,11 +61,11 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
             for j in range(0, len(df_ocr)):
                 read_str_ = df_ocr['number'].iloc[j]
                 read_str += read_str_
-            read_str = read_str.replace('o', '0')
 
             #Test for num2
             if len(read_str) == 15:
                 row2 = pd.DataFrame({
+                    'string_read_OCR': str_array,
                     'fixed_frequency_OCR': read_str[0:2],
                     'station_number_OCR': read_str[2:4],
                     'year_OCR': read_str[4:6],
@@ -72,11 +77,21 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
                     }, index=[i])
                 df_read = pd.concat([df_read, row2])
             else:
-                df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
-                df_notread = pd.concat([df_notread, df_ocr])
-            row3 = pd.DataFrame({'string_read_OCR': read_str}, index=[i])
-            df_read = pd.concat([df_read, row3])
-            df_notread = pd.concat([df_notread,row3])
+                row2 = pd.DataFrame({
+                    'string_read_OCR': str_array,
+                    'fixed_frequency_OCR': '',
+                    'station_number_OCR': '',
+                    'year_OCR': '',
+                    'day_of_year_OCR': '',
+                    'hour_OCR': '',
+                    'minute_OCR': '',
+                    'second_OCR': '',
+                    'filename': img_fns[batch_i + i].replace(subdir_path, '')
+                    }, index=[i])
+                df_read = pd.concat([df_read, row2])                
+            #else:
+                #df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
+                #df_notread = pd.concat([df_notread, df_ocr])
     
     return df_read, df_notread
 
@@ -100,7 +115,17 @@ def draw_random_subdir(processedDir, logDir):
     else:
         return directory, subdirectory
 
+def transform_image(path_image,a=1.8,b=-50,c=0.125):
 
+    # Increase contrast and lower brightness
+    im = cv2.imread(path_image[0])
+    im = cv2.addWeighted(im,a,im,0,b) 
+
+    #Cropped images to only see metadata
+    height, width, _ = im.shape
+    im = im[int(height-height*c):height,0:width]    
+    
+    return(im)
 
 #Process remaining subdirectories with while loop
 stop_condition = False
@@ -146,7 +171,8 @@ while stop_condition == False:
         batch_i = i*batch_size
         batch_f = batch_i + batch_size
         try:
-            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            new_img = transform_image(img_fns[batch_i:batch_f])
+            prediction_groups = pipeline.recognize([new_img])
             df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
                                                        img_fns=img_fns)
             df_read = pd.concat([df_read, df_read_])
@@ -159,7 +185,8 @@ while stop_condition == False:
         batch_i = n_batches*batch_size
         batch_f = batch_i + batch_remainder
         try:
-            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            new_img = transform_image(img_fns[batch_i:batch_f])
+            prediction_groups = pipeline.recognize(new_img)
             df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
                                                       img_fns=img_fns)
             df_read = pd.concat([df_read, df_read_])
@@ -173,6 +200,7 @@ while stop_condition == False:
     df_result = df_result.rename(columns={
         'Roll': 'Directory'
     })
+    #To review, because a lot of ionograms are put to loss or outlier at the moment    
     if len(df_result) > 0:
         if len(df_read) > 0:
             df_merge = df_result.merge(df_read, how='left', on='filename')
@@ -190,6 +218,7 @@ while stop_condition == False:
     OCR_cols = ['station_number_OCR', 'year_OCR', 'day_of_year_OCR', 'hour_OCR', 'minute_OCR', 'second_OCR']
     md_cols = ['satellite_number', 'year', 'day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 
            'second_2', 'station_number_1', 'station_number_2']
+    #We force keras ocr to only search for numbers now, we could remove that part
     if len(df_read) > 0:
         for col in OCR_cols:
             df_merge[col] = df_merge[col].astype('string')

@@ -1,13 +1,6 @@
 #OCR read 'num2' metadata
 
 import sys
-
-# ashley's tf 2.10 path
-#sys.path.insert(0, "u:/temp/aferreira/python/envs/tf210/lib/site-packages/")
-
-# rav's tf 2.10 path 
-sys.path.insert(0, "u:/temp/rnaidoo/python/envs/alouette_on_ravsupervdi2/lib/site-packages/")
-
 import tensorflow as tf
 print(tf.__version__)
 
@@ -37,18 +30,11 @@ user_prefix = sys.argv[2]
 instance = sys.argv[3]
 user = user_prefix + instance #e.g: 'Rav Super2'
 batch_size = int(sys.argv[4])
-#batch_size=1
-
-#user_prefix='mfortier'
-#instance='1'
-#user='mfortier1'
-
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
 #Set directories
 rootDir = sys.argv[1]
-#rootDir = 'L:/DATA/ISIS/ISIS_test_Run/'
 processedDir = rootDir + '04_processed/'
 resultDir = rootDir + '05_result/'
 logDir = rootDir + '06_log/'
@@ -59,10 +45,10 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
     
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
-
     for i in range(0, len(prediction_groups)):
         df_ocr = pd.DataFrame()
         predicted_image = prediction_groups[i]
+        # Stock the predictions
         str_array = list(zip(*predicted_image))[0]
         str_array = '('+', '.join([str(elem) for elem in str_array])+')'
         if len(predicted_image) > 0:
@@ -110,7 +96,6 @@ def read_num2_metadata(prediction_groups, subdir_path, batch_i, img_fns):
                 df_read = pd.concat([df_read, row2])
             #else:
                 #df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
-                #df_ocr['string_read_OCR'] = str_array
                 #df_notread = pd.concat([df_notread, df_ocr])
     return df_read, df_notread
 
@@ -204,7 +189,8 @@ while stop_condition == False:
         batch_i = n_batches*batch_size
         batch_f = batch_i + batch_remainder
         try:
-            prediction_groups = pipeline.recognize(img_fns[batch_i:batch_f])
+            new_img = transform_image(img_fns[batch_i:batch_f])
+            prediction_groups = pipeline.recognize(new_img)
             df_read_, df_notread_ = read_num2_metadata(prediction_groups=prediction_groups, subdir_path=processedDir + subdir_path_end, batch_i=batch_i, 
                                                       img_fns=img_fns)
             df_read = pd.concat([df_read, df_read_])
@@ -237,7 +223,7 @@ while stop_condition == False:
     OCR_cols = ['station_number_OCR', 'year_OCR', 'day_of_year_OCR', 'hour_OCR', 'minute_OCR', 'second_OCR']
     md_cols = ['satellite_number', 'year', 'day_1', 'day_2', 'day_3', 'hour_1', 'hour_2', 'minute_1', 'minute_2', 'second_1', 
            'second_2', 'station_number_1', 'station_number_2']
-    #We force keras ocr to only search for numbers now
+    #We force keras ocr to only search for numbers now, we could remove that part
     if len(df_read) > 0:
         for col in OCR_cols:
             df_merge[col] = df_merge[col].astype('string')
