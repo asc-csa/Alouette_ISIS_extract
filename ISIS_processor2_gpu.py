@@ -23,6 +23,7 @@ import string
 
 recognizer = keras_ocr.recognition.Recognizer(alphabet=string.digits)
 recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading_v2.h5')
+recognizer.compile()
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 #Set parameters
@@ -30,6 +31,8 @@ user_prefix = sys.argv[2]
 instance = sys.argv[3]
 user = user_prefix + instance #e.g: 'Rav Super2'
 batch_size = int(sys.argv[4])
+# For the moment, the code is made for 1 as batch_size
+batch_size = 1
 process_on_VDI = True
 stop_loop_threshold = 3000 #max while loops to prevent infinite loop
 
@@ -150,7 +153,7 @@ while stop_condition == False:
     directory, subdirectory = draw_random_subdir(processedDir=processedDir, logDir=logDir)
     if len(directory) == 0:
         #Check stop conditions
-        if len(subdir_ids_rem) < 2:
+        if len(subdir_ids_rem) < 1:
             print('Stop!')
             stop_condition = True
         if stop_condition_counter == stop_loop_threshold:
