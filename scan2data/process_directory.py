@@ -139,7 +139,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
 
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
-    
+
     if len(df_processed_left) > 0:
         is_dot = np.array(df_processed_left['is_dot'])
         df_dot_subset = df_processed_left[is_dot]
@@ -149,7 +149,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         df_num_subset = process_df_leftside_metadata(df_num_subset, subdir_name, master_dir, is_dot=False)
         df_dot = pd.concat([df_dot, df_dot_subset])
         df_num = pd.concat([df_num, df_num_subset])
-    
+
     #Assume that there is no bottom-side dot type metadata (count df_dot_subset as loss)
     if len(df_processed_bottom) > 0:
         #is_dot = np.array(df_processed_bottom['is_dot'])
@@ -171,9 +171,9 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         df_loss.to_csv(dir_csv_output + 'df_loss.csv', index=False)
     if len(df_outlier) > 0:
         df_outlier.to_csv(dir_csv_output + 'df_outlier.csv', index=False)
-    
+
     #Save mapped coordinates
-    for i in range(0, len(df_processed)):
+    for i in range(len(df_processed)):
         path = df_processed['file_name'].iloc[i].replace(master_dir, '')
         path = path.replace('/', '\\')
         path = path.replace('\\', '/')

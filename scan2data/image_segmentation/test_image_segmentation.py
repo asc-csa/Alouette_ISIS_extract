@@ -57,30 +57,30 @@ def test_segment_images_in_subdir_extract_helpers(sample_image_path):
     """
     Following Code pasted from segment_images_in_subdir.segment_images
     """
-    
+
     # If flipping/rotating is required 
     path = sample_image_path.replace('\\', '/')
-    flip_vertical = any([subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL])
-    rotate_180 = any([subdir_dir in path for subdir_dir in LIST_ROTATE_180])
- 
+    flip_vertical = any(subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL)
+    rotate_180 = any(subdir_dir in path for subdir_dir in LIST_ROTATE_180)
+
     #Read image in an 2D UTF-8 grayscale array
-    if flip_vertical == True:
+    if flip_vertical:
         raw_img = cv2.flip(cv2.imread(sample_image_path,0),1)
     else:
         raw_img = cv2.imread(sample_image_path,0)
-    
+
     # Extract ionogram and coordinates delimiting its limits
     limits,ionogram= extract_ionogram(raw_img)
-    
-    
-    if rotate_180 == True:
+
+
+    if rotate_180:
         ionogram= np.rot90(ionogram, 2)
 
     # Raw metadata
     metadata_type,raw_metadata = extract_metadata(raw_img, limits)
-    if rotate_180 == True:
+    if rotate_180:
         raw_metadata =  np.rot90(raw_metadata, 2)
-    
+
     """
     Above Code pasted from segment_images_in_subdir.segment_images
     """
@@ -107,30 +107,30 @@ def test_segment_images_in_subdir_trim_helper(sample_image_path):
     """
     Following Code heavily inspired from segment_images_in_subdir.segment_images
     """
-    
+
     # If flipping/rotating is required 
     path = sample_image_path.replace('\\', '/')
-    flip_vertical = any([subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL])
-    rotate_180 = any([subdir_dir in path for subdir_dir in LIST_ROTATE_180])
- 
+    flip_vertical = any(subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL)
+    rotate_180 = any(subdir_dir in path for subdir_dir in LIST_ROTATE_180)
+
     #Read image in an 2D UTF-8 grayscale array
-    if flip_vertical == True:
+    if flip_vertical:
         raw_img = cv2.flip(cv2.imread(sample_image_path,0),1)
     else:
         raw_img = cv2.imread(sample_image_path,0)
-    
+
     # Extract ionogram and coordinates delimiting its limits
     limits,ionogram= extract_ionogram(raw_img)
-    
-    
-    if rotate_180 == True:
+
+
+    if rotate_180:
         ionogram= np.rot90(ionogram, 2)
 
     # Raw metadata
     metadata_type,raw_metadata = extract_metadata(raw_img, limits)
-    if rotate_180 == True:
+    if rotate_180:
         raw_metadata =  np.rot90(raw_metadata, 2)
-    
+
     """
     Above Code heavily inspired from segment_images_in_subdir.segment_images
     """
@@ -141,22 +141,22 @@ def test_segment_images_in_subdir_trim_helper(sample_image_path):
     """
     # Median filtering to remove salt and pepper noise
     median_filtered_meta = cv2.medianBlur(raw_metadata,median_kernel_size)
-    
+
     # Opening operation: Erosion + Dilation
     kernel_opening = np.ones(opening_kernel_size,np.uint8)
     opened_meta = cv2.morphologyEx(median_filtered_meta,cv2.MORPH_OPEN,kernel_opening)
-    
+
     # Binarizatinon for connected component algorithm
     _,meta_binary = cv2.threshold(opened_meta, 127,255,cv2.THRESH_BINARY)    
-    
+
     # Run connected component algorithm
     connected_meta = connected_components_metadata_location(meta_binary)
-    
+
     if metadata_type == 'left':
         trimmed_metadata = leftside_metadata_trimming(connected_meta,meta_binary)
     else:
         trimmed_metadata =  bottomside_metadata_trimming(connected_meta,opened_meta)
-    
+
     """
     Above Code pasted from segment_images_in_subdir.trim_raw_metadata
     """
@@ -170,8 +170,8 @@ def test_segment_images_in_subdir_trim_helper(sample_image_path):
 
     # set bg label to black
     labeled_img[label_hue==0] = 0
-    
-    
+
+
     fig,axes = plt.subplots(ncols=2,nrows=3)
     ax=axes.ravel()
 
@@ -181,14 +181,14 @@ def test_segment_images_in_subdir_trim_helper(sample_image_path):
     ax[3].imshow(meta_binary,'gray')
     ax[4].imshow(labeled_img)
     ax[5].imshow(trimmed_metadata,'gray')
-    
+
     fig.suptitle(sample_image_path)
     ax[0].set_title('raw')
     ax[1].set_title('median_filtered_meta')
     ax[2].set_title('opened_meta')
     ax[3].set_title('meta_binary')
     ax[4].set_title('connected_meta')
-    ax[5].set_title('trimmed_metadata' + metadata_type)
+    ax[5].set_title(f'trimmed_metadata{metadata_type}')
     
 if __name__ =='__main__':
     sample_subdir = generate_random_subdirectory(regex_subdirectory='E:/master/R*/[0-9]*/')

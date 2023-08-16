@@ -29,9 +29,10 @@ def two_clusters(sorted_array):
     """
     if len(sorted_array) < 3:
         return (sorted_array, sorted_array)
-    variances = [np.std(sorted_array[0:i])+np.std(sorted_array[i:]) for i in range(1, len(sorted_array)-1)]
+    variances = [np.std(sorted_array[:i]) + np.std(sorted_array[i:]) for i in range(1, len(sorted_array) - 1)]
+
     index_sep = np.argmin(variances) + 1
-    subarray1, subarray2 = sorted_array[0:index_sep ],sorted_array[index_sep:]
+    subarray1, subarray2 = sorted_array[:index_sep], sorted_array[index_sep:]
 
     return (subarray1, subarray2)
 

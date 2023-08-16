@@ -69,23 +69,19 @@ def indices_highest_peaks(img, row_or_col,
     
     # Median values along each row or column
     median_values = np.median(img,row_or_col)
-    
+
     # Normalize median values so they are between 0 and 1
     median_values_normalized = (median_values - np.min(median_values))/(np.max(median_values)-np.min(median_values))
-    
+
     # Prepare peaks for peak detection function: the peaks should be pointing upwards
     peaks_function = 1 + -1*median_values_normalized 
-    
+
     # Detect all peaks
     select_peaks, _ = signal.find_peaks(peaks_function, distance=distance_between_peaks, prominence=peak_prominence_threshold) #from scipy.signal
-    
+
     #Remove edges from peaks
     h,w = img.shape
-    if row_or_col == 0:
-        select_peaks = select_peaks[:w]
-    else:
-        select_peaks = select_peaks[:h]
-
+    select_peaks = select_peaks[:w] if row_or_col == 0 else select_peaks[:h]
     return select_peaks
     
 
@@ -115,28 +111,26 @@ def adjust_arr_peaks(weighed_sum,arr_peaks,desired_length,row_or_col,
     """
     
     arr_peaks = indices_highest_peaks(weighed_sum, row_or_col, peak_prominence_threshold, distance_between_peaks)  #Q: WHY IS THE FUNCTION TAKING IN arr_peaks IF IT IS ALREADY CALCULATING IT HERE?
-    
+
     # Adjust if lenght is not the desired length by re-running indices_highest_peaks with different parameters
     while len(arr_peaks) != desired_length and n_tries !=0:
         
         if len(arr_peaks) > desired_length:
             # increase peak_prominence_threshold 
             peak_prominence_threshold = peak_prominence_threshold + update_amount
-            arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,
-                                               peak_prominence_threshold, distance_between_peaks)
         else:
             # decrease peak_prominence_threshold
             peak_prominence_threshold = peak_prominence_threshold - update_amount
-            arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,
-                                               peak_prominence_threshold, distance_between_peaks)
+        arr_peaks = indices_highest_peaks(weighed_sum, row_or_col,
+                                           peak_prominence_threshold, distance_between_peaks)
         n_tries = n_tries - 1
-    
+
 
     return arr_peaks
 
 
 def get_grid_mappings(weighed_sum,
-                      use_defaults=True,min_index_row_peaks=40): 
+                      use_defaults=True,min_index_row_peaks=40):
     """Determines and returns the the mapping between coordinate values and frequency/depth values in a subdirectory
     
     :param weighed_sum: equally weighed sum of all the image plot areas in a subsubdirectory 
@@ -152,17 +146,17 @@ def get_grid_mappings(weighed_sum,
     # Detect peaks
     col_peaks = indices_highest_peaks(weighed_sum, 0)
     row_peaks = indices_highest_peaks(weighed_sum, 1)
-    
+
     # Map col_peaks to Hz values
     if len(col_peaks) == len(HZ):
         mapping_Hz = dict(zip(HZ,col_peaks)) 
-    
+
     # Map adjusted col_peaks to Hz values
     else:
         try: 
             col_peaks = adjust_arr_peaks(weighed_sum, col_peaks, len(HZ), 0)
             mapping_Hz = dict(zip(HZ,col_peaks)) 
-            
+
             # Map adjusted HZ values to default coordinates if need be
             if use_defaults:
                 for i,key in enumerate(HZ):
@@ -173,26 +167,25 @@ def get_grid_mappings(weighed_sum,
                  mapping_Hz = dict(zip(HZ,DEFAULT_HZ_COORD)) 
             else:    
                 return np.nan,np.nan,np.nan,np.nan
-    
-    
+
+
     row_peaks = row_peaks[row_peaks > min_index_row_peaks]
-    
+
     try:
         row_100 = row_peaks[0] #Should be around 30 for 100 km
         row_200 = row_peaks[1] #Should be around 30 for 100 km
     except:
-        if use_defaults:
-            row_100 = KM_DEFAULT_100
-            row_200 = KM_DEFAULT_200  
-        else:    
+        if not use_defaults:
             return np.nan,np.nan,np.nan,np.nan
-    
+
+        row_100 = KM_DEFAULT_100
+        row_200 = KM_DEFAULT_200
     if use_defaults:
         if abs(row_100 - KM_DEFAULT_100) > abs(KM_DEFAULT_200 - KM_DEFAULT_100):
             row_100 = KM_DEFAULT_100
         if abs(row_200 - KM_DEFAULT_200) > abs(KM_DEFAULT_200 - KM_DEFAULT_100):
             row_200 = KM_DEFAULT_200   
-    
+
     mapping_km = {100:row_100,200:row_200}
 
     return col_peaks, row_peaks, mapping_Hz, mapping_km

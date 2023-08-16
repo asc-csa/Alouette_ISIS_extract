@@ -106,43 +106,43 @@ def test_param_extraction(sample_subdirectory,sample_image_path,regex_images):
     # Get stack
     stack = all_stack(df_img)
     col_peaks,row_peaks,mapping_Hz, mapping_km = get_grid_mappings(stack)
-    
+
     # Get random ionogram 
     df_sample = df_img[df_img['file_name'] == sample_image_path]
     row = df_sample.iloc[0,:]
-    
+
     ionogram = row['ionogram']
-    
+
     # Get (x,y) coordinates of trace
     raw_coord, window_coord = extract_coord(ionogram ,col_peaks,row_peaks)
-    
+
     # (Hz, km) coordinates
     arr_adjusted_coord = map_coordinates_positions_to_values(window_coord,col_peaks,row_peaks,mapping_Hz,mapping_km)  
-    
+
     # Extract parameters
     fmin, depth_max = extract_fmin_and_max_depth(arr_adjusted_coord)
-    
+
     # For plotting purposes
     # remove outliers ie coordinates less coordinates corresponding to 0.5 Hz or more than corresponding to 11.5 Hz
     col_peaks = np.array(list(mapping_Hz.values())) # use the modified col_peaks ie the one with exactly 13 values
     mask = np.logical_or(window_coord[:,0] < col_peaks.min(), window_coord[:,0] > col_peaks.max())
     window_coord_adjusted = window_coord[~mask,:]
-    
+
     fmin_coord, depth_max_coord = extract_fmin_and_max_depth(window_coord_adjusted,if_raw=True)
-    
+
     # Plots
     fig,axes = plt.subplots(nrows=1,ncols=2)
     ax= axes.ravel()
     fig.suptitle(row['file_name'])
     ax[0].set_title("Original ionogram " )
     ax[0].imshow(ionogram,'gray')
-    
+
     colored_iono = cv2.cvtColor(ionogram ,cv2.COLOR_GRAY2RGB)
     h,w = ionogram.shape
     cv2.line(colored_iono,(int(fmin_coord),0),(int(fmin_coord),h),[0,0,255],5)
     cv2.line(colored_iono,(0,int(depth_max_coord)),(w,int(depth_max_coord)),[0,0,255],5)
     ax[1].imshow(colored_iono)
-    ax[1].set_title('fmin='+  str(fmin) + 'max_depth='+  str(depth_max))
+    ax[1].set_title(f'fmin={str(fmin)}max_depth={str(depth_max)}')
     plt.axis('off')
     
     
@@ -166,14 +166,14 @@ def test_extract_coord_subdir_and_param(sample_subdirectory,sample_image_path,re
     # Get stack
     stack = all_stack(df_img)
     col_peaks,row_peaks,mapping_Hz, mapping_km = get_grid_mappings(stack)
-    
+
     df_img, df_loss_coord = extract_coord_subdir_and_param(df_img,sample_subdirectory,col_peaks,row_peaks,mapping_Hz,mapping_km)
-    
+
     # Visualize a random row of the dataframe output of df_img
     df_sample = df_img[df_img['file_name'] == sample_image_path]
     row = df_sample.iloc[0,:]
 
-    
+
     fig,axes = plt.subplots(nrows=2,ncols=2)
     ax=axes.ravel()
     ax[0].set_title("Original ionogram " )
@@ -190,24 +190,24 @@ def test_extract_coord_subdir_and_param(sample_subdirectory,sample_image_path,re
 
     colored_iono = cv2.cvtColor(row['ionogram'] ,cv2.COLOR_GRAY2RGB)
     h,w = row['ionogram'].shape
-    
+
     col_peaks = np.array(list(mapping_Hz.values())) # use the modified col_peaks ie the one with exactly 13 values
     mask = np.logical_or(row['window_coord'][:,0] < col_peaks.min(), row['window_coord'][:,0] > col_peaks.max())
     window_coord_adjusted = row['window_coord'][~mask,:]
-    
+
     fmin_coord, depth_max_coord = extract_fmin_and_max_depth(window_coord_adjusted,if_raw=True)
-    
+
     cv2.line(colored_iono,(int(fmin_coord),0),(int(fmin_coord),h),[0,0,255],5)
     cv2.line(colored_iono,(0,int(depth_max_coord)),(w,int(depth_max_coord)),[0,0,255],5)
     ax[2].imshow(colored_iono)
     ax[2].set_title('fmin='+  str(row['fmin']) + 'max_depth='+  str(row['max_depth']))
 
-    for i in range(0,3):
+    for i in range(3):
         ax[i].axis('off')
-    
+
     ax[3].set_title("Labeled extracted trace " )
     ax[3].scatter(list(zip(*row['mapped_coord']))[0],list(zip(*row['mapped_coord']))[1],s=1)
-           
+
     ax[3].invert_yaxis()
     ax[3].set_xlabel('Frequency (Hz)')
     ax[3].set_ylabel('Depth (km)')

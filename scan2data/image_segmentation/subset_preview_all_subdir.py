@@ -37,11 +37,11 @@ def subset_preview(regex_subdir,regex_img, output_file,
     
     # List of all the subdirectories
     all_subdir =  glob.glob(regex_subdir)
-    
+
     # Set up each pdf page 
     n_cols_page = int(math.ceil(len_subset/ n_rows_page))
-    
-    
+
+
     # Save random subset for each direcctory in a pdf
     with PdfPages(output_file) as pdf:
         for subdir in all_subdir:
@@ -57,20 +57,20 @@ def subset_preview(regex_subdir,regex_img, output_file,
                 img = cv2.imread(img_path,0)
                 if ionogram_preview:
                     _,ion = extract_ionogram(img)
-                    if not type(ion) == float:
+                    if type(ion) != float:
                         ax[count].imshow(ion, 'gray')
                         name_plot = img_path[len_name_subdir:]
                         ax[count].set_title(name_plot)
-                        ax[count].axis('off') 
-                        count = count + 1
-  
+                        ax[count].axis('off')
+                        count += 1
+
                 else:
                     ax[count].imshow(img, 'gray')
-                
+
                     name_plot = img_path[len_name_subdir:]
                     ax[count].set_title(name_plot)
-                    ax[count].axis('off') 
-                    count = count + 1
+                    ax[count].axis('off')
+                    count += 1
 
             pdf.savefig(fig)
             plt.close('all')

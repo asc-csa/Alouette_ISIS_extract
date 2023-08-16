@@ -30,22 +30,22 @@ def plot_hist_peaks_grids(*all_df,
     nrow = len(*all_df)
     fig,axes = plt.subplots(nrows=nrow,ncols=2)
     ax = axes.ravel()
-    
+
     for i,df in enumerate(*all_df):
         coord_row = list(itertools.chain.from_iterable(df['row_peaks']))
-        
-        
+
+
         ax[2*i].hist(coord_row, bins=nbins)
         ax[2*i].set_title(df.name + ' ' + 'row_peaks')
-        
+
         coord_col = list(itertools.chain.from_iterable(df['col_peaks']))
         ax[2*i +1].hist(coord_col, bins=nbins)
         ax[2*i+1].set_title(df.name + ' '+ 'col_peaks')
-        
+
         list_dict_mapping_Hz = df['mapping_Hz'].tolist()
-        
-    
-     
+
+
+
     for i,df in enumerate(*all_df):
         fig2,axes2 = plt.subplots(nrows=4,ncols=4)
         ax2 = axes2.ravel()
@@ -58,15 +58,15 @@ def plot_hist_peaks_grids(*all_df,
         for key in combined_mapping_Hz:
             combined_mapping_Hz[key] = [dict_mapping[key] for dict_mapping in list_dict_mapping_Hz if key in dict_mapping]
             ax2[i].hist(combined_mapping_Hz[key], bins=nbins)
-            ax2[i].set_title(str(key) + ' ' + 'Hz')
+            ax2[i].set_title(f'{str(key)} Hz')
             i = i +1
-        
+
         list_dict_mapping_km = df['mapping_km'].tolist()
         combined_mapping_km = {0:[],100:[],200:[]}
         for key in combined_mapping_km:
             combined_mapping_km[key] = [dict_mapping[key] for dict_mapping in list_dict_mapping_km if key in dict_mapping]
             ax2[i].hist(combined_mapping_km[key], bins=nbins//50)
-            ax2[i].set_title(str(key) + ' ' + 'km')
+            ax2[i].set_title(f'{str(key)} km')
             i = i +1
             
 

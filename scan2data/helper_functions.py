@@ -46,9 +46,7 @@ def generate_random_subdirectory(regex_subdirectory):
     list_all_subdirectory = glob.glob(regex_subdirectory)
     
     # Randomly pick a subdirectory
-    sample_subdirectory = list_all_subdirectory[random.randint(0,len(list_all_subdirectory) - 1)]
-    
-    return sample_subdirectory
+    return list_all_subdirectory[random.randint(0,len(list_all_subdirectory) - 1)]
 
 def generate_random_image_from_subdirectory(subdirectory,regex_images):
     """Extract random raw image from a subdirectory
@@ -62,9 +60,6 @@ def generate_random_image_from_subdirectory(subdirectory,regex_images):
     """
     # All the images
     list_all_img = glob.glob(subdirectory+regex_images)
-    
+
     # Randomly pick an image file
-    sample_img_file_path = list_all_img[random.randint(0,len(list_all_img) - 1)]
-    
-    
-    return sample_img_file_path
+    return list_all_img[random.randint(0,len(list_all_img) - 1)]
