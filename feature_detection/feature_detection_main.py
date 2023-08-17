@@ -30,8 +30,10 @@ if __name__ == '__main__':
 
     #Dataframe containing the trace coordinates
     df_coord = df_processed[['file_name', 'mapped_coord', 'raw_coord', 'window_coord', 'limits']]
-    
 
+
+    #Threshold the km value to eliminate noise
+    km_threshold = 200
     # 1) Get raw coord
     # 2) Convert raw coord into km, Hz
     # 3) Filter the trace with rolling mean, SG
@@ -51,14 +53,10 @@ if __name__ == '__main__':
         #Convert pixel values to Hz, km
         x, y = convert_pixel_to_mapping(x, y, mapping_Hz, mapping_km)
 
-        #Threshold the km value to eliminate noise
-        km_threshold = 200
         x = x[ y > km_threshold ]
         y = y[ y > km_threshold ]
 
-        #Sort the x, y by increasing x
-        sorted_xy = list(zip(x,y))
-        sorted_xy.sort()
+        sorted_xy = sorted(zip(x,y))
         x, y = zip(*sorted_xy)
 
         #Resample the x, y
@@ -72,7 +70,7 @@ if __name__ == '__main__':
 
         #Plot raw_coord against the new x_pixel, y_pixel after thresholding and resampling
         plt.figure()
-        plt.scatter(row['raw_coord'][:,0], row['raw_coord'][:,1], s=1, color='blue')
+        plt.scatter(raw_coord[:,0], raw_coord[:,1], s=1, color='blue')
         plt.scatter(x_pixel, y_pixel, s=5, color='red')
         plt.scatter(x_max_depth_pixel, y_max_depth_pixel, s=100, color='pink')
         plot_ionogram_image(row['file_name'], row['limits'], title, ' original raw(blue) vs resampled raw(red)')

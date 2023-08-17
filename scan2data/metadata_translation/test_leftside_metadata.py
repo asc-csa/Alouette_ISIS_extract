@@ -98,7 +98,7 @@ def test_leftside_metadata(sample_subdirectory,regex_images):
                     peaks = bin_edges[np.array(idx_peaks)]
                     ax[i+2].plot(bin_centers,counts)
                     ax[i+2].plot(peaks,counts[idx_peaks], "x")
-                except:
+                except Exception:
                     print(f'no {dict_type}')
                     continue
 

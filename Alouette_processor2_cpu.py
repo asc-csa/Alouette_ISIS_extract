@@ -40,7 +40,7 @@ with tf.device('/CPU:0'):
         
         df_read = pd.DataFrame()
         df_notread = pd.DataFrame()
-        for i in range(0, len(prediction_groups)):
+        for i in range(len(prediction_groups)):
             df_ocr = pd.DataFrame()
             predicted_image = prediction_groups[i]
             if len(predicted_image) > 0:
@@ -52,34 +52,29 @@ with tf.device('/CPU:0'):
                     }, index=[0])
                     df_ocr = pd.concat([df_ocr, row])
                 df_ocr = df_ocr.sort_values('x').reset_index(drop=True)
-            
+
                 #String concatenate, fix string
                 read_str = ''
-                for j in range(0, len(df_ocr)):
+                for j in range(len(df_ocr)):
                     read_str_ = df_ocr['number'].iloc[j]
                     read_str += read_str_
                 read_str = read_str.replace('o', '0')
 
                 #Test for num2
-                if len(read_str) == 15:
-                    if read_str[0:2] == '10':
-                        row2 = pd.DataFrame({
-                            'station_number_OCR': read_str[2:4],
-                            'year_OCR': read_str[4:6],
-                            'day_of_year_OCR': read_str[6:9],
-                            'hour_OCR': read_str[9:11],
-                            'minute_OCR': read_str[11:13],
-                            'second_OCR': read_str[13:15],
-                            'filename': img_fns[batch_i + i].replace(subdir_path, '')
-                        }, index=[i])
-                        df_read = pd.concat([df_read, row2])
-                    else:
-                        df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
-                        df_notread = pd.concat([df_notread, df_ocr])
+                if len(read_str) == 15 and read_str[:2] == '10':
+                    row2 = pd.DataFrame({
+                        'station_number_OCR': read_str[2:4],
+                        'year_OCR': read_str[4:6],
+                        'day_of_year_OCR': read_str[6:9],
+                        'hour_OCR': read_str[9:11],
+                        'minute_OCR': read_str[11:13],
+                        'second_OCR': read_str[13:15],
+                        'filename': img_fns[batch_i + i].replace(subdir_path, '')
+                    }, index=[i])
+                    df_read = pd.concat([df_read, row2])
                 else:
                     df_ocr['filename'] = img_fns[batch_i + i].replace(subdir_path, '')
                     df_notread = pd.concat([df_notread, df_ocr])
-        
         return df_read, df_notread
 
 
@@ -89,18 +84,15 @@ with tf.device('/CPU:0'):
         directory = directory_list[randrange(len(directory_list))]
         subdirectory_list = os.listdir(processedDir + directory + '/')
         subdirectory = subdirectory_list[randrange(len(subdirectory_list))]
-        
-        #Check randomly-selected directory and subdirectory against the 'process_log_OCR'
-        if os.path.exists(logDir + 'process_log_OCR.csv'):
-            df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
-            df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
-            if len(df_search) > 0:
-                print(directory + '/' + subdirectory + ' already processed!')
-                return '', ''
-            else:
-                return directory, subdirectory
-        else:
+
+        if not os.path.exists(f'{logDir}process_log_OCR.csv'):
             return directory, subdirectory
+        df_log = pd.read_csv(f'{logDir}process_log_OCR.csv')
+        df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
+        if len(df_search) <= 0:
+            return directory, subdirectory
+        print(f'{directory}/{subdirectory} already processed!')
+        return '', ''
 
 
 
@@ -136,7 +128,7 @@ with tf.device('/CPU:0'):
         batch_remainder = len(img_fns)%batch_size
         df_read = pd.DataFrame()
         df_notread = pd.DataFrame()
-        for i in range(0, n_batches):
+        for i in range(n_batches):
             print('Starting batch... ' + str(i))
             batch_i = i*batch_size
             batch_f = batch_i + batch_size
@@ -165,11 +157,9 @@ with tf.device('/CPU:0'):
         if len(df_result) > 0:
             if len(df_read) > 0:
                 df_merge = df_result.merge(df_read, how='left', on='filename')
-                for i in range(0, len(df_merge)):
-                    if df_merge['processed_image_class'].iloc[i] != 'loss':
-                        if df_merge['processed_image_class'].iloc[i] != 'outlier':
-                            if pd.isna(df_merge['day_of_year_OCR'].iloc[i]) == False:
-                                df_merge['processed_image_class'].iloc[i] = 'num2'
+                for i in range(len(df_merge)):
+                    if df_merge['processed_image_class'].iloc[i] != 'loss' and df_merge['processed_image_class'].iloc[i] != 'outlier' and pd.isna(df_merge['day_of_year_OCR'].iloc[i]) == False:
+                        df_merge['processed_image_class'].iloc[i] = 'num2'
             else:
                 df_merge = df_result
         else:
@@ -185,7 +175,7 @@ with tf.device('/CPU:0'):
                 df_merge.loc[df_merge[col].str.contains("[a-zA-Z]"), 'processed_image_class'] = 'loss'
                 df_merge.loc[df_merge[col].str.contains("[a-zA-Z]"), 'details'] = 'OCR read metadata contains letters'   
         n_OCR_read = 0
-        for i in range(0, len(df_merge)):
+        for i in range(len(df_merge)):
             if df_merge['processed_image_class'].iloc[i] == 'loss':
                 if df_merge['details'].iloc[i] == 'OCR read metadata contains letters':
                     for col in md_cols:
@@ -199,7 +189,7 @@ with tf.device('/CPU:0'):
         
         #If num2 metadata type is detected, classify images with all other metadata types as loss:
         if len(df_read) > 0:
-            for i in range(0, len(df_merge)):
+            for i in range(len(df_merge)):
                 if df_merge['processed_image_class'].iloc[i] == 'num':
                     df_merge['processed_image_class'].iloc[i] = 'loss'
                     df_merge['details'].iloc[i] = 'metadata could not be read by OCR'
@@ -217,7 +207,7 @@ with tf.device('/CPU:0'):
             n_dot = len(df_merge.loc[df_merge['processed_image_class'] == 'dot'])
             #If num type metadata is the majority, classify dot type images as loss:
             if n_num > n_dot:
-                for i in range(0, len(df_merge)):
+                for i in range(len(df_merge)):
                     if df_merge['processed_image_class'].iloc[i] == 'dot':
                         df_merge['processed_image_class'].iloc[i] = 'loss'
                         df_merge['details'].iloc[i] = 'metadata was interpreted to be dot type'
@@ -225,7 +215,7 @@ with tf.device('/CPU:0'):
                             df_merge[col].iloc[i] = np.nan
             #If dot type metadata is the majority, classify num type images as loss:
             if n_dot > n_num:
-                for i in range(0, len(df_merge)):
+                for i in range(len(df_merge)):
                     if df_merge['processed_image_class'].iloc[i] == 'num':
                         df_merge['processed_image_class'].iloc[i] = 'loss'
                         df_merge['details'].iloc[i] = 'metadata was interpreted to be num type'

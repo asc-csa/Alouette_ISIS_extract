@@ -81,9 +81,6 @@ def read_image(image_path, plotting=False, just_digits=False):
         # extract height and width of image in pixels 
         height, width = image.shape[0], image.shape[1]
 
-        # cut image to just include bottom 20% of pixels
-        cropped_height = height-height//5
-
         # create predictions for location and value of characters
         # on the cropped image, will output (word, box) tuples
         prediction = pipeline.recognize([image])[0]
@@ -92,7 +89,6 @@ def read_image(image_path, plotting=False, just_digits=False):
         if prediction == [[]]:
             digit_count = 0
 
-        # if characters are found look at the predictions
         else:
             if plotting == True:
                 # plot the predictied box and tuples
@@ -102,6 +98,9 @@ def read_image(image_path, plotting=False, just_digits=False):
             # loop over predicted (word, box) tuples and count number of digit characters
             digit_count = 0
             says_isis = False
+            # cut image to just include bottom 20% of pixels
+            cropped_height = height-height//5
+
             for p in prediction:
 
                 # select word and box part of the tuple
@@ -111,17 +110,11 @@ def read_image(image_path, plotting=False, just_digits=False):
                 if 'isis' in value.lower(): # may want to check 1, I, 5 variations on this to detect like 15iS
                     says_isis = True
                     print('found potential ISIS text')
-                
+
                 # if word is composed of just integers then 
                 # count how many and incriment digit_count
                 if just_digits == False or (just_digits == True and value.isdigit()):
-                    # check that box is within the cropped height
-                    in_bounds = True
-                    for b in box:
-                        if b[1] < cropped_height:
-                            in_bounds = False
-                            break
-                            
+                    in_bounds = all(b[1] >= cropped_height for b in box)
                     if in_bounds:
                         digit_count += len(value)
 
@@ -140,18 +133,15 @@ def draw_random_subdir(subdir_ids_list, logDir):
     subdir_id_parts = subdir_id.split('_')
     directory = subdir_id_parts[0]
     subdirectory = subdir_id_parts[1]
-    
-    #Check randomly-selected directory and subdirectory against the 'process_log'
-    if os.path.exists(logDir + 'process_log.csv'):
-        df_log = pd.read_csv(logDir + 'process_log.csv')
-        df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
-        if len(df_search) > 0:
-            print(directory + '/' + subdirectory + ' already processed!')
-            return ''
-        else:
-            return directory, subdirectory
-    else:
+
+    if not os.path.exists(logDir + 'process_log.csv'):
         return directory, subdirectory
+    df_log = pd.read_csv(logDir + 'process_log.csv')
+    df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
+    if len(df_search) <= 0:
+        return directory, subdirectory
+    print(directory + '/' + subdirectory + ' already processed!')
+    return ''
 
 
 
@@ -159,9 +149,9 @@ def draw_random_subdir(subdir_ids_list, logDir):
 stop_condition = False
 stop_condition_counter = 0
 
-while stop_condition == False:
+while not stop_condition:
     start = time.time()
-    
+
     #Draw random, yet to be processed subdirectory, to process
     df_inventory = pd.read_csv(logDir + 'image_inventory.csv')
     subdir_ids_tot = df_inventory['subdir_id'].unique()
@@ -173,11 +163,11 @@ while stop_condition == False:
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
     directory, subdirectory = draw_random_subdir(subdir_ids_list=subdir_ids_rem, logDir=logDir)
     subdir_path_end = directory + '/' + subdirectory + '/'
-    
+
     #Process subdirectory
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory...')
-    print(str(len(subdir_ids_rem)) + ' subdirectories to go!')
+    print(f'{len(subdir_ids_rem)} subdirectories to go!')
     #img_fns = []
     df_result = pd.DataFrame()
     for file in os.listdir(dataDir + subdir_path_end):
@@ -194,17 +184,19 @@ while stop_condition == False:
             'says_isis': says_isis
             }, index=[0])
         df_result = pd.concat([df_result, row])
-    
+
     #Save:
     os.makedirs(resultDir + directory + '/', exist_ok=True)
     df_result.to_csv(resultDir + directory + '/' + 'result_scan_error_detect-' + directory + '_' + subdirectory + '.csv', index=False)
-    
+
     end = time.time()
     t = end - start
-    print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
-    print('Processing rate: ' + str(round(t/len(os.listdir(dataDir + subdir_path_end)), 2)) + ' s/img')
+    print(f'Processing time for subdirectory: {str(round(t / 60, 1))} min')
+    print(
+        f'Processing rate: {str(round(t / len(os.listdir(dataDir + subdir_path_end)), 2))} s/img'
+    )
     print('')
-    
+
     #Record performance
     df_log_ = pd.DataFrame({
         'Directory': directory,
@@ -218,9 +210,8 @@ while stop_condition == False:
         df_log = pd.read_csv(logDir + 'scan_error_detect_log.csv')
         df_update = pd.concat([df_log, df_log_], axis=0, ignore_index=True)
         df_update.to_csv(logDir + 'scan_error_detect_log.csv', index=False)
-    else:
-        if len(df_log_) > 0:
-            df_log_.to_csv(logDir + 'scan_error_detect_log.csv', index=False)
+    elif len(df_log_) > 0:
+        df_log_.to_csv(logDir + 'scan_error_detect_log.csv', index=False)
 
     #Backup 'scan_error_detect_log' (10% of the time), garbage collection
     if randrange(10) == 7:

@@ -151,9 +151,8 @@ def get_grid_mappings(weighed_sum,
     if len(col_peaks) == len(HZ):
         mapping_Hz = dict(zip(HZ,col_peaks)) 
 
-    # Map adjusted col_peaks to Hz values
     else:
-        try: 
+        try:
             col_peaks = adjust_arr_peaks(weighed_sum, col_peaks, len(HZ), 0)
             mapping_Hz = dict(zip(HZ,col_peaks)) 
 
@@ -162,7 +161,7 @@ def get_grid_mappings(weighed_sum,
                 for i,key in enumerate(HZ):
                     if mapping_Hz[key] > UPPER_LIMIT_HZ_COORD[i] or mapping_Hz[key] < LOWER_LIMIT_HZ_COORD[i]:
                         mapping_Hz[key] = DEFAULT_HZ_COORD[i]
-        except:
+        except Exception:
             if use_defaults:
                  mapping_Hz = dict(zip(HZ,DEFAULT_HZ_COORD)) 
             else:    
@@ -174,7 +173,7 @@ def get_grid_mappings(weighed_sum,
     try:
         row_100 = row_peaks[0] #Should be around 30 for 100 km
         row_200 = row_peaks[1] #Should be around 30 for 100 km
-    except:
+    except Exception:
         if not use_defaults:
             return np.nan,np.nan,np.nan,np.nan
 

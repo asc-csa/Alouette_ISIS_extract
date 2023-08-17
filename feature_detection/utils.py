@@ -17,7 +17,9 @@ def find_nearest(array, value):
 
 
 #Make scatter plot for processed ionogram data
-def make_plot(x, y, title, description, color='purple', s=0.05, ylim=[0, 1400]):
+def make_plot(x, y, title, description, color='purple', s=0.05, ylim=None):
+    if ylim is None:
+        ylim = [0, 1400]
     plt.plot(x, y, s=s, c='purple')
     plt.title(title + ' (' + description + ')')
     plt.ylim(ylim[0], ylim[1])
@@ -30,7 +32,7 @@ def plot_ionogram_image(file_name, limits, title, description):
         im = plt.imread(file_name)
         implot = plt.imshow( im[ limits[2]:limits[3], limits[0]:limits[1] ], cmap='gray')
         plt.title(title + ' (' + description + ')')
-    except:
+    except Exception:
         print('Missing file: ' + row['file_name'])
 
 

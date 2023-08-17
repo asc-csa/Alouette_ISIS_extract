@@ -66,7 +66,7 @@ def test_coord_extraction(sample_subdirectory,sample_image_path,regex_images,to_
         ax[2].imshow(ionogram,'gray')
         ax[2].scatter(list(zip(*window_coord))[0],list(zip(*window_coord))[1],s=1)
 
-        for i in range(0,3):
+        for i in range(3):
             ax[i].axis('off')
     else:
         ax[1].set_title("Extracted trace " )
@@ -77,7 +77,7 @@ def test_coord_extraction(sample_subdirectory,sample_image_path,regex_images,to_
         ax[2].scatter(list(zip(*window_coord))[0],list(zip(*window_coord))[1],s=1)
         ax[2].invert_yaxis()
 
-    for i in range(0,3):
+    for i in range(3):
         ax[i].axis('off')
     ax[3].set_title("Labeled extracted trace " )
     ax[3].scatter(list(zip(*arr_adjusted_coord))[0],list(zip(*arr_adjusted_coord))[1],s=1)

@@ -121,7 +121,7 @@ def extract_coord(iono, col_peaks, row_peaks,
         arr_raw_coord = np.array(list(zip(arr_x, arr_y)), dtype=np.float64)
 
         return arr_raw_coord0, arr_raw_coord  # raw_coord, windowed_coord    `
-    except:
+    except Exception:
         return np.nan, np.nan
 
 

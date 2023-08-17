@@ -37,17 +37,16 @@ def extract_meta_info(dilated_meta,
     
     """
     try:
-        
         h,w = dilated_meta.shape
         _, _, stats, centroids	=	cv2.connectedComponentsWithStats(dilated_meta)
         area_centroids = stats[:,-1]
-        
-        area_centroids =area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]    
+
+        area_centroids =area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]
         mean_area = np.mean(area_centroids)
         median_area = np.median(area_centroids)
-             
+
         return mean_area ,median_area ,h,w,h*w
-    except:
+    except Exception:
         return np.nan,np.nan,h,w,h*w
 
 

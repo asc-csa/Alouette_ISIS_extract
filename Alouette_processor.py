@@ -46,21 +46,19 @@ def move_images(old_dir, new_dir, directory, subdir, copy_to_other_drive=False, 
     oldDir = old_dir + directory + '/' + subdir + '/'
     newDir = new_dir + directory + '/' + subdir + '/'
     os.makedirs(newDir, exist_ok=True)
-    
+
     if copy_to_other_drive:
         if os.path.exists(oldDir):
             for file in os.listdir(oldDir):
                 shutil.copyfile(oldDir+file, newDir+file)
-    else:
-        if os.path.exists(oldDir):
-            for file in os.listdir(oldDir):
-                os.rename(oldDir+file, newDir+file)
-    
-    if delete_old_dir:
-        if os.path.exists(oldDir):
-            shutil.rmtree(old_dir + directory + '/' + subdir + '/')
-            if len(os.listdir(old_dir + directory + '/')) == 0:
-                shutil.rmtree(old_dir + directory + '/')
+    elif os.path.exists(oldDir):
+        for file in os.listdir(oldDir):
+            os.rename(oldDir+file, newDir+file)
+
+    if delete_old_dir and os.path.exists(oldDir):
+        shutil.rmtree(old_dir + directory + '/' + subdir + '/')
+        if len(os.listdir(old_dir + directory + '/')) == 0:
+            shutil.rmtree(old_dir + directory + '/')
                 
 
 def draw_random_subdir(subdir_ids_list, logDir):
@@ -69,18 +67,15 @@ def draw_random_subdir(subdir_ids_list, logDir):
     subdir_id_parts = subdir_id.split('_')
     directory = subdir_id_parts[0]
     subdirectory = subdir_id_parts[1]
-    
-    #Check randomly-selected directory and subdirectory against the 'process_log'
-    if os.path.exists(logDir + 'process_log.csv'):
-        df_log = pd.read_csv(logDir + 'process_log.csv')
-        df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
-        if len(df_search) > 0:
-            print(directory + '/' + subdirectory + ' already processed!')
-            return ''
-        else:
-            return directory, subdirectory
-    else:
+
+    if not os.path.exists(logDir + 'process_log.csv'):
         return directory, subdirectory
+    df_log = pd.read_csv(logDir + 'process_log.csv')
+    df_search = df_log.loc[(df_log['Directory'] == directory) & (df_log['Subdirectory'] == subdirectory)]
+    if len(df_search) <= 0:
+        return directory, subdirectory
+    print(directory + '/' + subdirectory + ' already processed!')
+    return ''
     
 
 
@@ -88,9 +83,9 @@ def draw_random_subdir(subdir_ids_list, logDir):
 stop_condition = False
 stop_condition_counter = 0
 
-while stop_condition == False:
+while not stop_condition:
     start = time.time()
-    
+
     #Draw random, yet to be processed subdirectory, to process
     df_inventory = pd.read_csv(logDir + 'image_inventory.csv')
     subdir_ids_tot = df_inventory['subdir_id'].unique()
@@ -102,19 +97,19 @@ while stop_condition == False:
     subdir_ids_rem = list(set(subdir_ids_tot) - set(subdir_ids_proc))
     directory, subdirectory = draw_random_subdir(subdir_ids_list=subdir_ids_rem, logDir=logDir)
     subdir_path_end = directory + '/' + subdirectory + '/'
-    
+
     #Clear any old subdirectories in processingDir
     for file in os.listdir(processingDir):
         if 'R' in file:
             shutil.rmtree(processingDir + file)
-    
+
     #Clear intermediate results in result_localDir
     for file in os.listdir(result_localDir):
         if 'df' in file:
             os.remove(result_localDir + file)
         else:
             shutil.rmtree(result_localDir + file)
-    
+
     #Retrieve subdirectory
     if os.path.exists(dataDir_L + subdir_path_end):
         move_images(old_dir=dataDir_L, new_dir=processingDir, directory=directory, subdir=subdirectory, copy_to_other_drive=True)
@@ -123,11 +118,11 @@ while stop_condition == False:
     else:
         print('Cannot find subdirectory ' + subdirectory + '!')
         continue
-    
+
     #Process
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory...')
-    print(str(len(subdir_ids_rem)) + ' subdirectories to go!')
+    print(f'{len(subdir_ids_rem)} subdirectories to go!')
     subprocess.run('python user_input.py' + ' ' + processingDir + ' ' + result_localDir, shell=True, cwd='scan2data/')
 
     #Consolidate results
@@ -189,7 +184,7 @@ while stop_condition == False:
 
     end = time.time()
     t = end - start
-    print('Processing time for subdirectory: ' + str(round(t/60, 1)) + ' min')
+    print(f'Processing time for subdirectory: {str(round(t / 60, 1))} min')
     print('')
 
     #Record performance
@@ -211,9 +206,8 @@ while stop_condition == False:
         df_log = pd.read_csv(logDir + 'process_log.csv')
         df_update = pd.concat([df_log, df_result_], axis=0, ignore_index=True)
         df_update.to_csv(logDir + 'process_log.csv', index=False)
-    else:
-        if len(df_result_) > 0:
-            df_result_.to_csv(logDir + 'process_log.csv', index=False)
+    elif len(df_result_) > 0:
+        df_result_.to_csv(logDir + 'process_log.csv', index=False)
 
     #Backup 'process_log' (10% of the time)
     if randrange(10) == 7:
@@ -227,7 +221,7 @@ while stop_condition == False:
         move_images(old_dir=processingDir, new_dir=processedDir, directory=directory, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
     else:
         move_images(old_dir=processingDir, new_dir=unprocessedDir, directory=directory, subdir=subdirectory, copy_to_other_drive=move_to_L, delete_old_dir=True)
-    
+
     #Check stop conditions
     if len(subdir_ids_rem) < 2:
         print('Stop!')

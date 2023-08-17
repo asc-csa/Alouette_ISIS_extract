@@ -50,7 +50,6 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
     '''
 
     try:
-      
         # Use connected component algorithm to determine the centroids
         _, _, stats, centroids = cv2.connectedComponentsWithStats(dilated_meta)
         area_centroids = stats[:,-1]
@@ -70,7 +69,7 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
         #if any([dir_dot in file_name for dir_dot in LIST_DIRECTORY_DOTS]) and median_area < max_area_dot:
         is_dot = median_area < max_area_dot
         return col_centroids,row_centroids,is_dot
-    except:
+    except Exception:
         return np.nan,np.nan,np.nan
 
 
@@ -146,11 +145,18 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
         try:
             if 'cat' in type_dict:
                 if type_dict == 'dict_cat_digit':
-                    if any(dir_dot in dir_name for dir_dot in LIST_DIRECTORY_DOTS):
-                        mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DIGIT_F
-                    else:
-                        mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DIGIT
-
+                    (
+                        mean_dist_default,
+                        first_peak_default,
+                        last_peak_default,
+                    ) = (
+                        DEFAULT_DICT_CAT_DIGIT_F
+                        if any(
+                            dir_dot in dir_name
+                            for dir_dot in LIST_DIRECTORY_DOTS
+                        )
+                        else DEFAULT_DICT_CAT_DIGIT
+                    )
                 elif type_dict == 'dict_cat_dot':
                     mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DOT
                 try:
@@ -174,7 +180,7 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
                     all_dict_hist[type_dict] = (idx_peaks,bin_edges,counts)
 
 
-                except:
+                except Exception:
                     last_peak = last_peak_default
                     first_peak = first_peak_default
                     mean_dist_btw_peaks = mean_dist_default
@@ -186,10 +192,14 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
 
             elif 'num' in type_dict:
                 if type_dict == 'dict_num_digit':
-                    if any(dir_dot in dir_name for dir_dot in LIST_DIRECTORY_DOTS):
-                        mean_dist_default,peak_0_default,dist_btw_peaks = DEFAULT_DICT_NUM_DIGIT_F
-                    else:
-                        mean_dist_default,peak_0_default,dist_btw_peaks = DEFAULT_DICT_NUM_DIGIT
+                    mean_dist_default, peak_0_default, dist_btw_peaks = (
+                        DEFAULT_DICT_NUM_DIGIT_F
+                        if any(
+                            dir_dot in dir_name
+                            for dir_dot in LIST_DIRECTORY_DOTS
+                        )
+                        else DEFAULT_DICT_NUM_DIGIT
+                    )
                 elif type_dict == 'dict_num_dot':
                     mean_dist_default,peak_0_default,dist_btw_peaks= DEFAULT_DICT_NUM_DOT
 
@@ -212,14 +222,14 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
 
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] = (idx_peaks,bin_edges,counts)
-                except:
+                except Exception:
                     peak_0 = peak_0_default
                     mean_dist_btw_peaks = mean_dist_default
                     list_peaks = [int(round(peak_0 + i * mean_dist_btw_peaks)) for i in range(len(labels))]
 
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] =  {}
-        except:
+        except Exception:
             all_dict_mapping[type_dict] ={}
             all_dict_hist[type_dict] =  {}
 

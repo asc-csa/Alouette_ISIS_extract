@@ -204,7 +204,6 @@ def trimming_metadata(raw_metadata,type_metadata,
         
     """
     try:
-
         # Median filtering to remove salt and pepper noise
         median_filtered_meta = cv2.medianBlur(raw_metadata,median_kernel_size)
 
@@ -224,5 +223,5 @@ def trimming_metadata(raw_metadata,type_metadata,
 
         return leftside_metadata_trimming(connected_meta, meta_binary) if type_metadata == 'left' else bottomside_metadata_trimming(connected_meta, meta_binary)
 
-    except:
+    except Exception:
         return np.nan
