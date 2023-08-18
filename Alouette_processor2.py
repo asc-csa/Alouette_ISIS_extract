@@ -21,7 +21,7 @@ instance = sys.argv[3]
 user = user_prefix + instance #e.g: 'Rav Super2'
 batch_size = int(sys.argv[4])
 process_on_VDI = True
-stop_loop_threshold = 3000 #max while loops to prevent infinite loop
+stop_loop_threshold = 6000 #max while loops to prevent infinite loop
 
 #Set directories
 rootDir = sys.argv[1]

@@ -16,28 +16,20 @@ warnings.filterwarnings('ignore')
 user_prefix = sys.argv[4]
 instance = sys.argv[5]
 user = user_prefix + instance #e.g: 'Rav Super2'
-process_on_VDI = True
-stop_loop_threshold = 2640 #max while loops to prevent infinite loop
+stop_loop_threshold = 6000 #max while loops to prevent infinite loop
 
 #Set directories
-rootDir_local = sys.argv[3] + instance + '/Stage_1/'
+rootDir_local = sys.argv[3]
 dataDir_L = sys.argv[1]
 rootDir_L = sys.argv[2]
-downloadedDir = rootDir_local + '02_downloaded/'
 processingDir = rootDir_local + '03_processing/'
 result_localDir = rootDir_local + '05a_result_local/'
-if process_on_VDI:
-    processedDir = rootDir_L + '04_processed/' 
-    unprocessedDir = rootDir_L + '04a_unprocessed/'
-    resultDir = rootDir_L + '05_result/' 
-    logDir = rootDir_L + '06_log/'
-    move_to_L = True
-else:
-    processedDir = rootDir_local + '04_processed/' 
-    unprocessedDir = rootDir_local + '04a_unprocessed/' 
-    resultDir = rootDir_local + '05_result/' 
-    logDir = rootDir_local + '06_log/'
-    move_to_L = False
+
+processedDir = rootDir_L + '04_processed/' 
+unprocessedDir = rootDir_L + '04a_unprocessed/'
+resultDir = rootDir_L + '05_result/' 
+logDir = rootDir_L + '06_log/'
+move_to_L = True
     
 
 
