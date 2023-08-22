@@ -13,7 +13,13 @@ Alouette-1 is the swept-frequency topside sounder experiment that initiated Cana
 Yet, decades later the data was nearly lost, if not for the foresight and effort to save it. Now, the data has been digitized, processed and extracted, and could be used with today’s computational methods to produce a more comprehensive model of Earth’s topside ionosphere in the 1960s - or anything else!
 
 ## How to Get Started
-Read [Alouette-1 – Ionogram Data Extraction Methodology](Alouette-1 Ionogram Data Extraction Methodology-latest_ver.pdf)
+To learn how to access, work with and even re-process the data, read:
+
+- [Alouette-1 – Ionogram Data Extraction Methodology](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf) (16 pages - note that GitHub preview only shows the first 5 pages). 
+
+There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:
+
+- [asdf]
 
 
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
