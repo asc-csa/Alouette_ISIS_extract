@@ -1,9 +1,42 @@
 
-![alouette satellite](alouette.jpg)
+![alouette satellite](Alouette-1.jpg)
 
 
-- [En Français](#logiciel-de-traitement-de-l-ensemble-des-donn-es-alouette-i)
-- [In English](#software-to-process-the-alouette-i-dataset)
+- [En Français](#logiciel-de-traitement-de-lensemble-des-donn%C3%A9es-alouette-i)
+
+# Alouette-1 - Ionogram Data Extraction - Data from Canada's First Satellite Over 60 Years In the Making
+
+Alouette-1 is the swept-frequency topside sounder experiment that initiated Canada’s participation in space. At a time when satellites were designed and expected  to last only a few months, Alouette-1 transmitted data over 10 years to a growing international network of telemetry stations from 1962 – 72. Over this period of time the telemetry data were processed over thousands of hours by the DRTE data processing facility  at Shirley’s Bay, Ottawa – leading to hundreds of scientific publications in its time, and a family of ionospheric satellites (Alouette-2, Explorer-31, ISIS-1 and ISIS-2).
+
+> The efforts of the unusually competent and dedicated members of the Canadian team…led to Canada’s spectacular entry into the space age with Alouette 1 on September 29, 1962.
+
+Yet, decades later the data was nearly lost, if not for the foresight and effort to save it. Now, the data has been digitized, processed and extracted, and could be used with today’s computational methods to produce a more comprehensive model of Earth’s topside ionosphere in the 1960s - or anything else!
+
+## How to Get Started
+Read "Alouette-1 – Ionogram Data Extraction Methodology"
+
+
+# Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Logiciel de traitement de l'ensemble des données Alouette-I
 ## Contexte
