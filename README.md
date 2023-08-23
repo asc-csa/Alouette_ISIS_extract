@@ -14,7 +14,7 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 
 ## How to Get Started
 
-![Alouette-1 extracted ionogram](graphics/)
+![Alouette-1 extracted ionogram](graphics/extracted ionogram.png)
 
 To learn how to access, work with and even re-process the data, read:
 
