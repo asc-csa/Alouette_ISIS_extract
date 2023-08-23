@@ -51,11 +51,11 @@ ionogram. / (à gauche) Points de données extraits cartographiés dans un espac
 
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
 
-Alouette-1 est l'expérience de sondeur de surface à fréquence balayée qui a marqué le début de la participation du Canada à l'espace. À une époque où les satellites étaient conçus pour ne durer que quelques mois, Alouette-1 a transmis des données pendant 10 ans à un réseau international croissant de stations de télémétrie, de 1962 à 1972. Pendant cette période, les données de télémétrie ont été traitées pendant des milliers d'heures par l'installation de traitement des données du DRTE à Shirley's Bay, Ottawa, ce qui a donné lieu à des centaines de publications scientifiques et à une famille de satellites ionosphériques (Alouette-2, Explorer-31, ISIS-1 et ISIS-2).
+Alouette-1 a marqué le début de la participation du Canada à l'exploration de l'espace grâce à son expérience de sondeur de surface à fréquence balayée. À une époque où les satellites étaient conçus pour ne durer que quelques mois, Alouette-1 a transmis des données pendant 10 ans, de 1962 à 1972, à un réseau international croissant de stations de télémétrie. Pendant cette période, les données de télémétrie furent traitées pendant des milliers d'heures par l'installation de traitement des données du DRTE à Shirley's Bay, Ottawa, ce qui a donné lieu à des centaines de publications scientifiques et à une famille de satellites ionosphériques (Alouette-2, Explorer-31, ISIS-1 et ISIS-2).
 
-> Les efforts des membres exceptionnellement compétents et dévoués de l'équipe canadienne... ont conduit à l'entrée spectaculaire du Canada dans l'ère spatiale avec Alouette 1, le 29 septembre 1962.
+> Les efforts des membres exceptionnellement compétents et dévoués de l'équipe canadienne ont conduit à l'entrée spectaculaire du Canada dans l'ère spatiale avec Alouette 1, le 29 septembre 1962.
 
-Pourtant, des décennies plus tard, ces données ont failli être perdues, sans la prévoyance et les efforts déployés pour les sauvegarder. Aujourd'hui, les données ont été numérisées, traitées et extraites, et pourraient être utilisées avec les méthodes informatiques actuelles pour produire un modèle plus complet de l'ionosphère de la surface de la Terre dans les années 1960 - ou n'importe quoi d'autre !
+Pourtant, des décennies plus tard, ces données précieuses ont failli être perdues, sans la prévoyance et les efforts déployés pour les sauvegarder. Aujourd'hui, les données ont été numérisées, traitées et extraites. Elles pourraient, entre autre, être utilisées avec les méthodes informatiques actuelles pour produire un modèle plus complet de l'ionosphère de la surface de la Terre dans les années 1960.
 
 ## Comment démarrer
 
