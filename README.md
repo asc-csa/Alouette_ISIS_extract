@@ -16,13 +16,17 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 ## How to Get Started
 
 ![Alouette-1 extracted ionogram](graphics/extracted_ionogram.png)
+<b>Figure 1:</b> (left) Extracted datapoints mapped to a depth frequency space; (right) the corresponding scanned image of the
+ionogram. / (à gauche) Points de données extraits cartographiés dans un espace de fréquence de profondeur ; (à droite) l'image scannée correspondante de l'ionogramme.
+<br>
+<br>
 
-To learn how to access, work with and even re-process the data, read:
+**To learn how to access, work with and even re-process the data, read:**
 
 - [Alouette-1 – Ionogram Data Extraction Methodology](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
 	- 16 pages - note that GitHub preview only shows the first 5 pages
 
-There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:
+**There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:**
 
 - [Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
 	- A historical account of Alouette-1's data from early design decisions, to how the data was first recorded, to the data restoration efforts of today.
@@ -34,12 +38,12 @@ There are important details about the historical context of the Alouette-1 missi
 <br>
 
 ![Alouette-1 data availability](graphics/Alouette-1_data_availability.png)
-
+<b>Figure 2:</b> Current availability in days of Alouette-1 extracted data, by ground station. / Disponibilité actuelle en jours des données extraites d'Alouette-1, par station au sol.
 <br>
 <br>
 
 ![num_metadata](graphics/num_output.gif)
-
+<b>Figure 3:</b> Animation of scanned ionograms ('num' metadata type) from 35 mm negative film roll. / Animation d'ionogrammes numérisés (type de métadonnées "num") à partir d'un rouleau de film négatif de 35 mm.
 <br>
 <br>
 
@@ -113,7 +117,7 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 <br>
 
 ![Alouette-1 mounting on Thor-Agena B rocket](graphics/Alouette-1_mounting.jpg)
-Credit: Canadian Space Agency
+<b>Figure 4:</b> Alouette-1 installed on the Thor-Agena B rocket. Credit: Communications Research Center Canada (CRC) / Alouette-1 installée sur la fusée Thor-Agena B. Crédit : Centre de recherches sur les communications Canada (CRC)
 
 
 
