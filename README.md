@@ -45,44 +45,47 @@ There are important details about the historical context of the Alouette-1 missi
 
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
 
-
+<br>
+<br>
 
 ## Special Thank You
 Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research Telecommunications Establishment of Canada
 
+<br>
+<br>
 
 ## Credits
-## Data and Emerging Technologies (CSA)
-Ravendra Naidoo
-Roksana Sheikholmolouki
-Ashley Ferreira
-Jackson Cooper
-Marianne Fortier
-Benjamin ('JJ') Cannings
-Émiline Filion
-Natasha Fee
+### Data and Emerging Technologies (CSA)
+- Ravendra Naidoo
+- Roksana Sheikholmolouki
+- Ashley Ferreira
+- Jackson Cooper
+- Marianne Fortier
+- Benjamin ('JJ') Cannings
+- Émiline Filion
+- Natasha Fee
 
 ### Past Data Science Team (CSA)
-Etienne Low-Décarie 
-Jenisha Patel  
-Wasiq Mohammad
-Hansen Liu
-
-### Chief Information Officer (CSA):
-Josée Saint-Marseille
+- Etienne Low-Décarie 
+- Jenisha Patel  
+- Wasiq Mohammad
+- Hansen Liu
 
 ### Open Government (CSA)
-Natalina Mariani
-Jean-Sebastien Hunter
+- Natalina Mariani
+- Jean-Sebastien Hunter
 
 ### Infrastructure Operations (CSA)
-Mateusz Gola
+- Mateusz Gola
+
+### Chief Information Officer (CSA)
+- Josée Saint-Marseille
 
 ### Space Utilization (CSA)
-Pierre Langlois
+- Pierre Langlois
 
 ### Space Exploration (CSA)
-Louis-Paul Bédard
+- Louis-Paul Bédard
 
 
 
