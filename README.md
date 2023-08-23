@@ -47,15 +47,45 @@ There are important details about the historical context of the Alouette-1 missi
 
 
 
-
+## Special Thank You
+Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research Telecommunications Establishment of Canada
 
 
 ## Credits
+## Data and Emerging Technologies (CSA)
+Ravendra Naidoo
+Roksana Sheikholmolouki
+Ashley Ferreira
+Jackson Cooper
+Marianne Fortier
+Benjamin ('JJ') Cannings
+Émiline Filion
+Natasha Fee
 
-### Previous CSA Data Science Team
+### Past Data Science Team (CSA)
+Etienne Low-Décarie 
 Jenisha Patel  
-Etienne Low-Décarie  
-Wasiq Mohammad  
+Wasiq Mohammad
+Hansen Liu
+
+### Chief Information Officer (CSA):
+Josée Saint-Marseille
+
+### Open Government (CSA)
+Natalina Mariani
+Jean-Sebastien Hunter
+
+### Infrastructure Operations (CSA)
+Mateusz Gola
+
+### Space Utilization (CSA)
+Pierre Langlois
+
+### Space Exploration (CSA)
+Louis-Paul Bédard
+
+
+
 
 
 
