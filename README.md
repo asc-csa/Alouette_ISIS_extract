@@ -47,6 +47,8 @@ ionogram. / (à gauche) Points de données extraits cartographiés dans un espac
 <br>
 <br>
 
+---
+
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
 
 Alouette-1 est l'expérience de sondeur de surface à fréquence balayée qui a marqué le début de la participation du Canada à l'espace. À une époque où les satellites étaient conçus pour ne durer que quelques mois, Alouette-1 a transmis des données pendant 10 ans à un réseau international croissant de stations de télémétrie, de 1962 à 1972. Pendant cette période, les données de télémétrie ont été traitées pendant des milliers d'heures par l'installation de traitement des données du DRTE à Shirley's Bay, Ottawa, ce qui a donné lieu à des centaines de publications scientifiques et à une famille de satellites ionosphériques (Alouette-2, Explorer-31, ISIS-1 et ISIS-2).
@@ -70,15 +72,17 @@ Il y a des détails importants sur le contexte historique de la mission Alouette
 
 - [Alouette-1 - Restauration des données 2017 (Lessard, 2017) (en Anglais)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
 	- Documentation initiale de l'effort de numérisation de masse des films 35 mm de l'ASC, qui a débuté en 2017. 
+<br>
+<br>
 
-<br>
-<br>
+---
 
 ## Special Thank You / Un Gros Merci
 Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research Telecommunications Establishment of Canada
+<br>
+<br>
 
-<br>
-<br>
+---
 
 ## Credits
 ### Data and Emerging Technologies (CSA) / Données et technologies émergentes (ASC) 
