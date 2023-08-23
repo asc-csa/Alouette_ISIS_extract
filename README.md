@@ -27,11 +27,11 @@ There are important details about the historical context of the Alouette-1 missi
 	- A historical account of Alouette-1's data from early design decisions, to how the data was first recorded, to the data restoration efforts of today.
 	- 21 pages - note that GitHub preview only shows the first 5 pages
 
-- [Alouette-1 - 2017 Data Restoration (Lessard, 2017)](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette%201%20-%202017%20Data%20Restoration.docx)
+- [Alouette-1 - 2017 Data Restoration (Lessard, 2017)](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20-%202017%20Data%20Restoration.pdf)
 	- Initial documentation of the CSA's 35 mm film mass digitization effort, that started in 2017. 
 
 
-![Alouette-1 data availability](Alouette-1_data_availability.png)
+![Alouette-1 data availability](graphics/Alouette-1_data_availability.png)
 
 
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
