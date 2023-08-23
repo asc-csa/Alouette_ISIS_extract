@@ -16,7 +16,7 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 ## How to Get Started
 
 ![Alouette-1 extracted ionogram](graphics/extracted_ionogram.png)
-<b>Figure 1:</b> (left) Extracted datapoints mapped to a depth frequency space; (right) the corresponding scanned image of the
+<b>Figure 1:</b> (left) Extracted datapoints mapped to a depth-frequency space; (right) the corresponding scanned image of the
 ionogram. / (à gauche) Points de données extraits cartographiés dans un espace de fréquence de profondeur ; (à droite) l'image scannée correspondante de l'ionogramme.
 <br>
 <br>
