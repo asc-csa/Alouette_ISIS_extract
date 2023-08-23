@@ -15,14 +15,16 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 ## How to Get Started
 To learn how to access, work with and even re-process the data, read:
 
-- [Alouette-1 – Ionogram Data Extraction Methodology](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf) (16 pages - note that GitHub preview only shows the first 5 pages). 
+- [Alouette-1 – Ionogram Data Extraction Methodology](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
+	- 16 pages - note that GitHub preview only shows the first 5 pages
 
 There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:
 
-- [Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023)]()
+- [Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023)](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canada%E2%80%99s%20First%20Satellite%20Over%2060%20Years.pdf)
 	- A historical account of the history of Alouette-1's data from how the data was first recorded to the data restoration efforts of today. 
+	- 21 pages - note that GitHub preview only shows the first 5 pages
 
-- [Alouette-1 Data Restoration (Lessard, 2017)]()
+- [Alouette-1 - 2017 Data Restoration (Lessard, 2017)](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette%201%20-%202017%20Data%20Restoration.docx)
 	- Initial documentation of the CSA's 35 mm film mass digitization effort, that started in 2017. 
 
 
