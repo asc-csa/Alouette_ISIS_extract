@@ -1,5 +1,5 @@
 
-![Alouette-1](Alouette-1.jpg)
+![Alouette-1](graphics/Alouette-1.jpg)
 
 
 - [En Français](#logiciel-de-traitement-de-lensemble-des-donn%C3%A9es-alouette-i)
@@ -14,7 +14,7 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 
 ## How to Get Started
 
-![Alouette-1 data availability](Alouette-1_data_availability.png)
+![Alouette-1 extracted ionogram](graphics/)
 
 To learn how to access, work with and even re-process the data, read:
 
