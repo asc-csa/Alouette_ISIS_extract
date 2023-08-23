@@ -109,9 +109,11 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 ### Space Exploration (CSA) / Exploration spatiale (ASC)
 - Louis-Paul Bédard
 
+<br>
+<br>
 
-
-
+![Alouette-1 mounting on Thor-Agena B rocket](graphics/Alouette-1_mounting.jpg)
+Credit: Canadian Space Agency
 
 
 
