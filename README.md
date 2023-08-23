@@ -1,8 +1,9 @@
 
 ![Alouette-1](graphics/Alouette-1.jpg)
+<br>
+<br>
 
-
-- [En Français](#logiciel-de-traitement-de-lensemble-des-donn%C3%A9es-alouette-i)
+- [En Français]()
 
 # Alouette-1 - Ionogram Data Extraction - Data from Canada's First Satellite Over 60 Years In the Making
 
@@ -14,7 +15,7 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 
 ## How to Get Started
 
-![Alouette-1 extracted ionogram](graphics/extracted ionogram.png)
+![Alouette-1 extracted ionogram](graphics/extracted_ionogram.png)
 
 To learn how to access, work with and even re-process the data, read:
 
@@ -29,12 +30,21 @@ There are important details about the historical context of the Alouette-1 missi
 
 - [Alouette-1 - 2017 Data Restoration (Lessard, 2017)](https://github.com/asc-csa/Alouette_extract/blob/working/Alouette-1%20-%202017%20Data%20Restoration.pdf)
 	- Initial documentation of the CSA's 35 mm film mass digitization effort, that started in 2017. 
-
+<br>
+<br>
 
 ![Alouette-1 data availability](graphics/Alouette-1_data_availability.png)
 
+<br>
+<br>
+
+![num_metadata](graphics/num_output.gif)
+
+<br>
+<br>
 
 # Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
+
 
 
 
