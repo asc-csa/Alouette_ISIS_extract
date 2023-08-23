@@ -117,7 +117,7 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 <br>
 
 ![Alouette-1 mounting on Thor-Agena B rocket](graphics/Alouette-1_mounting.jpg)
-<b>Figure 4:</b> Alouette-1 installed on the Thor-Agena B rocket. Credit: Communications Research Center Canada (CRC) / Alouette-1 installée sur la fusée Thor-Agena B. Crédit : Centre de recherches sur les communications Canada (CRC)
+<b>Figure 4:</b> Alouette-1 being installed on its Thor-Agena B rocket. Credit: Communications Research Center Canada (CRC) / Alouette-1 installée sur la fusée Thor-Agena B. Crédit : Centre de recherches sur les communications Canada (CRC)
 
 
 
