@@ -53,19 +53,31 @@ Pourtant, des décennies plus tard, ces données ont failli être perdues, sans 
 
 ## Comment démarrer
 
+Pour savoir comment accéder aux données, les utiliser et même les retraiter, lisez le document suivant :
 
+- [Alouette-1 - Méthodologie d'extraction des données d'ionogrammes (en Anglais)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
+	- 16 pages - à noter que l'aperçu de GitHub ne montre que les 5 premières pages
+
+Il y a des détails importants sur le contexte historique de la mission Alouette-1 et de ses données. La lecture de ce document vous sera utile :
+
+- [Alouette-1 - Une histoire des données du premier satellite canadien sur 60 ans (Naidoo, 2023) (en Anglais)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
+	- Un historique des données d'Alouette-1, depuis les premières décisions de conception jusqu'aux efforts actuels de restauration des données, en passant par l'enregistrement initial des données.
+	- 21 pages - à noter que l'aperçu de GitHub ne montre que les 5 premières pages
+
+- [Alouette-1 - Restauration des données 2017 (Lessard, 2017) (en Anglais)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
+	- Documentation initiale de l'effort de numérisation de masse des films 35 mm de l'ASC, qui a débuté en 2017. 
 
 <br>
 <br>
 
-## Special Thank You
+## Special Thank You / Un Gros Merci
 Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research Telecommunications Establishment of Canada
 
 <br>
 <br>
 
 ## Credits
-### Data and Emerging Technologies (CSA)
+### Data and Emerging Technologies (CSA) / Données et technologies émergentes (ASC) 
 - Ravendra Naidoo
 - Roksana Sheikholmolouki
 - Ashley Ferreira
@@ -75,26 +87,26 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 - Émiline Filion
 - Natasha Fee
 
-### Past Data Science Team (CSA)
+### Past Data Science Team (CSA) / Ancienne équipe de science des données (ASC)
 - Etienne Low-Décarie 
 - Jenisha Patel  
 - Wasiq Mohammad
 - Hansen Liu
 
-### Open Government (CSA)
+### Open Government (CSA) / Gouvernement ouvert (ASC)
 - Natalina Mariani
 - Jean-Sebastien Hunter
 
-### Infrastructure Operations (CSA)
+### Infrastructure Operations (CSA) / Opérations d'infrastructure (ASC)
 - Mateusz Gola
 
-### Chief Information Officer (CSA)
+### Chief Information Officer (CSA) / Chef du bureau d'information (ASC)
 - Josée Saint-Marseille
 
-### Space Utilization (CSA)
+### Space Utilization (CSA) / Utilisation de l'espace (ASC)
 - Pierre Langlois
 
-### Space Exploration (CSA)
+### Space Exploration (CSA) / Exploration spatiale (ASC)
 - Louis-Paul Bédard
 
 
