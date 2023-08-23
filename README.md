@@ -15,7 +15,7 @@ Yet, decades later the data was nearly lost, if not for the foresight and effort
 
 ## How to Get Started
 
-![Alouette-1 extracted ionogram](graphics/extracted_ionogram.png)
+![Alouette-1 extracted ionogram](graphics/extracted_ionogram.png)<br>
 <b>Figure 1:</b> (left) Extracted datapoints mapped to a depth-frequency space; (right) the corresponding scanned image of the
 ionogram. / (à gauche) Points de données extraits cartographiés dans un espace de fréquence de profondeur ; (à droite) l'image scannée correspondante de l'ionogramme.
 <br>
@@ -35,12 +35,12 @@ ionogram. / (à gauche) Points de données extraits cartographiés dans un espac
 <br>
 <br>
 
-![Alouette-1 data availability](graphics/Alouette-1_data_availability.png)
+![Alouette-1 data availability](graphics/Alouette-1_data_availability.png)<br>
 <b>Figure 2:</b> Current availability in days of Alouette-1 extracted data, by ground station. / Disponibilité actuelle en jours des données extraites d'Alouette-1, par station au sol.
 <br>
 <br>
 
-![num_metadata](graphics/num_output.gif)
+![num_metadata](graphics/num_output.gif)<br>
 <b>Figure 3:</b> Animation of scanned ionograms ('num' metadata type) from 35 mm negative film roll. / Animation d'ionogrammes numérisés (type de métadonnées "num") à partir d'un rouleau de film négatif de 35 mm.
 <br>
 <br>
