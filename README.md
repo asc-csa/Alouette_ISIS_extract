@@ -27,7 +27,7 @@ ionogram. / (à gauche) Points de données extraits cartographiés dans un espac
 
 **There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:**
 
-- [**Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
+- [**Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023) (not for public availability, yet)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
 	- A historical account of Alouette-1's data from early design decisions that affected the data, to how the data was first recorded, to the data restoration efforts of today.
 
 - [**Alouette-1 - 2017 Data Restoration (Lessard, 2017**)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
@@ -63,7 +63,7 @@ Pourtant, des décennies plus tard, ces données précieuses ont failli être pe
 
 **Il y a des détails importants sur le contexte historique de la mission Alouette-1 et de ses données. La lecture de ce document vous sera utile :**
 
-- [**Alouette-1 - Une histoire des données du premier satellite canadien sur 60 ans (Naidoo, 2023) (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
+- [**Alouette-1 - Une histoire des données du premier satellite canadien sur 60 ans (Naidoo, 2023) (en Anglais, et pas encore disponible pour le public)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
 	- Un historique des données d'Alouette-1, depuis les premières décisions de conception jusqu'aux efforts actuels de restauration des données, en passant par l'enregistrement initial des données.
 
 - [**Alouette-1 - Restauration des données 2017 (Lessard, 2017) (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
