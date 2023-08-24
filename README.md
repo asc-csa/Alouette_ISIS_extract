@@ -11,7 +11,7 @@ Alouette-1 is the swept-frequency topside sounder experiment that initiated Cana
 
 > The efforts of the unusually competent and dedicated members of the Canadian team…led to Canada’s spectacular entry into the space age with Alouette 1 on September 29, 1962.
 
-Yet, decades later the data was nearly lost, if not for the foresight and effort to save it. Now, the data has been digitized, processed and extracted, and could be used with today’s computational methods to produce a more comprehensive model of Earth’s topside ionosphere in the 1960s - or anything else!
+Yet, decades later the data was nearly lost, if not for the foresight and effort to save it. Now, the data has been digitized, processed and extracted, and could be used with today’s computational methods to produce a more comprehensive model of Earth’s topside ionosphere in the 1960s - or for any other scientific or creative purposes not thought of yet.
 
 ## How to Get Started
 
