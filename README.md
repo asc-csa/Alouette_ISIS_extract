@@ -7,7 +7,7 @@
 
 # Alouette-1 - Ionogram Data Extraction - Data from Canada's First Satellite Over 60 Years In the Making
 
-Alouette-1 is the swept-frequency topside sounder experiment that initiated Canada’s participation in space. At a time when satellites were designed and expected  to last only a few months, Alouette-1 transmitted data over 10 years to a growing international network of telemetry stations from 1962 – 72. Over this period of time the telemetry data were processed over thousands of hours by the DRTE data processing facility  at Shirley’s Bay, Ottawa – leading to hundreds of scientific publications in its time, and a family of ionospheric satellites (Alouette-2, Explorer-31, ISIS-1 and ISIS-2).
+Alouette-1 is the swept-frequency topside sounder experiment that initiated Canada’s participation in space. At a time when satellites were designed and expected to last only a few months, Alouette-1 transmitted data over 10 years to a growing international network of telemetry stations from 1962 – 72. Over this period of time the telemetry data were processed over thousands of hours by the DRTE data processing facility  at Shirleys Bay, Ottawa – leading to hundreds of scientific publications in its time, and a family of ionospheric satellites (Alouette-2, Explorer-31, ISIS-1 and ISIS-2).
 
 > The efforts of the unusually competent and dedicated members of the Canadian team…led to Canada’s spectacular entry into the space age with Alouette 1 on September 29, 1962.
 
