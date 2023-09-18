@@ -136,7 +136,10 @@ def read_image(image_path, plotting=False, just_digits=False):
 
 def draw_random_subdir(subdir_ids_list, logDir):
     
+    print(subdir_ids_list)
     subdir_id = subdir_ids_list[randrange(len(subdir_ids_list))]
+    print(subdir_id)
+
     subdir_id_parts = subdir_id.split('_')
     directory = subdir_id_parts[0]
     subdirectory = subdir_id_parts[1]
