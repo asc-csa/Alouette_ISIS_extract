@@ -37,7 +37,7 @@ parser.add_option('-s', '--save', dest='saveDir',
         help='Path to directory where results output file should be saved, default=%default. All instances should output to the same path.')
 
 parser.add_option('-f', '--filename', dest='filename', 
-        default='error_results2.csv', type='str', 
+        default='error_results3.csv', type='str', 
         help='Name of file to output results to in the path $SAVEDIR$, default=%default. This document is also used to track which subdirectories have \
               already been processed so to avoid different instances duplicating efforts all instances should be outputting to the same file.')
 
@@ -80,9 +80,7 @@ print('This program will be saving to results file location:', outFile)
 if not(os.path.exists(saveDir)):
     os.makedirs(saveDir)
 
-# set default saving settings
-# (not sure if code works anymore if these are changed)
-append2outFile = True 
+append2outFile = True # change to false if starting new file
 saveImages = False
 
 
@@ -141,10 +139,11 @@ def read_image(image_path, plotting=False, just_digits=False):
             if plotting == True:
                 # plot the predictied box and tuples
                 keras_ocr.tools.drawAnnotations(image=image, predictions=prediction)
+                # ADD LINE SHOWING BOTTOM 20% OR JUST CONVERT WHOLE IMAGE
                 plt.show()
 
             # loop over predicted (word, box) tuples and count number of digit characters
-            digit_count, max_x, min_x = 0, 0, 0
+            digit_count, max_x, min_x, box_count = 0, -np.inf, np.inf, 0 # CHANGE
             for p in prediction:
 
                 # select word and box part of the tuple
@@ -156,11 +155,12 @@ def read_image(image_path, plotting=False, just_digits=False):
                     # check that box is within the cropped height
                     in_bounds = True
                     for b in box:
-                        if b[1] < cropped_height:
-                            in_bounds = False
+                        if b[0] < cropped_height: # does this pick the right thing?
+                            in_bounds = False # right way?
                             break
                             
-                    if in_bounds:
+                    if in_bounds: 
+                        box_count +=1 
                         digit_count += len(value)
 
                         # save diffrence between lowest and highest x value
@@ -169,13 +169,17 @@ def read_image(image_path, plotting=False, just_digits=False):
                         if box[0,1] < min_x:
                             min_x = box[0,1]
 
-        max_d = max_x - min_x
+        if box_count > 2 and max_x != -np.inf and min_x != np.inf: # add chars detected >x
+            max_d = max_x - min_x
+        else:
+            max_d = -1
+
         print('max digits distance:', max_d)
         print('digits count:', digit_count)
 
     except Exception as e:
         print('ERR:', e)
-        digit_count, height, width, max_d = -1, -1, -1, 'ERR'
+        digit_count, height, width, max_d = -1, -1, -1, -1
 
     return digit_count, height, width, max_d
 
@@ -229,8 +233,11 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             # at similar times but we check before saving to avoid writting duplicates
             # --> alternatively can sample from an "unprocessed" log
 
-            print('###############################')
+            print('###############################\n###############################')
+            print('###############################\n###############################')
             print('dir:', directory, '\nsubdir:', subdir)
+            print('###############################\n###############################')
+            print('###############################\n###############################')
 
             # if path exists we want to see what subdirs are processed
             # this far and so that is what we check below
@@ -264,6 +271,9 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 else:
                     print('this subdirectory is not already processed, beginning processing...')
             
+            else: # TEMP
+                print('error: outFile does not exist, did not save!!')
+
             # loop over all images in the subdirectory
             subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
             for image in subdir_contents:
@@ -311,18 +321,21 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 
             else: # append2outFile = False should not be used for multi-instance
                 # this overwrites existing file
-                mode = 'w'
+                mode = 'w' # check exits or not instead?
                 header = True
 
             print('subdirectory', subdir, 'processed, attempting to save data...')
             save = True
+            print(os.path.exists(outFile))
             if os.path.exists(outFile):
                 write_safe = False
                 while write_safe == False:
+                    print('***')
                     try:
                         os.rename(outFile, outFile)
 
                         # get a set of already processed dirs and subdirs
+                        # WHAT HAPPENS WHEN EMPTY? START IT YOURSELF NOW
                         df_processed_results = pd.read_csv(outFile, dtype=types)
                         subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
 
@@ -343,7 +356,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                             df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
                             del df_mapping_results
                             del df_processed_results
-                            print('data sucessfully saved')
+                            print('data sucessfully saved to {}'.format(outFile))
 
                         write_safe = True 
 
@@ -358,4 +371,4 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
 
 if __name__ == '__main__':
-    read_all_directories()
+    read_all_directories(plotting=False)
