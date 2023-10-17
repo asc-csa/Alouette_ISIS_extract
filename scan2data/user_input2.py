@@ -8,7 +8,7 @@ warnings.filterwarnings('ignore')
 def main(master_dir, dir_csv_output):
     
     regex_raw = '*.png'
-    list_all_subdir = glob.glob(master_dir + 'R*/[0-9]*/')
+    list_all_subdir = glob.glob(f'{master_dir}R*/[0-9]*/')
     for sample_subdir in list_all_subdir:
         sample_subdir = sample_subdir.replace('/', '\\')
         sample_subdir = sample_subdir.replace('\\', '/')

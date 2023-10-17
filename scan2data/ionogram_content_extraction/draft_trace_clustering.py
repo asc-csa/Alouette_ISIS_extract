@@ -29,9 +29,10 @@ def two_clusters(sorted_array):
     """
     if len(sorted_array) < 3:
         return (sorted_array, sorted_array)
-    variances = [np.std(sorted_array[0:i])+np.std(sorted_array[i:]) for i in range(1, len(sorted_array)-1)]
+    variances = [np.std(sorted_array[:i]) + np.std(sorted_array[i:]) for i in range(1, len(sorted_array) - 1)]
+
     index_sep = np.argmin(variances) + 1
-    subarray1, subarray2 = sorted_array[0:index_sep ],sorted_array[index_sep:]
+    subarray1, subarray2 = sorted_array[:index_sep], sorted_array[index_sep:]
 
     return (subarray1, subarray2)
 
@@ -122,7 +123,7 @@ def plot_curve_extraction(regex_subdir,regex_images,to_overlay):
         ax[3].scatter(df_arr_raw_coord['Hz'].tolist(),df_arr_raw_coord['Median'].tolist(),s=5, label='median')
         ax[3].scatter(df_arr_raw_coord ['Hz'].tolist(),df_arr_raw_coord['Cluster1_median'].tolist(),s=5,label='median1')
         ax[3].scatter(df_arr_raw_coord ['Hz'].tolist(),df_arr_raw_coord['Cluster2_median'].tolist(),s=5,label='median2') 
-        for i in range(0,4):
+        for i in range(4):
             ax[i].axis('off')
     else:
         ax[1].set_title("Windowed extracted trace " )
@@ -138,7 +139,7 @@ def plot_curve_extraction(regex_subdir,regex_images,to_overlay):
         ax[3].scatter(df_arr_adjusted_coord['Hz'].tolist(),df_arr_adjusted_coord['Median'].tolist(),s=5, label='median')
         ax[3].scatter(df_arr_adjusted_coord ['Hz'].tolist(),df_arr_adjusted_coord['Cluster1_median'].tolist(),s=5,label='median1')
         ax[3].scatter(df_arr_adjusted_coord ['Hz'].tolist(),df_arr_adjusted_coord['Cluster2_median'].tolist(),s=5,label='median2') 
-        for i in range(0,2):
+        for i in range(2):
             ax[i].axis('off')
         for i in range(2,4):
             ax[i].invert_yaxis()

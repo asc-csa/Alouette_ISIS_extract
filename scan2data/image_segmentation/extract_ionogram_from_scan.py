@@ -51,7 +51,6 @@ def extract_ionogram(raw_img_array):
         
     """
     try:
-
         # Extract coordinate delimiting the ionogram part of the scan
         x_axis_left_limit ,x_axis_right_limit = limits_ionogram(raw_img_array, 0)
         y_axis_upper_limit, y_axis_lower_limit = limits_ionogram(raw_img_array, 1)
@@ -66,7 +65,6 @@ def extract_ionogram(raw_img_array):
 
         limits = [x_axis_left_limit ,x_axis_right_limit, y_axis_upper_limit, y_axis_lower_limit]
         return (limits, ionogram)
-    
-    # In case if ionogram extraction fails:
-    except: 
+
+    except Exception:
         return ([],np.nan)

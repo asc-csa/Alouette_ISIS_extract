@@ -44,39 +44,39 @@ def plot_curve_fitting(iono,adjusted_arr_coord,log_x=False, log_y=False):
     ax1.imshow(iono,cmap='gray',aspect="auto")
     ax1.set_title("Original " )
     ax1.axis('off')
-    
+
 
     title_digitized = 'Digitized '
     if log_x and log_y:
-        title_digitized = title_digitized + 'log both'
+        title_digitized += 'log both'
         tmp_arr = adjusted_arr_coord[:]
         adjusted_arr_coord = [(math.log(x),math.log(y)) for x, y in tmp_arr if x !=0 and y !=0]
-    elif log_x :
-        title_digitized = title_digitized + 'log x'
+    elif log_x:
+        title_digitized += 'log x'
         tmp_arr = adjusted_arr_coord[:]
         adjusted_arr_coord = [(math.log(x),y) for x, y in tmp_arr if x != 0]
     elif log_y:
-        title_digitized = title_digitized + 'log y'
+        title_digitized += 'log y'
         tmp_arr = adjusted_arr_coord[:]
         adjusted_arr_coord = [(x,math.log(y)) for x, y in tmp_arr if y !=0]
-    
+
     if len(adjusted_arr_coord) != 0:
         ax2.scatter(list(zip(*adjusted_arr_coord))[0],list(zip(*adjusted_arr_coord))[1],s=1,alpha=0.05, label='raw')
-    
+
     df_adjusted_arr_coord = pd.DataFrame(adjusted_arr_coord, columns=['Hz','Range'] )
     df_adjusted_arr_coord = df_adjusted_arr_coord.groupby(['Range']).median()
     df_adjusted_arr_coord.reset_index(level=0, inplace=True)
     median_adjusted_arr_coord = list(zip(df_adjusted_arr_coord['Hz'], df_adjusted_arr_coord['Range']))
-    
-    if len(median_adjusted_arr_coord) != 0:
+
+    if median_adjusted_arr_coord:
         ax2.scatter(list(zip(*median_adjusted_arr_coord))[0],list(zip(*median_adjusted_arr_coord))[1],s=5, c = 'y',label='median raw')
-    
-    
+
+
     ax2.set_title(title_digitized)
     ax2.set_xlabel("Frequency (Hz)")
     ax2.set_ylabel("Altitude (km) ")
     ax2.invert_yaxis()
-    
+
     min_residual = np.inf
     coeff = []
     # Try to fit a polynomial model up to degree 9
@@ -85,14 +85,18 @@ def plot_curve_fitting(iono,adjusted_arr_coord,log_x=False, log_y=False):
 
         if len(residuals) != 0 and residuals[0] <  min_residual:
             coeff = trend
-        
+
     ffit = poly.Polynomial(coeff )  
 
     min_x = max(min(list(zip(*median_adjusted_arr_coord))[0]),1.5)
     max_x = min(max(list(zip(*median_adjusted_arr_coord))[0]),11.5)
 #    
-    
-    ax2.plot(np.linspace(min_x,max_x,100),ffit(np.linspace(min_x,max_x,100)), label = str('polynomial ' + str (i)))
+
+    ax2.plot(
+        np.linspace(min_x, max_x, 100),
+        ffit(np.linspace(min_x, max_x, 100)),
+        label=str(f'polynomial {str(i)}'),
+    )
 ##    
 #    adjusted_arr_coord_spline = sorted(adjusted_arr_coord, key=lambda coord: coord[0])
 #    df_adjusted_arr_coord_spline = pd.DataFrame(adjusted_arr_coord_spline,columns = ['Hz','Range'] )
@@ -101,7 +105,7 @@ def plot_curve_fitting(iono,adjusted_arr_coord,log_x=False, log_y=False):
 #    adjusted_arr_coord_spline = list(zip(df_adjusted_arr_coord_spline['Hz'],df_adjusted_arr_coord_spline['Range']))
 #    cs = CubicSpline(list(zip(*adjusted_arr_coord_spline ))[0],list(zip(*adjusted_arr_coord_spline ))[1])
 #    ax2.plot(np.linspace(min_x,max_x,100),cs(np.linspace(min_x,max_x,100)), label='cubic spline')
-    
+
     def rational(x, p, q):
         """The general rational function description (from https://stackoverflow.com/questions/29815094/rational-function-curve-fitting-in-python)
         
@@ -114,20 +118,20 @@ def plot_curve_fitting(iono,adjusted_arr_coord,log_x=False, log_y=False):
         
         """
         return np.polyval(p, x) / np.polyval(q + [1.0], x)
-    
-     
+
+
     dict_functions = {'exp': lambda t,a,b: a*np.exp(b*t), 
                       'log': lambda t,a,b: a+b*np.log(t),
                       'power': lambda t,a,b,c: a*t**b + c,
                       'rational': lambda t,a,b,c,d,e: rational(t, [a, b, c], [d, e]),
                       'logistic': lambda t,a,b,c,d: a/(1+ np.exp(b + c*t))+d}
-        
+
     #dictionary of functions
     # pick function minimizing error
-    for fun in dict_functions.keys():
+    for fun in dict_functions:
         try:
             popt,pcov= optimize.curve_fit(dict_functions[fun],list(zip(*median_adjusted_arr_coord))[0],list(zip(*median_adjusted_arr_coord))[1], maxfev = 5000 )
-        except:
+        except Exception:
             continue
         ax2.plot(np.linspace(min_x,max_x,100),dict_functions[fun](np.linspace(min_x,max_x,100),*popt),label = fun)
 #        

@@ -125,9 +125,6 @@ def read_image(image_path, plotting=False, just_digits=False):
         # extract height and width of image in pixels 
         height, width = image.shape[0], image.shape[1]
 
-        # cut image to just include bottom 20% of pixels
-        cropped_height = height-height//5
-
         # create predictions for location and value of characters
         # on the cropped image, will output (word, box) tuples
         prediction = pipeline.recognize([image])[0]
@@ -136,7 +133,6 @@ def read_image(image_path, plotting=False, just_digits=False):
         if prediction == [[]]:
             digit_count = 0
 
-        # if characters are found look at the predictions
         else:
             if plotting == True:
                 # plot the predictied box and tuples
@@ -146,6 +142,9 @@ def read_image(image_path, plotting=False, just_digits=False):
             # loop over predicted (word, box) tuples and count number of digit characters
             digit_count = 0
             says_isis = False
+            # cut image to just include bottom 20% of pixels
+            cropped_height = height-height//5
+
             for p in prediction:
 
                 # select word and box part of the tuple
@@ -155,17 +154,11 @@ def read_image(image_path, plotting=False, just_digits=False):
                 if 'isis' in value.lower(): # may want to check 1, I, 5 variations on this to detect like 15iS
                     says_isis = True
                     print('found potential ISIS text')
-                
+
                 # if word is composed of just integers then 
                 # count how many and incriment digit_count
                 if just_digits == False or (just_digits == True and value.isdigit()):
-                    # check that box is within the cropped height
-                    in_bounds = True
-                    for b in box:
-                        if b[1] < cropped_height:
-                            in_bounds = False
-                            break
-                            
+                    in_bounds = all(b[1] >= cropped_height for b in box)
                     if in_bounds:
                         digit_count += len(value)
 
@@ -212,14 +205,14 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     # set column types for results dataframe 
     types = {'Directory': 'str', 'Subdirectory': 'str', 'filename': 'str', 'digit_count': 'int', \
              'height': 'float32', 'width': 'float32', 'says_isis': 'str', 'user': 'str'}
-    
+
     # loop over all directories in the batch 2 raw data directory
     raw_contents = os.listdir(batchDir) # random suffle appled
     random.shuffle(raw_contents) # random suffle applied
     for directory in raw_contents:
 
         # loop over all subdirectories within the directory
-        directory_contents = os.listdir(batchDir + directory) 
+        directory_contents = os.listdir(batchDir + directory)
         random.shuffle(directory_contents) # random shuffle applied
         for subdir in directory_contents:
 
@@ -236,7 +229,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                 # this is just a trick to make sure file isnt in use
                 read_safe = False
-                while read_safe == False:
+                while not read_safe:
                     try:
                         os.rename(outFile, outFile)
 
@@ -249,7 +242,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                         read_safe = True 
 
-                    except (OSError, PermissionError) as e:
+                    except OSError as e:
                         print(e)
                         print(outFile, 'currently being used, pausing for 30 seconds before another attempt')
                         time.sleep(30)
@@ -258,12 +251,12 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 if str(directory + ' ' + subdir) in subdir_id_lst:
                     print('this subdirectory has already been processed, moving on to the next one...')
                     continue
-            
+
                 else:
                     print('this subdirectory is not already processed, beginning processing...')
-            
+
             # loop over all images in the subdirectory
-            subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
+            subdir_contents = os.listdir(batchDir + directory + '/' + subdir)
             for image in subdir_contents:
 
                 # save full path of image
@@ -306,7 +299,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 directories, subdirs, images = [], [], []
                 heights, widths, digit_counts = [], [], []
                 says_isis_lst, user_lst = [], []
-                
+
             else: # append2outFile = False should not be used for multi-instance
                 # this overwrites existing file
                 mode = 'w'
@@ -316,7 +309,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             save = True
             if os.path.exists(outFile):
                 write_safe = False
-                while write_safe == False:
+                while not write_safe:
                     try:
                         os.rename(outFile, outFile)
 
@@ -329,7 +322,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                             print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
                             # note: we should check for duplicates in the analysis just incase + check all data has been saved
                             save = False
-                        
+
                         if save == True:
 
                             # check if there is already data in the output file 
@@ -345,7 +338,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                         write_safe = True 
 
-                    except (OSError, PermissionError) as e:
+                    except OSError as e:
                         print(e)
                         print(outFile, 'currently being used, pausing for 1 minute before another attempt')
                         time.sleep(60)

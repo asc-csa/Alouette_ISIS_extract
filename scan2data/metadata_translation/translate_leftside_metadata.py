@@ -40,27 +40,26 @@ def map_coord_to_metadata(list_cat_coord, list_num_coord, dict_mapping_cat, dict
     """
     
     try:
-        
         list_coord = zip(list_cat_coord,list_num_coord)
         coord_mapping_cat = dict_mapping_cat.keys()
         coord_mapping_num = dict_mapping_num.keys()
-        
+
         dict_metadata={}
         for cat_coord, num_coord in list_coord:
             cat_key = min(coord_mapping_cat, key=lambda x:abs(x-cat_coord))
             num_key = min(coord_mapping_num, key=lambda x:abs(x-num_coord))
-            
+
             cat = dict_mapping_cat[cat_key]
             num = dict_mapping_num[num_key]
-            
+
             # TODO: improve for many num
             if cat in dict_metadata:
                 dict_metadata[cat].append(num)
             else:
                 dict_metadata[cat] = [num]
-        
+
         return dict_metadata
-    except:
+    except Exception:
         return np.nan
     
 

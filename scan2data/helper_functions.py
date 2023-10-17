@@ -5,8 +5,7 @@ Functions that are common for each submodule
 import glob
 import random
 
-def record_loss(df,function_name,subdir_location,
-                columns_to_extract=['file_name'],loss_extraction=[]):
+def record_loss(df, function_name, subdir_location, columns_to_extract=None, loss_extraction=None):
     """Generate a dataframe that records loss due to a self-imposed filter or a runtime programming error
     
     :param df: dataframe containing information of which image files did not pass a self-imposed filter or lead to runtime programming errors
@@ -22,6 +21,10 @@ def record_loss(df,function_name,subdir_location,
     :returns: df_loss_extraction,loss_extraction i.e. dataframe containing file names leading to runtime errors or that do not pass pre-established filters (metadata size, ionogram size) as well as boolean series indicating which row of data to remove (==1)
     :rtype: (class: `pandas.core.frame.DataFrame`,class: `pandas.core.series.Series`)
     """   
+    if columns_to_extract is None:
+        columns_to_extract = ['file_name']
+    if loss_extraction is None:
+        loss_extraction = []
     if len(loss_extraction) == 0:
         # function should return NA if there an error
         loss_extraction = df.isna().any(axis=1)
@@ -30,7 +33,7 @@ def record_loss(df,function_name,subdir_location,
     df_loss_extraction = df_loss_extraction[columns_to_extract]
     df_loss_extraction['func_name'] = function_name
     df_loss_extraction[ 'subdir_name'] = subdir_location
-    
+
     return df_loss_extraction,loss_extraction
 
 
@@ -46,9 +49,7 @@ def generate_random_subdirectory(regex_subdirectory):
     list_all_subdirectory = glob.glob(regex_subdirectory)
     
     # Randomly pick a subdirectory
-    sample_subdirectory = list_all_subdirectory[random.randint(0,len(list_all_subdirectory) - 1)]
-    
-    return sample_subdirectory
+    return list_all_subdirectory[random.randint(0,len(list_all_subdirectory) - 1)]
 
 def generate_random_image_from_subdirectory(subdirectory,regex_images):
     """Extract random raw image from a subdirectory
@@ -62,9 +63,6 @@ def generate_random_image_from_subdirectory(subdirectory,regex_images):
     """
     # All the images
     list_all_img = glob.glob(subdirectory+regex_images)
-    
+
     # Randomly pick an image file
-    sample_img_file_path = list_all_img[random.randint(0,len(list_all_img) - 1)]
-    
-    
-    return sample_img_file_path
+    return list_all_img[random.randint(0,len(list_all_img) - 1)]

@@ -122,8 +122,6 @@ def read_image(image_path, plotting=False, just_digits=False, down_factor=1):
         # extract height and width of image in pixels 
         height, width = image.shape[0], image.shape[1]
 
-        # cut image to just include bottom 20% of pixels
-        cropped_height = height-height//5
         #cropped_image = [image[cropped_height:height,:]]
         #^no longer cropping since we are looking for ISIS text
 
@@ -135,7 +133,6 @@ def read_image(image_path, plotting=False, just_digits=False, down_factor=1):
         if prediction == [[]]:
             digit_count = 0
 
-        # if characters are found look at the predictions
         else:
             if plotting == True:
                 # plot the predictied box and tuples
@@ -145,6 +142,8 @@ def read_image(image_path, plotting=False, just_digits=False, down_factor=1):
             # loop over predicted (word, box) tuples and count number of digit characters
             digit_count = 0
             says_isis = False
+            # cut image to just include bottom 20% of pixels
+            cropped_height = height-height//5
             for p in prediction:
 
                 # select word and box part of the tuple
@@ -154,21 +153,10 @@ def read_image(image_path, plotting=False, just_digits=False, down_factor=1):
                 if 'isis' in value.lower(): # may want to check 1, I, 5 variations on this to detect like 15iS
                     says_isis = True
                     print('found potential ISIS text')
-                
-                # if word is composed of just integers then 
-                # count how many and incriment digit_count
-                #if just_digits == False or (just_digits == True and value.isdigit()):
-                if True: # do not require it to be an integer, too much of a cut it seems
 
-                    # check that box is within the cropped height
-                    in_bounds = True
-                    for b in box:
-                        if b[1] < cropped_height:
-                            in_bounds = False
-                            break
-                            
-                    if in_bounds:
-                        digit_count += len(value)
+                in_bounds = all(b[1] >= cropped_height for b in box)
+                if in_bounds:
+                    digit_count += len(value)
 
         print('digits count:', digit_count)
 

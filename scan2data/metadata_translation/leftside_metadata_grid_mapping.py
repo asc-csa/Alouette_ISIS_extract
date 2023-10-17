@@ -30,7 +30,7 @@ DEFAULT_DICT_NUM_DOT = (15,32,10) #mean_dist_default,first_peak_default,dist_btw
 
 def extract_centroids_and_determine_type(dilated_meta,file_name,
                       min_num_pixels=50, max_number_pixels=1000,max_area_dot=120):
-    
+
     '''Extract the coordinates of the centroid of each metadata dot/number using the connected component algorithm as well as determines if the metadata is of type dot or number
     
     :param dilated_meta: trimmed metadata (output of image_segmentation.leftside_metadata_trimming) after a rotation and dilation morphological transformation (see translate_leftside_metadata.extract_leftside_metadata )
@@ -50,29 +50,26 @@ def extract_centroids_and_determine_type(dilated_meta,file_name,
     '''
 
     try:
-  
         # Use connected component algorithm to determine the centroids
         _, _, stats, centroids = cv2.connectedComponentsWithStats(dilated_meta)
         area_centroids = stats[:,-1]
-        
+
         # Remove centroids who are probably not associated with metadata num/dot
-        centroids_metadata = centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels),:]    
+        centroids_metadata = centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels),:]
         col_centroids, row_centroids = zip(*centroids_metadata)
-        
+
         # Rounding to nearest integer
         col_centroids = list(map(round,col_centroids))
         row_centroids = list(map(round,row_centroids))
-        
+
         #Determine if dot leftside metadata 
-        area_centroids = area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]    
+        area_centroids = area_centroids[np.logical_and(area_centroids > min_num_pixels, area_centroids < max_number_pixels)]
         median_area = np.median(area_centroids)
-        is_dot = False
         #The line below is commented to prevent giving the dot items manually
         #if any([dir_dot in file_name for dir_dot in LIST_DIRECTORY_DOTS]) and median_area < max_area_dot:
-        if median_area < max_area_dot: #max_area_dot is manually specified as a function input
-            is_dot = True
+        is_dot = median_area < max_area_dot
         return col_centroids,row_centroids,is_dot
-    except:
+    except Exception:
         return np.nan,np.nan,np.nan
 
 
@@ -116,7 +113,7 @@ def indices_highest_peaks_hist_binning(list_coord,
 # TODO: DEFAULTS
 def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, list_y_digit, dir_name,
                       difference_ratio=0.75,use_defaults=True):
-    
+
     """Determines and returns the the mapping between coordinate values on a metadata image and metadata labels in a subdirectory, for metadata of types dot and digits, as well as returns the histogram used to generate each mapping
     
     :param list_x_dot: list of col ('x') positions where metadata of type dot is detected
@@ -148,17 +145,24 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
         try:
             if 'cat' in type_dict:
                 if type_dict == 'dict_cat_digit':
-                    if any([dir_dot in dir_name for dir_dot in LIST_DIRECTORY_DOTS]):
-                        mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DIGIT_F
-                    else:
-                        mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DIGIT
-            
+                    (
+                        mean_dist_default,
+                        first_peak_default,
+                        last_peak_default,
+                    ) = (
+                        DEFAULT_DICT_CAT_DIGIT_F
+                        if any(
+                            dir_dot in dir_name
+                            for dir_dot in LIST_DIRECTORY_DOTS
+                        )
+                        else DEFAULT_DICT_CAT_DIGIT
+                    )
                 elif type_dict == 'dict_cat_dot':
                     mean_dist_default,first_peak_default,last_peak_default=DEFAULT_DICT_CAT_DOT
                 try:
                     idx_peaks,bin_edges,counts = indices_highest_peaks_hist_binning(list_coord)
                     peaks = bin_edges[np.array(idx_peaks)] #coordinate values on a metadata image probably corresponding to metadata
-                    
+
                     n_labels = len(labels)
                     first_peak = peaks[0]
                     last_peak = peaks[-1]
@@ -167,64 +171,68 @@ def get_leftside_metadata_grid_mapping(list_x_dot, list_y_dot, list_x_digit, lis
                         last_peak = last_peak_default
                     if use_defaults and abs(first_peak -first_peak_default)  > difference_ratio*mean_dist_default:
                         first_peak = first_peak_default
-                        
+
                     mean_dist_btw_peaks = (last_peak - first_peak)/(n_labels -1)
-                    list_peaks = [int(round(first_peak + i* mean_dist_btw_peaks)) for i in range(0,n_labels )]
-                    
+                    list_peaks = [int(round(first_peak + i * mean_dist_btw_peaks)) for i in range(n_labels)]
+
+
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] = (idx_peaks,bin_edges,counts)
-                
 
-                except:
+
+                except Exception:
                     last_peak = last_peak_default
                     first_peak = first_peak_default
                     mean_dist_btw_peaks = mean_dist_default
-                    list_peaks = [int(round(first_peak + i* mean_dist_btw_peaks)) for i in range(0,n_labels )]
-                    
+                    list_peaks = [int(round(first_peak + i * mean_dist_btw_peaks)) for i in range(n_labels)]
+
+
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] = {}
-                
+
             elif 'num' in type_dict:
-                if  type_dict == 'dict_num_digit':
-                    if any([dir_dot in dir_name for dir_dot in LIST_DIRECTORY_DOTS]):
-                        mean_dist_default,peak_0_default,dist_btw_peaks = DEFAULT_DICT_NUM_DIGIT_F
-                    else:
-                        mean_dist_default,peak_0_default,dist_btw_peaks = DEFAULT_DICT_NUM_DIGIT
+                if type_dict == 'dict_num_digit':
+                    mean_dist_default, peak_0_default, dist_btw_peaks = (
+                        DEFAULT_DICT_NUM_DIGIT_F
+                        if any(
+                            dir_dot in dir_name
+                            for dir_dot in LIST_DIRECTORY_DOTS
+                        )
+                        else DEFAULT_DICT_NUM_DIGIT
+                    )
                 elif type_dict == 'dict_num_dot':
                     mean_dist_default,peak_0_default,dist_btw_peaks= DEFAULT_DICT_NUM_DOT
 
-                    
+
                 try:
                     idx_peaks,bin_edges,counts = indices_highest_peaks_hist_binning(list_coord,peak_prominence_threshold=0.3,nbins=100,distance_between_peaks=dist_btw_peaks)
-                
-                    peaks = bin_edges[np.array(idx_peaks)]                
+
+                    peaks = bin_edges[np.array(idx_peaks)]
                     peak_0 = peaks[0]
                     if use_defaults and abs(peak_0 -peak_0_default)  > difference_ratio*mean_dist_default:
                         peak_0 = peak_0_default
-                
+
                     # only first three peaks are deemed relevant
-                    if len(peaks) < 3:
-                        max_idx = 2
-                    else:
-                        max_idx = 3
-                
-                    mean_dist_btw_peaks = np.mean([peaks[i+1]-peaks[i] for i in range(0,max_idx)])
+                    max_idx = 2 if len(peaks) < 3 else 3
+                    mean_dist_btw_peaks = np.mean([peaks[i+1]-peaks[i] for i in range(max_idx)])
                     if use_defaults and abs(mean_dist_btw_peaks - mean_dist_default)  > difference_ratio*dist_btw_peaks:
                         mean_dist_btw_peaks = mean_dist_default
-                    list_peaks = [int(round(peak_0 + i* mean_dist_btw_peaks)) for i in range(0,len(labels))]
-                
+                    list_peaks = [int(round(peak_0 + i * mean_dist_btw_peaks)) for i in range(len(labels))]
+
+
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] = (idx_peaks,bin_edges,counts)
-                except:
+                except Exception:
                     peak_0 = peak_0_default
                     mean_dist_btw_peaks = mean_dist_default
-                    list_peaks = [int(round(peak_0 + i* mean_dist_btw_peaks)) for i in range(0,len(labels))]
+                    list_peaks = [int(round(peak_0 + i * mean_dist_btw_peaks)) for i in range(len(labels))]
+
                     all_dict_mapping[type_dict] =dict(zip(list_peaks,labels))
                     all_dict_hist[type_dict] =  {}
-        except:
+        except Exception:
             all_dict_mapping[type_dict] ={}
             all_dict_hist[type_dict] =  {}
 
-            
+
     return all_dict_mapping,all_dict_hist
 

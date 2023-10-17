@@ -24,11 +24,11 @@ def connected_components_metadata_location(meta,min_count=50, max_count=1000):
     """
     # Run the connected component algorithm to label the metadata rectangle
     _, labelled = cv2.connectedComponents(meta)
-    
+
     # Dictionary of label:counts
     unique, counts = np.unique(labelled, return_counts = True)
     dict_components = dict(zip(unique, counts ))
-    
+
     # Remove outliers ie pixels not part of metadata
     dict_subset = {}
     dict_outlier = {}
@@ -37,12 +37,11 @@ def connected_components_metadata_location(meta,min_count=50, max_count=1000):
             dict_subset[k] = v
         else: 
             dict_outlier[k] = v
-            
-    key_list_to_remove = list(dict_outlier.keys())
-    if len(key_list_to_remove) != 0:
+
+    if key_list_to_remove := list(dict_outlier.keys()):
         for k in key_list_to_remove:
             labelled[labelled==k] = 0
-            
+
     return labelled
 
 def grouped_limits_metadata(meta, row_or_col,
@@ -62,17 +61,17 @@ def grouped_limits_metadata(meta, row_or_col,
     """
 
     sum_values = np.sum(meta, row_or_col)
-    sum_values = sum_values[0:-offset_right]
+    sum_values = sum_values[:-offset_right]
     mean_values = [sum(sum_values[i:i + grouped])/(meta.shape[row_or_col]) 
                         for i in range(0,len(sum_values),grouped)]
-    
+
     if math.ceil(len(mean_values) / grouped) > len(mean_values):
         mean_values = mean_values.append(sum(sum_values[i + grouped:-1])/grouped)
-    
+
     normalized_mean_values = (mean_values - np.min(mean_values))/(np.max(mean_values)- np.min(mean_values))
     threshold = 0
     limits = [i for i, mean in enumerate(normalized_mean_values) if mean >threshold ]
- 
+
     return grouped*limits[0],grouped*limits[-1]
 
 
@@ -205,29 +204,24 @@ def trimming_metadata(raw_metadata,type_metadata,
         
     """
     try:
-
         # Median filtering to remove salt and pepper noise
         median_filtered_meta = cv2.medianBlur(raw_metadata,median_kernel_size)
-        
+
         # Opening operation: Erosion + Dilation
         kernel_opening = np.ones(opening_kernel_size,np.uint8)
         opened_meta = cv2.morphologyEx(median_filtered_meta,cv2.MORPH_OPEN,kernel_opening)
-        
+
         # Binarizatinon for connected component algorithm
         _,meta_binary = cv2.threshold(opened_meta, 127,255,cv2.THRESH_BINARY)    
-        
+
         # Run connected component algorithm
         connected_meta = connected_components_metadata_location(meta_binary)
-        
-        if type_metadata == 'left':
-            trimmed_metadata = leftside_metadata_trimming(connected_meta,meta_binary)
-        else:
-            trimmed_metadata =  bottomside_metadata_trimming(connected_meta,meta_binary)
 
         # These lines were added just for checking the extracted metadata
         # cv2.imshow("test", trimmed_metadata)
         # cv2.waitKey(0)
 
-        return trimmed_metadata
-    except:
+        return leftside_metadata_trimming(connected_meta, meta_binary) if type_metadata == 'left' else bottomside_metadata_trimming(connected_meta, meta_binary)
+
+    except Exception:
         return np.nan

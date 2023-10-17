@@ -15,7 +15,7 @@ def main():
     dir_csv_output = sys.argv[2] #05a_result_local
     regex_raw = '*.png'
 
-    list_all_subdir = glob.glob(master_dir + 'R*/[0-9]*/')
+    list_all_subdir = glob.glob(f'{master_dir}R*/[0-9]*/')
     for sample_subdir in list_all_subdir:
         sample_subdir = sample_subdir.replace('/', '\\')
         sample_subdir = sample_subdir.replace('\\', '/')

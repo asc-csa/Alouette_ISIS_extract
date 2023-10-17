@@ -66,62 +66,62 @@ def segment_images(subdir_location, regex_img,
     # List of raw image files in subdirectory
     regex_raw_image = subdir_location + regex_img
     list_images = glob.glob(regex_raw_image)
-    
+
     # If flipping/rotating is required for all the images in the subdirectory
     path = subdir_location.replace('\\', '/')
-    flip_vertical = any([subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL])
-    rotate_180 = any([subdir_dir in path for subdir_dir in LIST_ROTATE_180])
+    flip_vertical = any(subdir_dir in path for subdir_dir in LIST_FLIP_VERTICAL)
+    rotate_180 = any(subdir_dir in path for subdir_dir in LIST_ROTATE_180)
 
     # DataFrame for processing
     df_img = pd.DataFrame(data = {'file_name': list_images})     
-    
+
     #Read each image in an 2D UTF-8 grayscale array
-    if flip_vertical == True:
+    if flip_vertical:
         df_img['raw'] = df_img['file_name'].map(lambda file_name: cv2.flip(cv2.imread(file_name,0),1))
     else:
         df_img['raw'] = df_img['file_name'].map(lambda file_name: cv2.imread(file_name,0))
-    
+
     # Extract ionogram and coordinates delimiting its limits
     df_img['limits'], df_img['ionogram'] = zip(*df_img['raw'].map(lambda raw_img: extract_ionogram(raw_img))) #from extract_ionogram_from_scan.py
-    
+
     # Record the files whose ionogram extraction was not successful
     df_loss_ion_extraction, loss_ion_extraction = record_loss(df_img,'image_segmentation.extract_ionogram_from_scan.extract_ionogram',subdir_location)
 
     # Remove files whose ionogram extraction was not successful
     df_img = df_img[~loss_ion_extraction]
-    
-    if rotate_180 == True:
+
+    if rotate_180:
         df_img['ionogram'] = df_img['ionogram'].map(lambda ionogram: np.rot90(ionogram, 2))
 
     # Extract the shape of each ionogram in subdirectory
     df_img['height'],df_img['width'] = zip(*df_img['ionogram'].map(lambda array_pixels: array_pixels.shape))
-    
+
     #Find median height and width of ionogram in subdirectory
     median_height = np.median(df_img['height'])
     median_width = np.median(df_img['width'])
-    
+
     # Find and remove ionogram outliers    
-    conditional_list_ionogram = [abs(df_img['height'] -median_height) > cutoff_height,abs(df_img['width'] - median_width) > cutoff_width] 
+    conditional_list_ionogram = [abs(df_img['height'] -median_height) > cutoff_height,abs(df_img['width'] - median_width) > cutoff_width]
     outlier_ionogram = np.any(conditional_list_ionogram,axis = 0)
-    
+
     df_outlier_ionogram,_ = record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: iono size outlier',subdir_location,['file_name','height','width'],outlier_ionogram)
-    
+
     # Log outlier
     if not df_outlier_ionogram.empty:
         df_outlier_ionogram[ 'details'] = df_outlier_ionogram.apply(lambda row: 'height: ' + str(row['height'])+',width: ' + str(row['width']), 1)
         df_outlier_ionogram = df_outlier_ionogram[['file_name','func_name','subdir_name','details']]
     else:
         df_outlier_ionogram = df_outlier_ionogram[['file_name','func_name','subdir_name']]
-    
+
     # Remove outlier
     df_img = df_img[~outlier_ionogram]
-    
+
 
     # Raw metadata
     df_img['metadata_type'], df_img['raw_metadata'] = zip(*df_img.apply(lambda row: extract_metadata(row['raw'], row['limits']), 1)) #from extract_metadata_from_scan
-    if rotate_180 == True:
+    if rotate_180:
         df_img['raw_metadata'] = df_img['raw_metadata'].map(lambda raw_metadata: np.rot90(raw_metadata, 2))
-    
+
     # There should be no metadata on left and top, especially after flipping
     '''outlier_metadata_location = np.any([df_img['metadata_type'] == 'right', df_img['metadata_type']=='top'], axis=0)
     df_outlier_metadata_location ,_ =  record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: metadata not on left or bottom',subdir_location,
@@ -135,23 +135,23 @@ def segment_images(subdir_location, regex_img,
     
     # Remove loss from detected metadata not being on the left or bottom
     df_img = df_img[~outlier_metadata_location]'''
-    
+
     # Trimmed metadata
     df_img['trimmed_metadata'] = df_img.apply(lambda row: trimming_metadata(row['raw_metadata'], row['metadata_type']), 1) #from trim_raw_metadata.py
     df_loss_trim,loss_trim = record_loss(df_img,'image_segmentation.trim_raw_metadata.trimming_metadata',subdir_location)
 
-    
+
     # Remove files whose metadata trimming was not successful
     df_img = df_img[~loss_trim]
-    
-    
+
+
     # Check if metadata too small
     df_img['meta_height'],df_img['meta_width'] = zip(*df_img['trimmed_metadata'].map(lambda array_pixels: array_pixels.shape))
     outlier_size_metadata = np.logical_or(np.logical_and(df_img['metadata_type'] == 'left', 
                                                       df_img['meta_width'] < min_leftside_meta_width),
                                        np.logical_and(df_img['metadata_type'] == 'bottom', 
                                                       df_img['meta_height'] < min_bottomside_meta_height))
-        
+
     df_outlier_metadata_size, _ = record_loss(df_img,'image_segmentation.segment_images_in_subdir.segment_images: metadata size outlier',subdir_location,
                                            ['file_name','metadata_type','meta_height','meta_width'],outlier_size_metadata)
 
@@ -159,18 +159,18 @@ def segment_images(subdir_location, regex_img,
         df_outlier_metadata_size['details'] = df_outlier_metadata_size.apply(lambda row: row['metadata_type'] + '_height: ' + \
                                                     str(row['meta_height'])+',width: ' + str(row['meta_width']),1)
         df_outlier_metadata_size = df_outlier_metadata_size[['file_name','func_name','subdir_name','details']]
-        
+
     else:
         df_outlier_metadata_size = df_outlier_metadata_size[['file_name','func_name','subdir_name']]
-    
+
     # Remove files whose metadata too small
     df_img = df_img[~outlier_size_metadata]
-    
-    
+
+
     # Dataframe recording loss from programming errors
     df_loss = pd.concat([df_loss_ion_extraction,df_loss_trim])
-    
+
     # Dataframe recording loss from various filters i.e. metadata too small, ionogram too small/big
     df_outlier = pd.concat([df_outlier_ionogram,df_outlier_metadata_size]) #df_outlier_metadata_location
-    
+
     return df_img, df_loss, df_outlier

@@ -34,9 +34,7 @@ def get_peaks(list_coord):
     
     """
     idx_peaks,bin_edges,counts = indices_highest_peaks_hist_binning(list_coord)
-    peaks = bin_edges[np.array(idx_peaks)]
-           
-    return peaks
+    return bin_edges[np.array(idx_peaks)]
 
 
 
