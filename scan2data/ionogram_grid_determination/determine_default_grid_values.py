@@ -11,10 +11,13 @@ import sys
 
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 from grid_mapping import all_stack,get_grid_mappings
 sys.path.append('../')
 from image_segmentation.segment_images_in_subdir import segment_images
+import warnings
+warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning) 
 
 def plot_hist_peaks_grids(*all_df,
                           nbins=500):
@@ -27,26 +30,26 @@ def plot_hist_peaks_grids(*all_df,
     
     
     '''
-    nrow = len(*all_df)
+    nrow = len(all_df)
     fig,axes = plt.subplots(nrows=nrow,ncols=2)
     ax = axes.ravel()
-
-    for i,df in enumerate(*all_df):
+    
+    for i,df in enumerate(all_df):
         coord_row = list(itertools.chain.from_iterable(df['row_peaks']))
-
-
+        
+        
         ax[2*i].hist(coord_row, bins=nbins)
         ax[2*i].set_title(df.name + ' ' + 'row_peaks')
-
+        
         coord_col = list(itertools.chain.from_iterable(df['col_peaks']))
         ax[2*i +1].hist(coord_col, bins=nbins)
         ax[2*i+1].set_title(df.name + ' '+ 'col_peaks')
-
+        
         list_dict_mapping_Hz = df['mapping_Hz'].tolist()
-
-
-
-    for i,df in enumerate(*all_df):
+        
+    
+     
+    for i,df in enumerate(all_df):
         fig2,axes2 = plt.subplots(nrows=4,ncols=4)
         ax2 = axes2.ravel()
         fig2.suptitle(df.name)
@@ -58,15 +61,15 @@ def plot_hist_peaks_grids(*all_df,
         for key in combined_mapping_Hz:
             combined_mapping_Hz[key] = [dict_mapping[key] for dict_mapping in list_dict_mapping_Hz if key in dict_mapping]
             ax2[i].hist(combined_mapping_Hz[key], bins=nbins)
-            ax2[i].set_title(f'{str(key)} Hz')
+            ax2[i].set_title(str(key) + ' ' + 'Hz')
             i = i +1
-
+        
         list_dict_mapping_km = df['mapping_km'].tolist()
         combined_mapping_km = {0:[],100:[],200:[]}
         for key in combined_mapping_km:
             combined_mapping_km[key] = [dict_mapping[key] for dict_mapping in list_dict_mapping_km if key in dict_mapping]
             ax2[i].hist(combined_mapping_km[key], bins=nbins//50)
-            ax2[i].set_title(f'{str(key)} km')
+            ax2[i].set_title(str(key) + ' ' + 'km')
             i = i +1
             
 
@@ -88,11 +91,13 @@ def grid_default_values(regex_subdir, regex_images,min_subset=10):
     """
     # All the subdirectory i.e. R014207948/1743-9/
     list_all_subdir = glob.glob(regex_subdir)
+    print(list_all_subdir)
     
     df_summary_bottom = pd.DataFrame(columns=['row_peaks','col_peaks','mapping_Hz', 'mapping_km'] )
     df_summary_left = pd.DataFrame(columns=['row_peaks','col_peaks','mapping_Hz', 'mapping_km'] )
     
     for subdir_name in list_all_subdir:
+        print(subdir_name)
         try:
             df_img,_,_ =segment_images(subdir_name, regex_images)
             for metatype in ['left','bottom']:
@@ -116,7 +121,7 @@ def grid_default_values(regex_subdir, regex_images,min_subset=10):
     return df_summary_bottom,df_summary_left
 
 if __name__ == '__main__':
-    df_summary_bottom1,df_summary_left1 = grid_default_values(regex_subdir='E:/master/R*/[0-9]*/', regex_images='*.png')
+    df_summary_bottom1,df_summary_left1 = grid_default_values(regex_subdir='L:/DATA/ISIS/raw_upload_20230421/R*/B*/', regex_images='*.png')
     df_merge1 = df_summary_bottom1.append(df_summary_left1)
     df_merge1.name = 'merged'
-    plot_hist_peaks_grids(df_summary_bottom1,df_summary_left1,df_merge1)
+    #plot_hist_peaks_grids(df_summary_bottom1,df_summary_left1,df_merge1)

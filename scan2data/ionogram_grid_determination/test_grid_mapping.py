@@ -51,6 +51,6 @@ def test_grid_mapping(sample_subdirectory, regex_images):
 
 
 if __name__ == '__main__':
-    sample_subdir = generate_random_subdirectory(regex_subdirectory='E:/master/R*/[0-9]*/')
+    sample_subdir = generate_random_subdirectory(regex_subdirectory='L:/DATA/ISIS/raw_upload_20230421/R*/B*/')
     test_grid_mapping(sample_subdir , regex_images='*.png')
     

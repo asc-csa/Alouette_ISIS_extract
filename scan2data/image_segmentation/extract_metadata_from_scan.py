@@ -20,7 +20,6 @@ def extract_metadata(raw_img_array, limits_ionogram):
     # Limits delimiting the ionogram part of the image
     x_axis_left_limit, x_axis_right_limit, y_axis_upper_limit, y_axis_lower_limit = limits_ionogram
     
-    
     # Extract each rectangular block besides the ionogram
     rect_left = raw_img_array[:,0:x_axis_left_limit]
     rect_right = raw_img_array[:,x_axis_right_limit::]
@@ -34,7 +33,7 @@ def extract_metadata(raw_img_array, limits_ionogram):
     type_metadata_idx = np.argmax(rect_areas) 
     raw_metadata = rect_list[type_metadata_idx]
     type_metadata = dict_mapping_meta[type_metadata_idx ]
-    
+
     return (type_metadata, raw_metadata)
  
     

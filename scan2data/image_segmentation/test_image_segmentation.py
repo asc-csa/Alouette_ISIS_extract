@@ -191,7 +191,7 @@ def test_segment_images_in_subdir_trim_helper(sample_image_path):
     ax[5].set_title(f'trimmed_metadata{metadata_type}')
     
 if __name__ =='__main__':
-    sample_subdir = generate_random_subdirectory(regex_subdirectory='E:/master/R*/[0-9]*/')
+    sample_subdir = generate_random_subdirectory(regex_subdirectory='L:/DATA/ISIS/raw_upload_20230421/R*/B*/')
     sample_img_from_subdir = generate_random_image_from_subdirectory(sample_subdir, regex_images='*.png')
     
     test_segment_images_in_subdir(sample_subdir,sample_img_from_subdir, regex_images='*.png')

@@ -53,7 +53,7 @@ def process_subdirectory(subdir_path, regex_images):
     
     if len(df_img_left) > 9:
         #Get metadata
-        df_img_left, df_loss_meta_left, _, _ = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
+        df_img_left, df_loss_meta_left, dict_mapping_left, dict_hist_left = get_leftside_metadata(df_img_left, subdir_path) #from metadata_translation.translate_leftside_metadata
         df_loss = df_loss.append(df_loss_meta_left)
         #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
         df_processed_left, df_loss_coord_left = extract_coord_subdir_and_param(df_img_left, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
@@ -63,10 +63,15 @@ def process_subdirectory(subdir_path, regex_images):
         df_loss_coord_left = pd.DataFrame()
     
     if len(df_img_bottom) > 9:
-        df_img_bottom, df_loss_meta_bottom, _, _ = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_bottomside_metadata
+        df_img_bottom, df_loss_meta_bottom, dict_mapping_bottom, dict_hist_bottom = get_bottomside_metadata(df_img_bottom, subdir_path) #from metadata_translation.translate_bottomside_metadata
         df_loss = df_loss.append(df_loss_meta_bottom)
-        #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
-        df_processed_bottom, df_loss_coord_bottom = extract_coord_subdir_and_param(df_img_bottom, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
+        if len(df_img_bottom) > 0:
+            #Extract the coordinates of the ionogram trace (black), Map the (x,y) pixel coordinates to (Hz, km) values
+            df_processed_bottom, df_loss_coord_bottom = extract_coord_subdir_and_param(df_img_bottom, subdir_path, col_peaks, row_peaks, mapping_Hz, mapping_km) #from ionogram_content_extraction.extract_all_coordinates_ionogram_trace
+        else :
+            df_processed_bottom = pd.DataFrame()
+            df_loss_coord_bottom = pd.DataFrame()
+            
     else:
         df_loss = df_loss.append(df_img_bottom)
         df_processed_bottom = pd.DataFrame()
@@ -133,23 +138,26 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
     
     df_processed, df_loss, df_outlier = process_subdirectory(sample_subdir, regex_raw)
 
-    # Split left from bottom-side metadata
-    df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
-    df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
+    if(len(df_processed)==0):
+        df_processed_left=pd.DataFrame()
+        df_processed_bottom=pd.DataFrame()
+    else:
+        # Split left from bottom-side metadata
+        df_processed_left = df_processed.loc[df_processed['metadata_type'] == 'left']
+        df_processed_bottom = df_processed.loc[df_processed['metadata_type'] == 'bottom']
 
     df_dot = pd.DataFrame()
     df_num = pd.DataFrame()
-
+    
     if len(df_processed_left) > 0:
-        is_dot = np.array(df_processed_left['is_dot'])
-        df_dot_subset = df_processed_left[is_dot]
-        df_num_subset = df_processed_left[np.invert(is_dot)]
-        _, subdir_name = ntpath.split(sample_subdir[:-1])
+        df_dot_subset = df_processed_left.loc[df_processed_left['is_dot'] == 1.]
+        df_num_subset = df_processed_left.loc[df_processed_left['is_dot'] == 0.]
+        start, subdir_name = ntpath.split(sample_subdir[:-1])
         df_dot_subset = process_df_leftside_metadata(df_dot_subset, subdir_name, master_dir, is_dot=True)
         df_num_subset = process_df_leftside_metadata(df_num_subset, subdir_name, master_dir, is_dot=False)
         df_dot = pd.concat([df_dot, df_dot_subset])
         df_num = pd.concat([df_num, df_num_subset])
-
+    
     #Assume that there is no bottom-side dot type metadata (count df_dot_subset as loss)
     if len(df_processed_bottom) > 0:
         #is_dot = np.array(df_processed_bottom['is_dot'])
@@ -157,7 +165,7 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         df_dot_subset = df_processed_bottom.loc[df_processed_bottom['is_dot'] == True]
         #df_num_subset = df_processed_bottom[np.invert(is_dot)]
         df_num_subset = df_processed_bottom.loc[df_processed_bottom['is_dot'] != True]
-        _, subdir_name = ntpath.split(sample_subdir[:-1])
+        start, subdir_name = ntpath.split(sample_subdir[:-1])
         df_loss = pd.concat([df_loss, df_dot_subset])
         df_num_subset = process_df_bottomside_metadata(df_num_subset, subdir_name, master_dir)
         df_num = pd.concat([df_num, df_num_subset])
@@ -171,9 +179,9 @@ def process_extract_management(dir_csv_output, master_dir, regex_raw, sample_sub
         df_loss.to_csv(dir_csv_output + 'df_loss.csv', index=False)
     if len(df_outlier) > 0:
         df_outlier.to_csv(dir_csv_output + 'df_outlier.csv', index=False)
-
+    
     #Save mapped coordinates
-    for i in range(len(df_processed)):
+    for i in range(0, len(df_processed)):
         path = df_processed['file_name'].iloc[i].replace(master_dir, '')
         path = path.replace('/', '\\')
         path = path.replace('\\', '/')

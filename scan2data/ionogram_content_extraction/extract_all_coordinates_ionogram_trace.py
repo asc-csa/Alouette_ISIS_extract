@@ -143,7 +143,7 @@ def map_coordinates_positions_to_values(arr_raw_coord, col_peaks, row_peaks, map
     """
 
     # check if there are any coordinate values recorded for the ionogram
-    if not arr_raw_coord.size:
+    if len(arr_raw_coord)==0:
         return arr_raw_coord
 
     # remove outliers ie coordinates less coordinates corresponding to 0.5 Hz or more than corresponding to 11.5 Hz
@@ -199,8 +199,14 @@ def extract_coord_subdir_and_param(df_img, subdir_location, col_peaks, row_peaks
 
     """
     # Get (x,y) coordinates of trace
-    df_img['raw_coord'], df_img['window_coord'] = zip(
-        *df_img['ionogram'].map(lambda iono: extract_coord(iono, col_peaks, row_peaks)))
+    if(len(df_img)==1):
+        c1, c2 = zip(*df_img['ionogram'].map(lambda iono: extract_coord(iono, col_peaks, row_peaks)))
+        df_img['raw_coord'] = list(c1)
+        df_img['window_coord'] = list(c2)
+        
+    else :
+        df_img['raw_coord'], df_img['window_coord'] = zip(
+            *df_img['ionogram'].map(lambda iono: extract_coord(iono, col_peaks, row_peaks)))
 
     # Remove loss
     df_loss_coord, loss_coord = record_loss(df_img,
