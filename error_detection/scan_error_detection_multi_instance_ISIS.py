@@ -61,6 +61,7 @@ import pandas as pd
 import tensorflow as tf
 import keras_ocr
 import datetime
+import string 
 
 print('tensorflow version (should be 2.10.* for GPU compatibility):', tf.__version__)
 if len(tf.config.list_physical_devices('GPU')) != 0: 
@@ -68,7 +69,13 @@ if len(tf.config.list_physical_devices('GPU')) != 0:
 else:
     print('CPU in use for tensorflow')
 
-pipeline = keras_ocr.pipeline.Pipeline()
+# pipeline = keras_ocr.pipeline.Pipeline()
+
+# Added a recognizer to better read characters picked up 
+recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits)  ## edit made by Jeysh - check with Ashley
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading.h5')   
+recognizer.compile()  
+pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 # set paths
 batchDir = 'L:/DATA/ISIS/ISIS_101300030772/'
