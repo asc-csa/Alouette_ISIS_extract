@@ -37,19 +37,19 @@ parser.add_option('-s', '--save', dest='saveDir',
         help='Path to directory where results output file should be saved, default=%default. All instances should output to the same path.')
 
 parser.add_option('-f', '--filename', dest='filename', 
-        default='error_results3.csv', type='str', 
+        default='error_results4.csv', type='str', 
         help='Name of file to output results to in the path $SAVEDIR$, default=%default. This document is also used to track which subdirectories have \
               already been processed so to avoid different instances duplicating efforts all instances should be outputting to the same file.')
 
 (options, args) = parser.parse_args()
 
 # replace this with your own library path for --user pip installs (if applicable)
-sys.path.append('C:/Users/' + options.username + '/AppData/Roaming/Python/Python38/Scripts')
+sys.path.append(f'C:/Users/{options.username}/AppData/Roaming/Python/Python38/Scripts')
 
 if options.device == 'CPU':
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 if options.device == 'GPU':
-    sys.path.insert(0, 'U:/temp/' + options.username + '/python/envs/' + options.env_name + '/lib/site-packages/')
+    sys.path.insert(0, f'U:/temp/{options.username}/python/envs/{options.env_name}/lib/site-packages/')
 
 # more imports
 import gc
@@ -60,10 +60,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import tensorflow as tf
 import keras_ocr
+import datetime
 
-print('tensorflow version (should be 2.10.* for GPU compatibility)', tf.__version__)
+print('tensorflow version (should be 2.10.* for GPU compatibility):', tf.__version__)
 if len(tf.config.list_physical_devices('GPU')) != 0: 
-    print('GPU in use for tensorflor')
+    print('GPU in use for tensorflow')
 else:
     print('CPU in use for tensorflow')
 
@@ -80,11 +81,11 @@ print('This program will be saving to results file location:', outFile)
 if not(os.path.exists(saveDir)):
     os.makedirs(saveDir)
 
-append2outFile = True # change to false if starting new file
+append2outFile = True # change to false if starting new file, have not tested in long time
 saveImages = False
 
 
-def read_image(image_path, plotting=False, just_digits=False):
+def read_image(image_path, plotting=False, just_digits=False, use_cutoff=True):
     '''
     This function reads in one image a time and outputs the height 
     and width along with the estimated digit count of the metadata.
@@ -109,11 +110,11 @@ def read_image(image_path, plotting=False, just_digits=False):
     
         height (int): number of pixels along y-axis of original image
         
-        width (int): number of pixels along x-axis of origional image
+        width (int): number of pixels along x-axis of original image
 
-        max_d (bool): True if 'isis' independant of capitalization is 
-                          present within the detected text, False otherwise
-                          ~~~~ done for origional image ~~~~
+        max_d (bool): True if 'isis' in either capitalization is present
+                        within the detected text, False otherwise
+                          ~~~~ done for original image ~~~~
     '''
     try: 
 
@@ -137,51 +138,66 @@ def read_image(image_path, plotting=False, just_digits=False):
         # if characters are found look at the predictions
         else:
             if plotting == True:
-                # plot the predictied box and tuples
+                # plot the predicted box and tuples
                 keras_ocr.tools.drawAnnotations(image=image, predictions=prediction)
                 # ADD LINE SHOWING BOTTOM 20% OR JUST CONVERT WHOLE IMAGE
                 plt.show()
 
             # loop over predicted (word, box) tuples and count number of digit characters
             digit_count, max_x, min_x, box_count = 0, -np.inf, np.inf, 0 # CHANGE
+            candidate_char_boxes = []
             for p in prediction:
 
                 # select word and box part of the tuple
                 value, box = p[0], p[1]
                
                 # if word is composed of just integers then 
-                # count how many and incriment digit_count
-                if just_digits == False or (just_digits == True and value.isdigit()):
+                # count how many and increment digit_count
+                if just_digits == False or (just_digits == True and value.isdigit()): # loop over each digit?
                     # check that box is within the cropped height
                     in_bounds = True
-                    for b in box:
-                        if b[0] < cropped_height: # does this pick the right thing?
-                            in_bounds = False # right way?
-                            break
+                    
+                    if use_cutoff:
+                        for b in box: 
+                            # key change is b[0] --> b[1] and now I think bug is fixed
+                            if b[1] < cropped_height: # does this pick the right thing?
+                                in_bounds = False # right way?
+                                break
                             
                     if in_bounds: 
                         box_count +=1 
                         digit_count += len(value)
 
-                        # save diffrence between lowest and highest x value
-                        if box[0,0] > max_x:
+                        # save difference between lowest and highest x value
+                        # (for max_d)
+                        if box[0,0] > max_x: # top left corner ?
                             max_x = box[0,0]
-                        if box[0,1] < min_x:
+                        if box[0,1] < min_x: # top right corner ?
                             min_x = box[0,1]
+                            
+                        # save all char positions (for max_d_no_char use later)
+                        candidate_char_boxes.append(box) # assumes no box overlap?
+                        #just pass the whole box, not: (box[0,1],box[0,1])
+        
+        # sort the boxes from left to right by top left value
+        #sorted_boxes.append()
+        candidate_char_boxes.sort(key=lambda candidate_char_boxes: candidate_char_boxes[0,0])
+        print(f'box order to check {candidate_char_boxes}')
 
         if box_count > 2 and max_x != -np.inf and min_x != np.inf: # add chars detected >x
             max_d = max_x - min_x
+            max_d_no_char = 0
         else:
-            max_d = -1
+            max_d, max_d_no_char = -1, -1
 
         print('max digits distance:', max_d)
         print('digits count:', digit_count)
 
     except Exception as e:
         print('ERR:', e)
-        digit_count, height, width, max_d = -1, -1, -1, -1
+        digit_count, height, width, max_d, max_d_no_char = -1, -1, -1, -1, -1
 
-    return digit_count, height, width, max_d
+    return digit_count, height, width, max_d, max_d_no_char
 
 
 def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False):
@@ -210,18 +226,19 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     # initialize lists to save values to in loop
     directories, subdirs, images = [], [], []
     heights, widths, digit_counts = [], [], []
-    max_d_lst, user_lst = [], []
+    max_d_lst, max_d_no_char_lst, user_lst, datetime_lst = [], [], [], []
 
     # assume file has not yet been written to and needs header
     header = True
 
     # set column types for results dataframe 
     types = {'Directory': 'str', 'Subdirectory': 'str', 'filename': 'str', 'digit_count': 'int', \
-             'height': 'float32', 'width': 'float32', 'max_d': 'float32', 'user': 'str'}
+             'height': 'float32', 'width': 'float32', 'max_d': 'float32', \
+             'max_d_no_char': 'float32', 'user': 'str', 'datetime':'str'}
     
     # loop over all directories in the batch 2 raw data directory
-    raw_contents = os.listdir(batchDir) # random suffle appled
-    random.shuffle(raw_contents) # random suffle applied
+    raw_contents = os.listdir(batchDir) # random shuffle applied
+    random.shuffle(raw_contents) # random shuffle applied
     for directory in raw_contents:
 
         # loop over all subdirectories within the directory
@@ -232,7 +249,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             # in this approach we hope that no same subdirectory is found by two instances
             # at similar times but we check before saving to avoid writting duplicates
             # --> alternatively can sample from an "unprocessed" log
-
             print('###############################\n###############################')
             print('###############################\n###############################')
             print('dir:', directory, '\nsubdir:', subdir)
@@ -243,7 +259,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
             # this far and so that is what we check below
             if os.path.exists(outFile):
 
-                # this is just a trick to make sure file isnt in use
+                # this is just a trick to make sure file isn't in use
                 read_safe = False
                 while read_safe == False:
                     try:
@@ -266,108 +282,114 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 # check that this specific subdir has already been processed
                 if str(directory + ' ' + subdir) in subdir_id_lst:
                     print('this subdirectory has already been processed, moving on to the next one...')
-                    continue
+                    proceed = False # the continue statement was not working as expected
             
                 else:
                     print('this subdirectory is not already processed, beginning processing...')
+                    proceed = True
             
             else: # TEMP
-                print('error: outFile does not exist, did not save!!')
+                print(f'error: outFile does not exist ({outFile}), did not save!!')
+                proceed = False
 
-            # loop over all images in the subdirectory
-            subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
-            for image in subdir_contents:
+            if proceed == True:
+                # loop over all images in the subdirectory
+                subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
+                for image in subdir_contents:
 
-                # save full path of image
-                image_path = batchDir + directory + '/' + subdir + '/' + image
+                    # save full path of image
+                    image_path = batchDir + directory + '/' + subdir + '/' + image
 
-                # save id of image
-                directories.append(directory)
-                subdirs.append(subdir)
-                images.append(image)
+                    # save id of image
+                    directories.append(directory)
+                    subdirs.append(subdir)
+                    images.append(image)
 
-                # send to read_image to get aspect ratio, digit count, and isis text
-                num_of_digits, h, w, max_d = read_image(image_path, plotting=plotting)
+                    # send to read_image to get aspect ratio, digit count, and isis text
+                    num_of_digits, h, w, max_d, max_d_no_char = read_image(image_path, 
+                                                                           plotting=plotting)
 
-                # save values
-                digit_counts.append(num_of_digits)
-                heights.append(h)
-                widths.append(w)
-                max_d_lst.append(max_d)
-                user_lst.append(options.username)
+                    # save values
+                    digit_counts.append(num_of_digits)
+                    heights.append(h)
+                    widths.append(w)
+                    max_d_lst.append(max_d)
+                    user_lst.append(options.username)
+                    datetime_lst.append(datetime.datetime.now())
 
 
-            #### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
-            # initialize dataframe and save results to csv
-            # (redoing this each interation to not loose information)
-            df_mapping_results = pd.DataFrame()
-            df_mapping_results['Directory'] = directories
-            df_mapping_results['Subdirectory'] = subdirs
-            df_mapping_results['filename'] = images
-            df_mapping_results['digit_count'] = digit_counts
-            df_mapping_results['height'] = heights
-            df_mapping_results['width'] = widths
-            df_mapping_results['max_d'] = max_d_lst
-            df_mapping_results['user'] = user_lst
+                #### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
+                # initialize dataframe and save results to csv
+                # (redoing this each interation to not loose information)
+                df_mapping_results = pd.DataFrame()
+                df_mapping_results['Directory'] = directories
+                df_mapping_results['Subdirectory'] = subdirs
+                df_mapping_results['filename'] = images
+                df_mapping_results['digit_count'] = digit_counts
+                df_mapping_results['height'] = heights
+                df_mapping_results['width'] = widths # zero len??
+                df_mapping_results['max_d'] = max_d_lst
+                #df_mapping_results['max_d_no_char'] = max_d_no_char_lst
+                df_mapping_results['user'] = user_lst
+                df_mapping_results['datetime'] = datetime_lst
 
-            # mode = 'a' means it will append to existing data within the file
-            if append2outFile == True:
-                mode = 'a' 
+                # mode = 'a' means it will append to existing data within the file
+                if append2outFile == True:
+                    mode = 'a' 
 
-                # wipe lists now that they have been saved
-                directories, subdirs, images = [], [], []
-                heights, widths, digit_counts = [], [], []
-                max_d_lst, user_lst = [], []
-                
-            else: # append2outFile = False should not be used for multi-instance
-                # this overwrites existing file
-                mode = 'w' # check exits or not instead?
-                header = True
+                    # wipe lists now that they have been saved
+                    directories, subdirs, images = [], [], []
+                    heights, widths, digit_counts = [], [], []
+                    max_d_lst, max_d_no_char_lst, user_lst, datetime_lst = [], [], [], []
+                    
+                else: # append2outFile = False should not be used for multi-instance
+                    # this overwrites existing file
+                    mode = 'w' # check exits or not instead?
+                    header = True
 
-            print('subdirectory', subdir, 'processed, attempting to save data...')
-            save = True
-            print(os.path.exists(outFile))
-            if os.path.exists(outFile):
-                write_safe = False
-                while write_safe == False:
-                    print('***')
-                    try:
-                        os.rename(outFile, outFile)
+                print('subdirectory', subdir, 'processed, attempting to save data...')
+                save = True
+                print(os.path.exists(outFile))
+                if os.path.exists(outFile):
+                    write_safe = False
+                    while write_safe == False:
+                        print('***')
+                        try:
+                            os.rename(outFile, outFile)
 
-                        # get a set of already processed dirs and subdirs
-                        # WHAT HAPPENS WHEN EMPTY? START IT YOURSELF NOW
-                        df_processed_results = pd.read_csv(outFile, dtype=types)
-                        subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
+                            # get a set of already processed dirs and subdirs
+                            # WHAT HAPPENS WHEN EMPTY? START IT YOURSELF NOW
+                            df_processed_results = pd.read_csv(outFile, dtype=types)
+                            subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
 
-                        # check that this specific subdir has already been processed
-                        if str(directory + ' ' + subdir) in subdir_id_lst:
-                            print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                            # note: we should check for duplicates in the analysis just incase + check all data has been saved
-                            save = False
-                        
-                        if save == True:
+                            # check that this specific subdir has already been processed
+                            if str(directory + ' ' + subdir) in subdir_id_lst:
+                                print('thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
+                                # note: we should check for duplicates in the analysis just incase + check all data has been saved
+                                save = False
+                            
+                            if save == True:
+                                # check if there is already data in the output file 
+                                # (this may create duplicate headers if instances finish 
+                                # processing their first subdir too close together)
+                                if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
+                                    header = False 
 
-                            # check if there is already data in the output file 
-                            # (this may create duplicate headers if instances finish 
-                            # processing their first subdir too close together)
-                            if header == True and os.path.exists(outFile) and os.path.getsize(outFile)!=0:
-                                header = False 
+                                df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
+                                del df_mapping_results
+                                del df_processed_results
+                                print(f'data sucessfully saved to {outFile}')
 
-                            df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
-                            del df_mapping_results
-                            del df_processed_results
-                            print('data sucessfully saved to {}'.format(outFile))
+                            write_safe = True 
 
-                        write_safe = True 
+                        except (OSError, PermissionError) as e:
+                            print(e)
+                            print(outFile, 'currently being used, pausing for 1 minute before another attempt')
+                            time.sleep(60)
 
-                    except (OSError, PermissionError) as e:
-                        print(e)
-                        print(outFile, 'currently being used, pausing for 1 minute before another attempt')
-                        time.sleep(60)
-
-            collected = gc.collect()
-            print("Garbage collector: collected",
-                    "%d objects." % collected)
+                collected = gc.collect()
+                print("Garbage collector: collected",
+                        "%d objects." % collected)
 
 
 if __name__ == '__main__':
