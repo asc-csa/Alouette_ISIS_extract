@@ -63,6 +63,10 @@ import keras_ocr
 import datetime
 import string 
 
+#imports - pixel reading (Jeysh 10/31/23)
+from PIL import Image 
+import cv2 as cv
+
 print('tensorflow version (should be 2.10.* for GPU compatibility):', tf.__version__)
 if len(tf.config.list_physical_devices('GPU')) != 0: 
     print('GPU in use for tensorflow')
@@ -72,7 +76,7 @@ else:
 # pipeline = keras_ocr.pipeline.Pipeline()
 
 # Added a recognizer to better read characters picked up 
-recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits)  ## edit made by Jeysh - check with Ashley
+recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits)  ## edit made by Jeysh 
 recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading.h5')   
 recognizer.compile()  
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
@@ -130,9 +134,44 @@ def read_image(image_path, plotting=False, just_digits=False, use_cutoff=True):
 
         # extract height and width of image in pixels 
         height, width = image.shape[0], image.shape[1]
-
         # cut image to just include bottom 20% of pixels
         cropped_height = height-height//5
+
+        # Getting a count on pixels 
+        bright_count = np.sum(np.array(Image.open(image_path)) >= 200)
+        print("Bright count:", bright_count)
+        print("Total Pixels Keras:", width*height)
+
+        #Comparison
+        base_image = cv.imread("L:/DATA/ISIS/ISIS_101300030772/b34_R014207854/B1-35-12 ISIS A C-1876/Image0092.png")
+        test_image = cv.imread(image_path)
+
+        #converting to HSV format
+        hsv_base = cv.cvtColor(base_image, cv.COLOR_BGR2HSV)
+        hsv_test1 = cv.cvtColor(test_image, cv.COLOR_BGR2HSV)
+
+        h_bins = 50
+        s_bins = 60
+        histSize = [h_bins, s_bins]
+        # hue varies from 0 to 179, saturation from 0 to 255
+        h_ranges = [0, 180]
+        s_ranges = [0, 256]
+        ranges = h_ranges + s_ranges # concat lists
+        # Use the 0-th and 1-st channels
+        channels = [0, 1]
+
+        hist_base = cv.calcHist([hsv_base], channels, None, histSize, ranges, accumulate=False)
+        cv.normalize(hist_base, hist_base, alpha=0, beta=1, norm_type=cv.NORM_MINMAX)
+
+        hist_test = cv.calcHist([hsv_test1], channels, None, histSize, ranges, accumulate=False)
+        cv.normalize(hist_test, hist_test, alpha=0, beta=1, norm_type=cv.NORM_MINMAX)
+
+        for compare_method in range(2):
+            base_base = cv.compareHist(hist_base, hist_base, compare_method)
+            base_test1 = cv.compareHist(hist_base, hist_test, compare_method)
+            
+            print('Method:', compare_method, 'Base-Base, Base-Test:',\
+                base_base, ':', base_test1)
 
         # create predictions for location and value of characters
         # on the cropped image, will output (word, box) tuples
@@ -189,7 +228,7 @@ def read_image(image_path, plotting=False, just_digits=False, use_cutoff=True):
         # sort the boxes from left to right by top left value
         #sorted_boxes.append()
         candidate_char_boxes.sort(key=lambda candidate_char_boxes: candidate_char_boxes[0,0])
-        print(f'box order to check {candidate_char_boxes}')
+        # print(f'box order to check {candidate_char_boxes}')
 
         if box_count > 2 and max_x != -np.inf and min_x != np.inf: # add chars detected >x
             max_d = max_x - min_x
@@ -197,7 +236,7 @@ def read_image(image_path, plotting=False, just_digits=False, use_cutoff=True):
         else:
             max_d, max_d_no_char = -1, -1
 
-        print('max digits distance:', max_d)
+       # print('max digits distance:', max_d)
         print('digits count:', digit_count)
 
     except Exception as e:
@@ -205,6 +244,20 @@ def read_image(image_path, plotting=False, just_digits=False, use_cutoff=True):
         digit_count, height, width, max_d, max_d_no_char = -1, -1, -1, -1, -1
 
     return digit_count, height, width, max_d, max_d_no_char
+
+
+
+#testing
+
+
+read_image("L:/DATA/ISIS/ISIS_101300030772/b34_R014207854/B1-35-12 ISIS A C-1876/Image0092.png", plotting = True)
+read_image("L:/DATA/ISIS/ISIS_101300030772/b7_R014207896/B1-34-50 ISIS A C-260/Image0196.png", plotting = True)
+read_image("L:/DATA/ISIS/ISIS_101300030772/b7_R014207896/B1-34-50 ISIS A C-259/Image0261.png", plotting = True)
+
+
+
+
+
 
 
 def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False):
