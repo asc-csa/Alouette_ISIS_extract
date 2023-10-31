@@ -69,8 +69,8 @@ else:
     print('CPU in use for tensorflow')
 
 recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits)  ## edit made by Jeysh - check with Ashley
-recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading.h5')   ## edit made by Jeysh - check with Ashley
-recognizer.compile()  ## edit made by Jeysh - check with Ashley
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading.h5')   
+recognizer.compile()  
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
 
@@ -126,8 +126,8 @@ def read_image(image_path, plotting=False, just_digits=False):
                 value, box = p[0], p[1]
                 print("value: " + value)  ## edit made by Jeysh - check with Ashley
           
-                if word is composed of just integers then 
-                count how many and incriment digit_count
+                # if word is composed of just integers then 
+                # count how many and increment digit_count
 
                 if just_digits == False or (just_digits == True and value.isdigit()):
                     # check that box is within the cropped height
