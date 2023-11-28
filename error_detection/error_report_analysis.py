@@ -5,8 +5,7 @@
 import os 
 import pandas as pd 
 
-# if in L-drive or on GitHub then remove this
-relative_path = '//SAQCJ3YWVDCP003.csa.space.gc.ca/L-DFS/DATA/ISIS/contractor_error_reports/'
+relative_path = 'L:/DATA/ISIS/contractor_error_reports/'
 
 def subdir_logs():
     '''
