@@ -149,15 +149,17 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                     subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
                     for image in subdir_contents:
                         # save full path of image
-                        image_path = batchDir + directory + '/' + subdir + '/' + image                        
+                         if image.endswith(".png"):
+                            image_path = batchDir + directory + '/' + subdir + '/' + image                        
 
-                        # Pass image to flag_overexposed to check for overexposure
-                        prop_val, bool_check = flag_overexposed(image_path, plotting_hist = plotting)
-                        if bool_check:
-                            directories.append(directory)
-                            subdirs.append(subdir)
-                            images.append(image)
-                            proportion_list.append(prop_val)
+                            # Pass image to flag_overexposed to check for overexposure
+                            prop_val, bool_check = flag_overexposed(image_path, plotting_hist = plotting)
+
+                            if bool_check:
+                                directories.append(directory)
+                                subdirs.append(subdir)
+                                images.append(image)
+                                proportion_list.append(prop_val)
 
                     ### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
                     # initialize dataframe and save results to csv
