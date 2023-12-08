@@ -14,11 +14,10 @@ import time
 import gc
 
 #Path to save results 
-outFile = 'L:/DATA/ISIS/OverExposure/Flagged_Ionograms.csv'
+outFile = 'L:/DATA/ISIS/OverExposure/Flagged_Ionograms_First_Batch.csv'
 #ISIS Ionograms Directory
 batchDir = 'L:/DATA/ISIS/ISIS_101300030772/' 
 print('This program will be saving to results file location:', outFile)
-
 
 def flag_overexposed(image_path, plotting_hist = False):
     '''
@@ -91,21 +90,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                 print('###############################')
                 print('Directory:', directory, '\nSubdirectory:', subdir)
                 print('###############################')
-                
-                #add directory and subdirectory names to file, for future
-                # check in case no ionogram was flagged
-                subdir_temp = []
-                subdir_temp.append(subdir)
-                dir_temp = []
-                dir_temp.append(directory)
-                temp_subdir = pd.DataFrame()
-                temp_subdir['Directory'] = dir_temp
-                temp_subdir['Subdirectory'] = subdir_temp
-                temp_subdir.to_csv(outFile, mode='a', index=False, header=header)
-                del subdir_temp
-                del temp_subdir
-                del dir_temp
-                header = True
 
                 # if path exists we want to see what subdirs are processed
                 # this far and so that is what we check below
@@ -119,11 +103,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                             # get a set of already processed dirs and subdirs
                             df_processed_results = pd.read_csv(outFile, dtype=types)
-                            subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
-
-                            # clear memory of stuff we don't need
-                            del df_processed_results
-
                             read_safe = True 
 
                         except (OSError, PermissionError) as e:
@@ -131,8 +110,9 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                             print(outFile, 'currently being used, pausing for 30 seconds before another attempt')
                             time.sleep(30)
 
-                    # check that this specific subdir has already been processed
-                    if str(directory + ' ' + subdir) in subdir_id_lst:
+                    #  check that this specific subdir has already been processed
+                    if (df_processed_results["Directory"].eq(directory).any()) and (df_processed_results["Subdirectory"].eq(subdir).any()):
+                        print(str(directory + ' ' + subdir))
                         print('This subdirectory has already been processed, moving on to the next one')
                         proceed = False # the continue statement was not working as expected
                 
@@ -144,13 +124,30 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                     print(f'error: OutFile does not exist ({outFile}), did not save!!')
                     proceed = False
 
+                del df_processed_results
+                
                 if proceed == True:
+                    #add directory and subdirectory names to file, for future
+                    # check in case no ionogram was flagged
+                    subdir_temp = []
+                    subdir_temp.append(subdir)
+                    dir_temp = []
+                    dir_temp.append(directory)
+                    temp_subdir = pd.DataFrame()
+                    temp_subdir['Directory'] = dir_temp
+                    temp_subdir['Subdirectory'] = subdir_temp
+                    temp_subdir.to_csv(outFile, mode='a', index=False, header=header)
+                    del subdir_temp
+                    del temp_subdir
+                    del dir_temp
+                    header = True
+
                     # loop over all images in the subdirectory
                     subdir_contents = os.listdir(batchDir + directory + '/' + subdir) 
                     for image in subdir_contents:
                         # save full path of image
                          if image.endswith(".png"):
-                            image_path = batchDir + directory + '/' + subdir + '/' + image                        
+                            image_path = batchDir + directory + '/' + subdir + '/' + image       
 
                             # Pass image to flag_overexposed to check for overexposure
                             prop_val, bool_check = flag_overexposed(image_path, plotting_hist = plotting)
@@ -161,6 +158,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                                 images.append(image)
                                 proportion_list.append(prop_val)
 
+
                     ### SAVE RESULTS AFTER PROCESSING EACH SUBDIR ####                
                     # initialize dataframe and save results to csv
                     # (redoing this each interation to not loose information)
@@ -169,6 +167,7 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                     df_mapping_results['Subdirectory'] = subdirs
                     df_mapping_results['filename'] = images
                     df_mapping_results['Proportion of Overexposure'] = proportion_list
+
 
                     # mode = 'a' means it will append to existing data within the file
                     if append2outFile == True:
@@ -192,17 +191,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
                             print('***')
                             try:
                                 os.rename(outFile, outFile)
-
-                                # get a set of already processed dirs and subdirs
-                                # WHAT HAPPENS WHEN EMPTY? START IT YOURSELF NOW
-                                df_processed_results = pd.read_csv(outFile, dtype=types)
-                                subdir_id_lst = set(str(df_processed_results['Directory']) + ' ' + str(df_processed_results['Subdirectory']))
-
-                                # check that this specific subdir has already been processed
-                                if str(directory + ' ' + subdir) in subdir_id_lst:
-                                    print('Thanks for all your hard work but you got unlucky and another instance processed this before this one\nNOT SAVING RESULTS')
-                                    # note: we should check for duplicates in the analysis just incase + check all data has been saved
-                                    save = False
                                 
                                 if save == True:
                                     # check if there is already data in the output file 
@@ -213,7 +201,6 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
                                     df_mapping_results.to_csv(outFile, mode=mode, index=False, header=header)
                                     del df_mapping_results
-                                    del df_processed_results
                                     print(f'Data sucessfully saved to {outFile}')
 
                                 write_safe = True 
@@ -229,3 +216,4 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
 
 if __name__ == '__main__':
     read_all_directories(plotting=False)
+
