@@ -5,7 +5,7 @@
 import os 
 import pandas as pd 
 
-relative_path = 'L:/DATA/ISIS/contractor_error_reports/'
+relative_path = 'U:/isis_extra/'
 
 def subdir_logs():
     '''
@@ -15,26 +15,40 @@ def subdir_logs():
     subdirs = []
 
     # directory where most of data is
-    main_dir = '//SAQCJ3YWVDCP003.csa.space.gc.ca/L-DFS/DATA/ISIS/ISIS_101300030772/'
+    main_dir = 'L:/DATA/ISIS/ISIS_101300030772/'
     for box in os.listdir(main_dir):
+        print("Batch 1")
         print('reading subdirs in', box)
         for subdir in os.listdir(main_dir + box):
             dirs.append(box)
             subdirs.append(subdir)
 
     # directory where a bit more data is
-    secondary_dir = '//SAQCJ3YWVDCP003.csa.space.gc.ca/L-DFS/DATA/ISIS/raw_upload_20230421/'
+    secondary_dir = 'L:/DATA/ISIS/raw_upload_20230421/'
     for roll in os.listdir(secondary_dir):
+        print("Batch 1 _ raw_upload")
         print('reading subdirs in', roll)
         for subdir in os.listdir(secondary_dir + roll):
             dirs.append(roll)
             subdirs.append(subdir)
 
+
+    batch2 = 'L:/DATA/ISIS/ISIS_102000056114/'
+    for roll in os.listdir(batch2):
+        print("Batch 2")
+        print('reading subdirs in', roll)
+        for subdir in os.listdir(batch2 + roll):
+            dirs.append(roll)
+            subdirs.append(subdir)
+    
+
     # convert to a dataframe and save to a csv
     subdirs_df = pd.DataFrame()
     subdirs_df['current_dir'] = dirs
     subdirs_df['current_subdirs'] = subdirs 
-    subdirs_df.to_csv(relative_path + 'current_subdirs.csv', index=False)
+    subdirs_df.to_csv(relative_path + 'Subdirs_batch.csv', index=False)
+
+report_path = 'L:/DATA/ISIS/contractor_error_reports/'
 
 def compare_report():
     '''
@@ -44,8 +58,8 @@ def compare_report():
     print('################\ncomparing file system subdirs to error report subdirs')
 
     # read in both error reports and save them to one combined error report
-    report1_subdirs = pd.read_csv(relative_path + 'SpaceAgencyErrorReport1.csv', usecols=['Box::Box_Name','Roll_Name'])
-    report2_subdirs = pd.read_csv(relative_path + 'SpaceAgencyErrorReport2.csv', usecols=['Box::Box_Name','Roll_Name'])
+    report1_subdirs = pd.read_csv(report_path + 'SpaceAgencyErrorReport1.csv', usecols=['Box::Box_Name','Roll_Name'])
+    report2_subdirs = pd.read_csv(report_path + 'SpaceAgencyErrorReport2.csv', usecols=['Box::Box_Name','Roll_Name'])
     report_combined_subdirs = pd.concat([report1_subdirs, report2_subdirs], join="outer")
     report_combined_subdirs.to_csv(relative_path + 'SpaceAgencyErrorReport_1and2.csv', index=False)
 
@@ -54,7 +68,7 @@ def compare_report():
     print(f'report combined subdirectories: {len(report_combined_subdirs)}')
 
     # read in the list of subdirs in current file system
-    current_subdirs = pd.read_csv(relative_path + 'current_subdirs.csv')
+    current_subdirs = pd.read_csv(relative_path + 'Subdirs_batch.csv')
     print(f'current subdirectories: {len(current_subdirs)}') 
 
     # initialize list to indicate if subdir is in current file system
@@ -66,6 +80,7 @@ def compare_report():
             in_current.append(True)
         else: 
             in_current.append(False)
+            print (item)
 
     print(len(current_subdirs), 'in current file system')
     print(sum(in_current), 'in error reports AND in current file system')
@@ -83,13 +98,32 @@ def compare_report():
             in_report.append(True)
         else: 
             in_report.append(False)
+            print (item)
+
     current_subdirs['in_report'] = in_report 
-    current_subdirs.to_csv(relative_path + 'current_subdirs.csv', index=False)
+    current_subdirs.to_csv(relative_path + 'Subdirs_batch.csv', index=False)
     print(len(in_report) - sum(in_report), 'in file system but not in error reports')
    
 if __name__ == '__main__':
     subdir_logs()
     compare_report()
+
+
+#UPDATED STATS AFTER BATCH 2 UPLOAD: #Jeyshinee Dec 2023
+# comparing file system subdirs to error report subdirs
+# report 1 subdirectories: 1975
+# report 2 subdirectories: 845
+# report combined subdirectories: 2820
+
+# current subdirectories: 2823 ### This includes duplicates : current subdir count in LDRIVE = 2804 = 1688 + 359 + 757
+# 2766 in error reports AND in current file system
+
+# 54 in error reports but NOT in current file system -> found 10 overlap with 38 below [Only subdirs starting with B1-35-23 missing from LDRIVE]
+
+# 38 in file system but not in error reports -> found 10 overlap with 54 above [Only subdirs starting with B1-35-17 missing from error report ]
+
+
+
 
 # You can find the two main outputs in report_combined_analysis.csv and current_subdirs.csv
 # I have done spot checks and the results so far seem correct. The printed stats are:
@@ -102,3 +136,4 @@ if __name__ == '__main__':
     # 801 in error reports but NOT in current file system
     # 28 in file system but not in error reports --> some are box_29 related for sure
 # We may want to add more info to these logs like associated rolls/boxes or which report subdir was from.
+

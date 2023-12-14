@@ -14,9 +14,9 @@ import time
 import gc
 
 #Path to save results 
-outFile = 'L:/DATA/ISIS/OverExposure/Flagged_Ionograms_First_Batch.csv'
+outFile = 'L:/DATA/ISIS/OverExposure/Flagged_Ionograms_102000056114.csv'
 #ISIS Ionograms Directory
-batchDir = 'L:/DATA/ISIS/ISIS_101300030772/' 
+batchDir = 'L:/DATA/ISIS/ISIS_102000056114/' 
 print('This program will be saving to results file location:', outFile)
 
 def flag_overexposed(image_path, plotting_hist = False):
@@ -57,7 +57,6 @@ def flag_overexposed(image_path, plotting_hist = False):
             # Sum over number in each bin and multiply by bin width
             integral_255 = integral_255 + (bin_width * sum(freq[i:i+1]))
         proportion = integral_255/total_pixels
-
         #Flag ionogram if prop 0.11
         if proportion > 0.11:
             return proportion, True 
@@ -79,12 +78,10 @@ def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir
     proportion_list = []
 
     raw_contents = os.listdir(batchDir) # random shuffle applied
-    random.shuffle(raw_contents) # random shuffle applied
     for directory in raw_contents:
 
             # loop over all subdirectories within the directory
             directory_contents = os.listdir(batchDir + directory) 
-            random.shuffle(directory_contents) # random shuffle applied
             for subdir in directory_contents:
                 
                 print('###############################')
