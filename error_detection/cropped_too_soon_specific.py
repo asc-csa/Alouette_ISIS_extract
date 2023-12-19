@@ -14,7 +14,7 @@ parser.add_option('-u', '--username', dest='username',
         help='CSA network username, default=%default.')
       
 parser.add_option('-s', '--save', dest='saveDir', 
-        default='L:/DATA/ISIS/cropped_too_soon_detection_batch3/', type='str', 
+        default='L:/DATA/ISIS/cropped_too_soon_detection_batch2_addition/', type='str', 
         help='Path to directory where results output file should be saved, default=%default. All instances should output to the same path.')
 
 parser.add_option('-f', '--filename', dest='filename', 
@@ -43,7 +43,7 @@ import cv2
 import shutil
 
 # set paths
-batchDir = 'L:/DATA/ISIS/raw_upload_20230421/' # need to run for more newly-uploaded data too
+batchDir = 'L:/DATA/ISIS/ISIS_102000056114/' # need to run for more newly-uploaded data too
 saveDir = options.saveDir 
 outFile = saveDir + options.filename
 print('This program will be saving to results file location:', outFile)
@@ -85,14 +85,23 @@ def read_all_directories(outFile=outFile, append2outFile=append2outFile, batchDi
     types = {'Directory': 'str', 'Subdirectory': 'str', 'filename': 'str', 
              'height': 'float32', 'width': 'float32', 'user': 'str', 'datetime':'str'}
     
-    # loop over all directories in the batch 2 raw data directory
-    raw_contents = os.listdir(batchDir) # random shuffle applied
-    random.shuffle(raw_contents) # random shuffle applied
-    for directory in raw_contents:
+    for directory in ['R014207775']:
 
-        # loop over all subdirectories within the directory
-        directory_contents = os.listdir(batchDir + directory) 
-        random.shuffle(directory_contents) # random shuffle applied
+        directory_contents = ['B1-35-23 ISIS B D-604','B1-35-23 ISIS B D-605','B1-35-23 ISIS B D-606',\
+                              'B1-35-23 ISIS B D-607','B1-35-23 ISIS B D-608','B1-35-23 ISIS B D-609',\
+                              'B1-35-23 ISIS B D-610','B1-35-23 ISIS B D-611','B1-35-23 ISIS B D-612',\
+                              'B1-35-23 ISIS B D-613','B1-35-23 ISIS B D-614','B1-35-23 ISIS B D-615',\
+                              'B1-35-23 ISIS B D-616','B1-35-23 ISIS B D-617','B1-35-23 ISIS B D-618',\
+                              'B1-35-23 ISIS B D-619','B1-35-23 ISIS B D-620','B1-35-23 ISIS B D-621',\
+                              'B1-35-23 ISIS B D-622','B1-35-23 ISIS B D-623','B1-35-23 ISIS B D-624',\
+                              'B1-35-23 ISIS B D-625','B1-35-23 ISIS B D-626','B1-35-23 ISIS B D-627',\
+                              'B1-35-23 ISIS B D-628','B1-35-23 ISIS B D-629','B1-35-23 ISIS B D-630',\
+                              'B1-35-23 ISIS B D-631','B1-35-23 ISIS B D-632','B1-35-23 ISIS B D-633',\
+                              'B1-35-23 ISIS B D-634','B1-35-23 ISIS B D-635','B1-35-23 ISIS B D-636',\
+                              'B1-35-23 ISIS B D-637','B1-35-23 ISIS B D-638','B1-35-23 ISIS B D-639',\
+                              'B1-35-23 ISIS B D-640','B1-35-23 ISIS B D-641','B1-35-23 ISIS B D-642',\
+                              'B1-35-23 ISIS B D-643','B1-35-23 ISIS B D-644','B1-35-23 ISIS B D-645',\
+                              'B1-35-23 ISIS B D-646','B1-35-23 ISIS B D-647','B1-35-23 ISIS B D-648-82-59']
         for subdir in directory_contents:
 
             # in this approach we hope that no same subdirectory is found by two instances
