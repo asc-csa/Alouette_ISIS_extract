@@ -14,9 +14,9 @@ import time
 import gc
 
 #Path to save results 
-outFile ='L:/DATA/ISIS/OverExposure/Cropped_Too_Soon_BATCH1_Copy.csv'
+outFile ='L:/DATA/ISIS/OverExposure/Overexposed_and_cropped_too_soon_raw_upload.csv'
 #ISIS Ionograms Directory
-batchDir = 'L:/DATA/ISIS/OverExposure/Cropped_Too_Soon_BATCH1_Copy.csv'
+batchDir = 'L:/DATA/ISIS/cropped_too_soon_detection_batch3/cropped_too_soon_results_flagged.csv'
 
 print('This program will be saving to results file location:', outFile)
 
@@ -70,26 +70,63 @@ def flag_overexposed(image_path, plotting_hist = False):
 def read_all_directories(outFile=outFile,batchDir=batchDir):
 
     overexposed = []
+    directories, subdirs, images = [], [], []
     row_number = 0
     #opening csv file containing images cropped too soon
     file = open(batchDir)    
     heading = next(file)
     reader = csv.reader(file)
     for row in reader:
-        image_path = 'L:/DATA/ISIS/ISIS_101300030772/' + row[0] + '/' + row[1]  + '/' + row[2]
+        image_path = 'L:/DATA/ISIS/raw_upload_20230421/' + row[0] + '/' + row[1]  + '/' + row[2]
+        print(image_path)
+        directories.append(row[0])
+        subdirs.append(row[1])
+        images.append(row[2])
+
         prop_val, bool_check = flag_overexposed(image_path)
+        print("row number:", str(row_number))
+        row_number = row_number + 1
         
         if bool_check:
             overexposed.append("True")
         else:
             overexposed.append("False")
-        print("row:", str(row_number))   
-        row_number = row_number + 1 
                 
     df_mapping_results = pd.DataFrame()
+    df_mapping_results['Directory'] = directories
+    df_mapping_results['Subdirectory'] = subdirs
+    df_mapping_results['filename'] = images
     df_mapping_results['OverExposed'] = overexposed
     df_mapping_results.to_csv(outFile, mode='a', index=False)
     
-    
 if __name__ == '__main__':
     read_all_directories()
+
+#Get counts     
+# test_batch_2 = pd.read_csv('L:/DATA/ISIS/OverExposure/Overexposed_and_cropped_too_soon_raw_upload.csv')
+# len(test_batch_2)
+
+# file = open('L:/DATA/ISIS/OverExposure/Overexposed_and_cropped_too_soon_raw_upload.csv')
+# heading = next(file)
+# reader = csv.reader(file)
+# count = 0
+# for row in reader:
+#     if row[0] == "True":
+#         count += 1
+# print(count)
+# file.close()
+
+
+# #stats
+# count_overexposed_batch2 = 6327
+# total_cropped_batch2 = 35963
+
+# count_overexposed_batch2_addition = 73
+# total_cropped_batch2_addition = 8
+
+# count_overexposed_raw_upload = 5132
+# total_cropped_raw_upload = 11549
+
+# count_overexposed_batch1 = 14694
+# total_cropped = 57091
+
