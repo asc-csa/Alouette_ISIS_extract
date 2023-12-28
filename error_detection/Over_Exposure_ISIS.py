@@ -14,7 +14,7 @@ import time
 import gc
 
 #Path to save results 
-outFile = 'L:/DATA/ISIS/OverExposure/Flagged_Ionograms_102000056114.csv'
+outFile = 'L:/DATA/ISIS/OverExposure/Batch2.csv'
 #ISIS Ionograms Directory
 batchDir = 'L:/DATA/ISIS/ISIS_102000056114/' 
 print('This program will be saving to results file location:', outFile)
@@ -34,37 +34,44 @@ def flag_overexposed(image_path, plotting_hist = False):
     
     '''
     try:
-        #Get frequency and bins for histogram
-        path = image_path
-        img = imageio.imread(path)
-        image_intensity = img_as_ubyte(rgb2gray(img))
+        # Get intensity values for grayscale images or convert to grayscale
+        img = imageio.imread(image_path)
+        if len(img.shape) == 3 and img.shape[2] == 3:
+            img = rgb2gray(img)
+
+        image_intensity = img_as_ubyte(img)
         freq, bins = histogram(image_intensity)
         width, height = img.shape[0], img.shape[1]
-        total_pixels = width*height
-       
-       #Plot histogram, if true
+        total_pixels = width * height
+
+        # Plot histogram, if true
         if plotting_hist:
-            plt.step(bins, freq*1.0/freq.sum())
+            plt.step(bins, freq * 1.0 / freq.sum())
             plt.xlabel('intensity value')
             plt.ylabel('Fraction of pixels')
             plt.show()
-        
-        #Get histogram integral values for pixels >= 230
-        integral_255 = 0
-        for i in range(230,len(bins)-1):
-            bin_width = bins[i+1] - bins[i]
 
-            # Sum over number in each bin and multiply by bin width
-            integral_255 = integral_255 + (bin_width * sum(freq[i:i+1]))
-        proportion = integral_255/total_pixels
-        #Flag ionogram if prop 0.11
+        # Get histogram integral values for pixels >= 230
+        integral_255 = 0
+        for i in range(230, len(bins) - 1):
+            bin_width = bins[i + 1] - bins[i]
+
+            # Sum over the number in each bin and multiply by bin width
+            integral_255 = integral_255 + (bin_width * sum(freq[i:i + 1]))
+
+        proportion = integral_255 / total_pixels
+
+        # Flag ionogram if prop 0.11
         if proportion > 0.11:
-            return proportion, True 
+            return proportion, True
         else:
             return proportion, False
 
-    except Exception as e:
-        print("Error -", e)
+    except (ValueError, RuntimeError) as e:
+        error_message = f"Error processing image '{image_path}': {e}"
+        print(error_message)
+        # Continue processing other images even if one fails
+        return 0, False
 
 
 def read_all_directories(outFile=outFile, append2outFile=True, batchDir=batchDir, plotting=False):
