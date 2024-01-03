@@ -1,8 +1,0 @@
-/output-analysis
-/docs
-/scan2data/metadata_translation/bottom_metadata/meta_bottom
-*/__pycache__
-__pycache__/
-/.idea
-*.pdf
-*.pkl
