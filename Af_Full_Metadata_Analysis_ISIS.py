@@ -13,8 +13,14 @@ warnings.filterwarnings('ignore')
 import keras_ocr
 from optparse import OptionParser
 
+
 pipeline = keras_ocr.pipeline.Pipeline()
 parser = OptionParser()
+
+#Log Directory, do not change
+logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/04_log/'
+#Path to save results, do not change
+resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/05_results/'
 
 parser.add_option('-u', '--username', dest='username', 
         default='jpyneeandee', type='str', 
@@ -31,33 +37,29 @@ if options.isis == '2':
      #ISIS BATCH 2 CHOSEN
      directory_path = 'L:/DATA/ISIS/ISIS_102000056114/'
      batch_size = 801
-     my_path = logDir = 'ISIS_2_Directory_Subdirectory_List.csv'
+     my_path = logDir + 'ISIS_2_Directory_Subdirectory_List.csv'
 elif options.isis == '3':
      #ISIS BATCH 3/RAW UPLOAD CHOSEN
      directory_path = 'L:/DATA/ISIS/raw_upload_20230421/'
      batch_size = 359
-     my_path = logDir = 'ISIS_Raw_Upload_Directory_Subdirectory_List.csv'
+     my_path = logDir + 'ISIS_Raw_Upload_Directory_Subdirectory_List.csv'
 else:
      #ISIS BATCH 1 
      directory_path = 'L:/DATA/ISIS/ISIS_101300030772/'
      batch_size = 1720
-     my_path = logDir = 'ISIS_1_Directory_Subdirectory_List.csv'
+     my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
      
 
 
 stop_loop_threshold = 6000 #max while loops to prevent infinite loop
 
-#Log Directory, do not change
-logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/04_log/'
-#Path to save results, do not change
-resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/05_results/'
 
 ######
 
 def read_metadata(prediction_groups, subdir_path, img):
     '''
     Definition:
-        This function reads the prediction groups produced by KERAS OCR and seperates the metadata strings 
+        This function reads the prediction groups produced by KERAS OCR and separates the metadata strings 
         into their appropriate tags
     Arguments:
         prediction_groups: KERAS OCR output predictions
@@ -114,7 +116,7 @@ def read_metadata(prediction_groups, subdir_path, img):
                 df_notread_temp = pd.concat([df_notread_temp, df_ocr])
     
     return df_read_temp, df_notread_temp
-
+from random import randrange
 def draw_random_subdir():
     '''
     Definition: Draw a directory and subdirectory, that is not currently in progress or has already been processed and updates the status
@@ -128,36 +130,37 @@ def draw_random_subdir():
     if os.path.exists(my_path):
             try:
                 full_dir_df = pd.read_csv(my_path)
+                ind = randrange(len(full_dir_df))
+            #   for ind in full_dir_df.index: #instead of a for loop, i'm trying a randomized int 
+                directory = full_dir_df['Directory'][ind]
+                subdir = full_dir_df['Subdirectory'][ind]
 
-                for ind in full_dir_df.index:
-                    directory = full_dir_df['Directory'][ind]
-                    subdir = full_dir_df['Subdirectory'][ind]
+                if (full_dir_df['Status'][ind]) == "Not Processed":
+                    full_dir_df.loc[ind, "Status"] = "In Progress"
+                    full_dir_df.to_csv(my_path, index=False)
+                    return directory, subdir, ind
 
-                    if (full_dir_df['Status'][ind]) == "Not Processed":
-                        full_dir_df.loc[ind, "Status"] = "In Progress"
-                        full_dir_df.to_csv(my_path, index=False)
-                        return directory, subdir, ind
-
-                    elif (full_dir_df['Status'][ind]) == "In Progress":
-                        print('Current subdirectory', subdir, 'being processed already, moving on to the next one')
-                        continue
+                elif (full_dir_df['Status'][ind]) == "In Progress":
+                    print('Current subdirectory', subdir, 'being processed already, moving on to the next one')
+                    draw_random_subdir()
                     
-                    elif (full_dir_df['Status'][ind]) == "Processed":
-                        print("Current subdirectory", subdir, "already processed, moving on to the next one")
-                        continue
+                elif (full_dir_df['Status'][ind]) == "Processed":
+                    print("Current subdirectory", subdir, "already processed, moving on to the next one")
+                    draw_random_subdir()
 
             except (OSError, PermissionError) as e:
                 print(my_path, 'currently being used, pausing for 30 seconds before another attempt')
                 time.sleep(30)
+
                 
 def update_my_log_file(ind):
     '''
-    Definition:
+    Definition: Updates the status of the given index row for dir and subdir as "Processed"
       
     Arguments:
-        ind:
+        ind: Index row for processed directory and subdirectory
 
-    Returns:
+    Returns: None
         
     '''
     if os.path.exists(my_path):
@@ -180,7 +183,7 @@ stop_condition = False
 while stop_condition == False:
     start = time.time()
     
-    #Draw random, yet to be processed subdirectory, to process
+    #Get number of processed subdirs 
     if os.path.exists(logDir + 'process_log_OCR.csv'):
         try:
             my_log_file = pd.read_csv(logDir + 'Process_Log.csv')
@@ -188,25 +191,30 @@ while stop_condition == False:
             dirs_processed = len(my_log_file['Directory'].drop_duplicates())
 
         except (OSError, PermissionError) as e:
-            print(logDir + 'process_log_OCR.csv', 'currently being used, pausing for 30 seconds before another attempt')
+            print(logDir + 'Process_Log_OCR.csv', 'currently being used, pausing for 30 seconds before another attempt')
             time.sleep(30)
-                
+
+        #get remaining subdirs        
         subdir_rem = batch_size - subdirs_processed
+
         #Check stop conditions
         if subdir_rem < 2:
             print('Stop!')
             stop_condition = True
 
+        #Not sure about the stop_loop_threshold
+
         # if stop_condition_counter == stop_loop_threshold:
         #     print('Stop!')
         #     stop_condition = True
+            
+        #stop_condition_counter gets initialized but never increments??
 
 
     #Process subdirectory
     print('')
-    print('Processing ' + subdir_path_end + ' subdirectory...')
+    print('Processing ' + subdir_path_end + ' subdirectory')
     print(str(subdir_rem) + ' subdirectories to go!')
-
 
     #Get directory and subdirectory path to process and current row index
     directory, subdirectory, curr_row_index = draw_random_subdir()
@@ -267,20 +275,12 @@ while stop_condition == False:
 
     else:
         if len(df_result_) > 0:
-            df_result_.to_csv(logDir + 'process_log_OCR.csv', index=False)
+            df_result_.to_csv(logDir + 'Process_Log_OCR.csv', index=False)
             
     #Backup 'process_log' (10% of the time), garbage collection
     if randrange(10) == 7:
-        df_log = pd.read_csv(logDir + 'process_log_OCR.csv')
+        df_log = pd.read_csv(logDir + 'Process_Log_OCR.csv')
         datetime_str = datetime.now().strftime("%Y%m%d_%Hh%M")
         os.makedirs(logDir + 'backups/', exist_ok=True)
         df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
         gc.collect()
-
-    # #Check stop conditions
-    # if len(subdir_ids_rem) < 2:
-    #     print('Stop!')
-    #     stop_condition = True
-    # if stop_condition_counter == stop_loop_threshold:
-    #     print('Stop!')
-    #     stop_condition = True
