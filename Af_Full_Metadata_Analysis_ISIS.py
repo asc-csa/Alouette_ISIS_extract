@@ -212,6 +212,7 @@ while stop_condition == False:
     img_fns = []
     for file in os.listdir(directory_path + subdir_path_end):
         img_fns.append(directory_path + subdir_path_end + file)
+        num_images = len(img_fns)
 
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
@@ -236,9 +237,11 @@ while stop_condition == False:
     if len(df_notread) > 0:
         df_notread.to_csv(resultDir + directory + '/' +  'LOSS_Metadata_analysis_' + subdirectory + '.csv', index=False)
 
+    print('Dir:', directory, 'Subdir:', subdirectory, "results saved to csv!")
+
     #update status for current path of dir and subdir
     update_my_log_file(curr_row_index)
-    print(directory, subdirectory, "processed - Status updated!")
+    print("Status updated!")
 
     #Processing time for one subdirectory
     end = time.time()
@@ -251,6 +254,7 @@ while stop_condition == False:
     df_result_ = pd.DataFrame({
         'Directory': directory,
         'Subdirectory': subdirectory,
+        '# images' : num_images,
         'Process_time': t,
         'Process_timestamp': datetime.fromtimestamp(end),
         'User': options.username
