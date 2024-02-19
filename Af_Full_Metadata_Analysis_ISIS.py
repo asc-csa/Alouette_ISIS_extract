@@ -63,6 +63,10 @@ else:
      #Path to save results, do not change
      resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/05_results/'
      my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
+
+#station names and location 
+station_log_dir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
+station_df = pd.read_csv(station_log_dir)
      
 ######
 
@@ -101,20 +105,20 @@ def read_metadata(prediction_groups, subdir_path, img):
                 read_str += read_str_
 
             if len(read_str) == 15:
+                    station_number = read_str[2:4]
+                    station_location, station_lat, station_lon, station_ID = get_station_info(int(station_number))
                     row2 = pd.DataFrame({'Satellite_code': read_str[0:1],
                                          'Fixed_Frequency_code': read_str[1:2],
-                                         'Station_Number_1': read_str[2:3],
-                                         'Station_Number_2': read_str[3:4],
+                                         'Station_Number': station_number,
+                                         'Station_Location':station_location,
+                                         'Station_ID':station_ID,
+                                         'Station_Lat':station_lat,
+                                         'Station_Lon':station_lon,
                                          'Year': read_str[4:6],
-                                         'Day_1': read_str[6:7],
-                                         'Day_2': read_str[7:8],
-                                         'Day_3': read_str[8:9],
-                                         'Hour_1': read_str[9:10],
-                                         'Hour_2': read_str[10:11],
-                                         'Minute_1': read_str[11:12],
-                                         'Minute_2': read_str[12:13],
-                                         'Second_1': read_str[13:14],
-                                         'Second_2': read_str[14:15],
+                                         'Day': read_str[6:9],
+                                         'Hour': read_str[9:11],
+                                         'Minute': read_str[11:13],
+                                         'Second': read_str[13:15],
                                          'Filename': img.replace(subdir_path, '')
                                          }, index=[i])
                     df_read_temp = pd.concat([df_read, row2])
@@ -186,6 +190,20 @@ def update_my_log_file(ind):
         except (OSError, PermissionError) as e:
                 print(my_path, 'currently being used, pausing for 30 seconds before another attempt')
                 time.sleep(30)
+
+
+def get_station_info(ind):
+    '''
+    
+    '''
+    for i in station_df:
+        if station_df['Number'][i] == ind:
+            station_location = station_df['Location'][i]
+            station_lat =  station_df['Latitude'][i]
+            station_lon = station_df['Longitude'][i]
+            station_ID =  station_df['Station ID'][i]
+        
+    return station_location, station_lat, station_lon, station_ID
                 
 #Process remaining subdirectories with while loop
 stop_condition = False
