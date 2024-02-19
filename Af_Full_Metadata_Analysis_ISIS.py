@@ -12,7 +12,9 @@ import warnings
 warnings.filterwarnings('ignore')
 import keras_ocr
 from optparse import OptionParser
+from random import randrange
 
+#To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 
 pipeline = keras_ocr.pipeline.Pipeline()
 parser = OptionParser()
@@ -49,11 +51,6 @@ else:
      batch_size = 1720
      my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
      
-
-
-stop_loop_threshold = 6000 #max while loops to prevent infinite loop
-
-
 ######
 
 def read_metadata(prediction_groups, subdir_path, img):
@@ -116,7 +113,7 @@ def read_metadata(prediction_groups, subdir_path, img):
                 df_notread_temp = pd.concat([df_notread_temp, df_ocr])
     
     return df_read_temp, df_notread_temp
-from random import randrange
+
 def draw_random_subdir():
     '''
     Definition: Draw a directory and subdirectory, that is not currently in progress or has already been processed and updates the status
@@ -131,7 +128,7 @@ def draw_random_subdir():
             try:
                 full_dir_df = pd.read_csv(my_path)
                 ind = randrange(len(full_dir_df))
-            #   for ind in full_dir_df.index: #instead of a for loop, i'm trying a randomized int 
+            #   for ind in full_dir_df.index: #instead of a for loop, i'm trying a randomized ind
                 directory = full_dir_df['Directory'][ind]
                 subdir = full_dir_df['Subdirectory'][ind]
 
@@ -201,15 +198,6 @@ while stop_condition == False:
         if subdir_rem < 2:
             print('Stop!')
             stop_condition = True
-
-        #Not sure about the stop_loop_threshold
-
-        # if stop_condition_counter == stop_loop_threshold:
-        #     print('Stop!')
-        #     stop_condition = True
-            
-        #stop_condition_counter gets initialized but never increments??
-
 
     #Process subdirectory
     print('')
