@@ -15,14 +15,10 @@ from optparse import OptionParser
 from random import randrange
 
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
+#Script defaults to ISIS Batch 1 
 
 pipeline = keras_ocr.pipeline.Pipeline()
 parser = OptionParser()
-
-#Log Directory, do not change
-logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/04_log/'
-#Path to save results, do not change
-resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/05_results/'
 
 parser.add_option('-u', '--username', dest='username', 
         default='jpyneeandee', type='str', 
@@ -39,16 +35,33 @@ if options.isis == '2':
      #ISIS BATCH 2 CHOSEN
      directory_path = 'L:/DATA/ISIS/ISIS_102000056114/'
      batch_size = 801
+
+    #Log Directory, do not change
+     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/04_log/'
+     #Path to save results, do not change
+     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/05_results/'
      my_path = logDir + 'ISIS_2_Directory_Subdirectory_List.csv'
+
 elif options.isis == '3':
      #ISIS BATCH 3/RAW UPLOAD CHOSEN
      directory_path = 'L:/DATA/ISIS/raw_upload_20230421/'
      batch_size = 359
+
+    #Log Directory, do not change
+     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/04_log/'
+     #Path to save results, do not change
+     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/05_results/'
      my_path = logDir + 'ISIS_Raw_Upload_Directory_Subdirectory_List.csv'
+
 else:
      #ISIS BATCH 1 
      directory_path = 'L:/DATA/ISIS/ISIS_101300030772/'
      batch_size = 1720
+
+    #Log Directory, do not change
+     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/04_log/'
+     #Path to save results, do not change
+     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/05_results/'
      my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
      
 ######
@@ -181,7 +194,7 @@ while stop_condition == False:
     start = time.time()
     
     #Get number of processed subdirs 
-    if os.path.exists(logDir + 'process_log_OCR.csv'):
+    if os.path.exists(logDir + 'Process_Log.csv'):
         try:
             my_log_file = pd.read_csv(logDir + 'Process_Log.csv')
             subdirs_processed = len(my_log_file['Subdirectory'].drop_duplicates())
