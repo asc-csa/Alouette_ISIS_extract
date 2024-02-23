@@ -14,6 +14,8 @@ import keras_ocr
 from optparse import OptionParser
 from random import randrange
 
+#from Ag_Keras_Ocr import read_image()
+
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 #Script defaults to ISIS Batch 1 
 
@@ -107,8 +109,8 @@ def read_metadata(prediction_groups, subdir_path, img):
             if len(read_str) == 15:
                     station_number = read_str[2:4]
                     station_location, station_lat, station_lon, station_ID = get_station_info(int(station_number))
-                    row2 = pd.DataFrame({'Satellite_code': read_str[0:1],
-                                         'Fixed_Frequency_code': read_str[1:2],
+                    row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
+                                         'Fixed_Frequency_Code': read_str[1:2],
                                          'Station_Number': station_number,
                                          'Station_Location':station_location,
                                          'Station_ID':station_ID,
@@ -194,7 +196,14 @@ def update_my_log_file(ind):
 
 def get_station_info(ind):
     '''
-    
+    Definition: This function takes in a station number (read from an ionogram), cross references it with 
+    a station information csv and returns the station location, ID, Latitude and Longitude 
+ 
+    Arguments:
+        ind: int corresponding to station number 
+
+    Returns: 4 strings corresponding to the location, latitude, longitiude and ID of the given station number 
+
     '''
     for i in station_df:
         if station_df['Number'][i] == ind:
