@@ -1,6 +1,7 @@
-#keras script - temp script for now: February 21st 
+#KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
+#This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
 
-#required imports 
+#Required imports 
 import os
 import tensorflow as tf
 import string 
@@ -15,6 +16,7 @@ recognizer.model.load_weights('U:/ISIS_Extra/Metadata_Analysis/trained_recognize
 recognizer.compile()  
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
+#Paramaters for denoising code
 imageHeight = 50
 top_noise_height = 10
 bottom_noise_height = 10
@@ -23,6 +25,8 @@ threshold_towhite=(0, 0, 0, 255)
 threshold_toblack=(80, 80, 80, 255)
 start_row_to_process = 1
 end_row_to_process = 20
+
+#Functions
 
 def crop_and_copy(input_path, output_path, imageHeight):
     # Open the input image

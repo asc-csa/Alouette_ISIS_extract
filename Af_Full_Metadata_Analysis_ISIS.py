@@ -14,7 +14,7 @@ import keras_ocr
 from optparse import OptionParser
 from random import randrange
 
-#from Ag_Keras_Ocr import read_image()
+from Ag_Keras_Ocr import *
 
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 #Script defaults to ISIS Batch 1 
@@ -70,7 +70,7 @@ else:
 station_log_dir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
 station_df = pd.read_csv(station_log_dir)
      
-######
+#Functions
 
 def read_metadata(prediction_groups, subdir_path, img):
     '''
@@ -258,11 +258,7 @@ while stop_condition == False:
     df_notread = pd.DataFrame()
 
     for img in img_fns:
-        prediction_groups = pipeline.recognize(img) ### TO EDIT BASED ON KERAS CODE 
-        #############################################################################
-        #############################################################################
-        #############################################################################
-
+        prediction_groups = read_image(img) 
         df_read_, df_notread_ = read_metadata(prediction_groups=prediction_groups, subdir_path=directory_path + subdir_path_end,
                                                        img=img)
         df_read = pd.concat([df_read, df_read_])
