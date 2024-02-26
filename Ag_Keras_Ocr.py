@@ -1,6 +1,7 @@
 #KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
 #This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
 
+
 #Required imports 
 import os
 import tensorflow as tf
@@ -94,7 +95,7 @@ def process_middle_lines_noise(input_path, threshold_toline, start_row, end_row)
     # Save the modified image
     img.save(input_path.name)
 
-def read_image(image_path,just_digits=False):
+def read_image(image_path):
     try: 
         #applying cropping and de-noising filters
         output_file_path = tempfile.NamedTemporaryFile(delete = False, suffix=".png")
