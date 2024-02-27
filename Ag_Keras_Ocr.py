@@ -99,8 +99,12 @@ def read_image(image_path):
     try: 
         #applying cropping and de-noising filters
         output_file_path = tempfile.NamedTemporaryFile(delete = False, suffix=".png")
+        print("Got in")
         crop_and_copy(image_path, output_file_path, imageHeight)
+        print("Got in 2")
         remove_top_bottom_noise(output_file_path,top_noise_height,bottom_noise_height)
+        print("Got in 3")
+
         process_middle_lines_noise(output_file_path,threshold_toLine,start_row_to_process,end_row_to_process)
 
         #reading filtered image

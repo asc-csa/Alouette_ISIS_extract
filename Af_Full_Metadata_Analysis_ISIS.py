@@ -19,7 +19,7 @@ from Ag_Keras_Ocr import *
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 #Script defaults to ISIS Batch 1 
 
-pipeline = keras_ocr.pipeline.Pipeline()
+#pipeline = keras_ocr.pipeline.Pipeline()
 parser = OptionParser()
 
 parser.add_option('-u', '--username', dest='username', 
@@ -89,44 +89,25 @@ def read_metadata(prediction_groups, subdir_path, img):
     df_notread_temp = pd.DataFrame()
     for i in range(0, len(prediction_groups)):
         df_ocr = pd.DataFrame()
-        predicted_image = prediction_groups[i]
-        if len(predicted_image) > 0:
-            for text, box in predicted_image:
-                row = pd.DataFrame({
-                    'number': text,
-                    'x': box[1][0],
-                    'y': box[1][1]
-                }, index=[0])
-                df_ocr = pd.concat([df_ocr, row])
-            df_ocr = df_ocr.sort_values('x').reset_index(drop=True)
-        
-            #String concatenate, get all metadata in one string
-            read_str = ''
-            for j in range(0, len(df_ocr)):
-                read_str_ = df_ocr['number'].iloc[j]
-                read_str += read_str_
-
-            if len(read_str) == 15:
-                    station_number = read_str[2:4]
-                    station_location, station_lat, station_lon, station_ID = get_station_info(int(station_number))
-                    row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
-                                         'Fixed_Frequency_Code': read_str[1:2],
-                                         'Station_Number': station_number,
-                                         'Station_Location':station_location,
-                                         'Station_ID':station_ID,
-                                         'Station_Lat':station_lat,
-                                         'Station_Lon':station_lon,
+        read_str = str(prediction_groups)
+        if len(read_str) == 15:
+                station_number = read_str[2:4]
+                station_location, station_lat, station_lon, station_ID = get_station_info(station_number)
+                row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
+                                    'Fixed_Frequency_Code': read_str[1:2],
+                                    'Station_Number': station_number,
+                                    'Station_Location':station_location,
+                                    'Station_ID':station_ID,
+                                    'Station_Lat':station_lat,
+                                    'Station_Lon':station_lon,
                                          'Year': read_str[4:6],
                                          'Day': read_str[6:9],
                                          'Hour': read_str[9:11],
                                          'Minute': read_str[11:13],
                                          'Second': read_str[13:15],
                                          'Filename': img.replace(subdir_path, '')
-                                         }, index=[i])
-                    df_read_temp = pd.concat([df_read, row2])
-            else:
-                    df_ocr['Filename'] = img.replace(subdir_path, '')
-                    df_notread_temp = pd.concat([df_notread_temp, df_ocr])
+                                         })
+                df_read_temp = pd.concat([df_read, row2])
         else:
                 df_ocr['Filename'] = img.replace(subdir_path, '')
                 df_notread_temp = pd.concat([df_notread_temp, df_ocr])
@@ -204,16 +185,18 @@ def get_station_info(ind):
 
     Returns: 4 strings corresponding to the location, latitude, longitiude and ID of the given station number 
 
-    '''
-    for i in station_df:
-        if station_df['Number'][i] == ind:
+    '''    
+    for i in range(len(station_df)):
+        if station_df['Number'][i] == str(ind):
             station_location = station_df['Location'][i]
             station_lat =  station_df['Latitude'][i]
             station_lon = station_df['Longitude'][i]
             station_ID =  station_df['Station ID'][i]
-        
+        else:
+            station_ID = station_location = station_lon = station_lat = 0
+
     return station_location, station_lat, station_lon, station_ID
-                
+
 #Process remaining subdirectories with while loop
 stop_condition = False
 
@@ -239,21 +222,22 @@ while stop_condition == False:
             print('Stop!')
             stop_condition = True
 
+   
+    #Get directory and subdirectory path to process and current row index
+    directory, subdirectory, curr_row_index = draw_random_subdir()
+    subdir_path_end = directory + '/' + subdirectory + '/'
+
     #Process subdirectory
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory')
     print(str(subdir_rem) + ' subdirectories to go!')
-
-    #Get directory and subdirectory path to process and current row index
-    directory, subdirectory, curr_row_index = draw_random_subdir()
-    subdir_path_end = directory + '/' + subdirectory + '/'
 
     #Get all images from chosen directory and subdirectory path
     img_fns = []
     for file in os.listdir(directory_path + subdir_path_end):
         img_fns.append(directory_path + subdir_path_end + file)
         num_images = len(img_fns)
-
+        
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
 
@@ -266,7 +250,7 @@ while stop_condition == False:
         
     #Saving results:
     my_temp_path = resultDir + directory
-    if not os.path.notexists(my_temp_path):
+    if not os.path.exists(my_temp_path):
         os.makedirs(resultDir,directory)
     
     df_read.to_csv(resultDir + directory + '/' +  'Metadata_analysis_' + subdirectory + '.csv', index=False)
