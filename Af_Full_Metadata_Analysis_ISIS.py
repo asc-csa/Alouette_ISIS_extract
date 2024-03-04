@@ -1,25 +1,30 @@
-
 #ISIS Full MetaData Analysis - Jeyshinee Pyneeandee February 2024
 
 #Required imports 
 import pandas as pd
-import os
+import os, gc, sys
 from random import randrange
-import time
-from datetime import datetime
-import gc
-import warnings
-warnings.filterwarnings('ignore')
-import keras_ocr
+import time, datetime
 from optparse import OptionParser
-from random import randrange
 
-from Ag_Keras_Ocr import *
+#from Ag_Keras_Ocr import *
+
+#GPU not being used - need to fix 
+sys.path.insert(0,  "c:/Users/jpyneeandee/.conda/envs/my_env_local/Lib/site-packages")
+
+import tensorflow as tf
+import keras_ocr
+
+print('tensorflow version (should be 2.10.* for GPU compatibility)', tf.__version__)
+if len(tf.config.list_physical_devices('GPU')) != 0:
+    print('GPU in use for tensorflow')
+else:
+    print('CPU in use for tensorflow')
+
 
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 #Script defaults to ISIS Batch 1 
 
-#pipeline = keras_ocr.pipeline.Pipeline()
 parser = OptionParser()
 
 parser.add_option('-u', '--username', dest='username', 
@@ -69,6 +74,129 @@ else:
 #station names and location 
 station_log_dir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
 station_df = pd.read_csv(station_log_dir)
+
+#KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
+#This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
+
+#Required imports 
+import os
+import string 
+from PIL import Image
+import keras_ocr
+import string
+import tempfile
+
+#Loading trained recognizer model
+recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits) 
+recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading_final.h5')  
+recognizer.compile()  
+pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
+
+#Paramaters for denoising code
+imageHeight = 50
+top_noise_height = 10
+bottom_noise_height = 10
+threshold_toLine=(110, 110, 110, 255)
+threshold_towhite=(0, 0, 0, 255)
+threshold_toblack=(80, 80, 80, 255)
+start_row_to_process = 1
+end_row_to_process = 20
+
+#Functions
+def crop_and_copy(input_path, output_path, imageHeight):
+    # Open the input image
+    with Image.open(input_path) as img:
+        # Get the dimensions of the image
+        width, height = img.size
+        # Define the region to crop (imageHeight pixels from the bottom)
+        crop_region = (0, height - imageHeight, width, height)
+        # Crop the image
+        cropped_img = img.crop(crop_region)
+        # Create a new image with the same size as the cropped region
+        new_img = Image.new("RGBA", (width, imageHeight), (0, 0, 0, 0))
+        # Paste the cropped region onto the new image
+        new_img.paste(cropped_img, (0, 0))
+        # Save the result to the output path
+        new_img.save(output_path.name)
+
+def remove_top_bottom_noise(input_path, top_noise_height, bottom_noise_height):
+    # Open the image
+    with Image.open(input_path) as img:
+        # Get the dimensions of the image
+        width, height = img.size
+        # Create a new image with the same content as the original
+        new_img = img.copy()
+
+        # Add a black border to the top noise height
+        for y in range(top_noise_height):
+            for x in range(width):
+                new_img.putpixel((x, y), (0, 0, 0, 255))  # Set pixel to black
+        # Remove noise from the bottom
+        for y in range(height - bottom_noise_height, height):
+            for x in range(width):
+                new_img.putpixel((x, y), (0, 0, 0, 255))  # Set pixel to black
+
+        # Save the result, overwriting the original image
+        new_img.save(input_path.name)
+
+def process_middle_lines_noise(input_path, threshold_toline, start_row, end_row):
+    # Open the image
+    img = Image.open(input_path)
+    
+    # Get the pixels
+    pixels = img.load()
+    width, _ = img.size
+    # Iterate through rows to process and replace colors below the threshold
+    for y in range(start_row, end_row + 1):
+        for x in range(width):
+            r, g, b, a = pixels[x, y]
+            if (r, g, b, a) < threshold_toline:
+                pixels[x, y] = (0, 0, 0, 255)
+    # Iterate through all rows to process the below threshold rest pixels to black
+    for y in range(top_noise_height, imageHeight-bottom_noise_height):
+        if y == 19 or y == 20:
+           continue
+        for x in range(width):
+            r, g, b, a = pixels[x, y]
+            if (r, g, b, a) < threshold_toblack:
+                pixels[x, y] = (0, 0, 0, 255)
+    # Iterate through all rows to process the rest pixels to white
+    for y in range(top_noise_height, imageHeight-bottom_noise_height):
+        for x in range(width):
+            r, g, b, a = pixels[x, y]
+            if (r, g, b, a) > threshold_towhite:
+                pixels[x, y] = (255, 255, 255, 255)
+    # Save the modified image
+    img.save(input_path.name)
+
+def read_image(image_path):
+    try: 
+        #applying cropping and de-noising filters
+        output_file_path = tempfile.NamedTemporaryFile(delete = False, suffix=".png")
+        crop_and_copy(image_path, output_file_path, imageHeight)
+        remove_top_bottom_noise(output_file_path,top_noise_height,bottom_noise_height)
+
+        process_middle_lines_noise(output_file_path,threshold_toLine,start_row_to_process,end_row_to_process)
+
+        #reading filtered image
+        image = keras_ocr.tools.read(output_file_path.name) 
+      
+        #applying keras
+        prediction = pipeline.recognize([image])[0]
+    
+        combined_lists = list(zip([x[1][0][0] for x in prediction], [x[0] for x in prediction]))
+        sorted_lists = sorted(combined_lists, key=lambda x: x[0])
+        sorted_digits = [item[1] for item in sorted_lists]
+        print("Metadata read:", sorted_digits)
+
+    except Exception as e:
+        print('ERR:', e)
+
+    output_file_path.close()
+    os.unlink(output_file_path.name)
+
+    return sorted_digits
+
      
 #Functions
 
@@ -87,30 +215,28 @@ def read_metadata(prediction_groups, subdir_path, img):
     #get metadata from keras prediction & concat string
     df_read_temp = pd.DataFrame()
     df_notread_temp = pd.DataFrame()
-    for i in range(0, len(prediction_groups)):
-        df_ocr = pd.DataFrame()
-        read_str = str(prediction_groups)
-        if len(read_str) == 15:
-                station_number = read_str[2:4]
-                station_location, station_lat, station_lon, station_ID = get_station_info(station_number)
-                row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
-                                    'Fixed_Frequency_Code': read_str[1:2],
-                                    'Station_Number': station_number,
-                                    'Station_Location':station_location,
-                                    'Station_ID':station_ID,
-                                    'Station_Lat':station_lat,
-                                    'Station_Lon':station_lon,
-                                         'Year': read_str[4:6],
-                                         'Day': read_str[6:9],
-                                         'Hour': read_str[9:11],
-                                         'Minute': read_str[11:13],
-                                         'Second': read_str[13:15],
-                                         'Filename': img.replace(subdir_path, '')
+
+    read_str = str(prediction_groups)
+    if len(read_str) == 15:
+            station_number = read_str[2:4]
+            station_location, station_lat, station_lon, station_ID = get_station_info(station_number)
+            row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
+                                'Fixed_Frequency_Code': read_str[1:2],
+                                'Station_Number': station_number,
+                                'Station_Location':station_location,
+                                'Station_ID':station_ID,
+                                'Station_Lat':station_lat,
+                                'Station_Lon':station_lon,
+                                'Year': read_str[4:6],
+                                'Day': read_str[6:9],
+                                'Hour': read_str[9:11],
+                                'Minute': read_str[11:13],
+                                'Second': read_str[13:15],
+                                'Filename': img.replace(subdir_path, '')
                                          })
-                df_read_temp = pd.concat([df_read, row2])
-        else:
-                df_ocr['Filename'] = img.replace(subdir_path, '')
-                df_notread_temp = pd.concat([df_notread_temp, df_ocr])
+            df_read_temp = pd.concat([df_read_temp, row2])
+    else:
+            df_notread_temp.loc[0,'Filename'] = img.replace(subdir_path, '')
     
     return df_read_temp, df_notread_temp
 
@@ -237,7 +363,7 @@ while stop_condition == False:
     for file in os.listdir(directory_path + subdir_path_end):
         img_fns.append(directory_path + subdir_path_end + file)
         num_images = len(img_fns)
-        
+
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
 
@@ -251,7 +377,8 @@ while stop_condition == False:
     #Saving results:
     my_temp_path = resultDir + directory
     if not os.path.exists(my_temp_path):
-        os.makedirs(resultDir,directory)
+        path = os.path.join(resultDir, directory)
+        os.makedirs(path)
     
     df_read.to_csv(resultDir + directory + '/' +  'Metadata_analysis_' + subdirectory + '.csv', index=False)
     if len(df_notread) > 0:
