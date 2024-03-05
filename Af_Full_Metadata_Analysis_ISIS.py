@@ -4,18 +4,18 @@
 import pandas as pd
 import os, gc, sys
 from random import randrange
-import time, datetime
+import time
+from datetime import datetime
 from optparse import OptionParser
 
 #from Ag_Keras_Ocr import *
 
-#GPU not being used - need to fix 
-sys.path.insert(0,  "c:/Users/jpyneeandee/.conda/envs/my_env_local/Lib/site-packages")
+sys.path.insert(0,"V:\jpyneeandee\envs\my_env\Lib\site-packages") #change to add the path to your virtual env
 
 import tensorflow as tf
 import keras_ocr
 
-print('tensorflow version (should be 2.10.* for GPU compatibility)', tf.__version__)
+print('tensorflow version (should be 2.10.* for GPU compatibility) is: ' , tf.__version__)
 if len(tf.config.list_physical_devices('GPU')) != 0:
     print('GPU in use for tensorflow')
 else:
@@ -75,6 +75,9 @@ else:
 station_log_dir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
 station_df = pd.read_csv(station_log_dir)
 
+cropped_too_soon = "L:/DATA/ISIS/contractor_error_reports/CSA-AMS Comparison/CSAnotAMS_allmerged.csv"
+cropped_too_soon_df = pd.read_csv(cropped_too_soon)
+
 #KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
 #This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
 
@@ -82,7 +85,6 @@ station_df = pd.read_csv(station_log_dir)
 import os
 import string 
 from PIL import Image
-import keras_ocr
 import string
 import tempfile
 
@@ -199,7 +201,6 @@ def read_image(image_path):
 
      
 #Functions
-
 def read_metadata(prediction_groups, subdir_path, img):
     '''
     Definition:
@@ -215,9 +216,12 @@ def read_metadata(prediction_groups, subdir_path, img):
     #get metadata from keras prediction & concat string
     df_read_temp = pd.DataFrame()
     df_notread_temp = pd.DataFrame()
+    read_str =''.join(map(str, prediction_groups))
 
-    read_str = str(prediction_groups)
-    if len(read_str) == 15:
+    #get length of metadata
+    list_of_lengths = (lambda x:[len(i) for i in x])(prediction_groups)
+
+    if sum(list_of_lengths) == 15:
             station_number = read_str[2:4]
             station_location, station_lat, station_lon, station_ID = get_station_info(station_number)
             row2 = pd.DataFrame({'Satellite_Code': read_str[0:1],
@@ -233,10 +237,12 @@ def read_metadata(prediction_groups, subdir_path, img):
                                 'Minute': read_str[11:13],
                                 'Second': read_str[13:15],
                                 'Filename': img.replace(subdir_path, '')
-                                         })
+                                         }, index = [0])
             df_read_temp = pd.concat([df_read_temp, row2])
     else:
+            df_notread_temp['Filename'] = None
             df_notread_temp.loc[0,'Filename'] = img.replace(subdir_path, '')
+            print(df_notread_temp)
     
     return df_read_temp, df_notread_temp
 
@@ -318,12 +324,13 @@ def get_station_info(ind):
             station_lat =  station_df['Latitude'][i]
             station_lon = station_df['Longitude'][i]
             station_ID =  station_df['Station ID'][i]
+            return station_location, station_lat, station_lon, station_ID
         else:
             station_ID = station_location = station_lon = station_lat = 0
+            return station_location, station_lat, station_lon, station_ID
 
-    return station_location, station_lat, station_lon, station_ID
 
-#Process remaining subdirectories with while loop
+#Start processing 
 stop_condition = False
 
 while stop_condition == False:
@@ -353,20 +360,26 @@ while stop_condition == False:
     directory, subdirectory, curr_row_index = draw_random_subdir()
     subdir_path_end = directory + '/' + subdirectory + '/'
 
-    #Process subdirectory
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory')
     print(str(subdir_rem) + ' subdirectories to go!')
 
+    #Cross reference images that were flagged as cropped too soon & remove them
+    flagged_dir = cropped_too_soon_df.loc[cropped_too_soon_df['Directory'] == directory]
+    flagged_subdir = flagged_dir.loc[flagged_dir['Subdirectory'] == subdirectory]
+
     #Get all images from chosen directory and subdirectory path
     img_fns = []
     for file in os.listdir(directory_path + subdir_path_end):
+        if (flagged_subdir['filename'] == file).any():
+            continue #Cross reference images that were flagged as cropped too soon & remove them
         img_fns.append(directory_path + subdir_path_end + file)
         num_images = len(img_fns)
 
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
 
+    #Apply KERAS on each image, save metadata read and loss files 
     for img in img_fns:
         prediction_groups = read_image(img) 
         df_read_, df_notread_ = read_metadata(prediction_groups=prediction_groups, subdir_path=directory_path + subdir_path_end,
@@ -418,7 +431,7 @@ while stop_condition == False:
             
     #Backup 'process_log' (10% of the time), garbage collection
     if randrange(10) == 7:
-        df_log = pd.read_csv(logDir + 'Process_Log_OCR.csv')
+        df_log = pd.read_csv(logDir + 'Process_Log.csv')
         datetime_str = datetime.now().strftime("%Y%m%d_%Hh%M")
         os.makedirs(logDir + 'backups/', exist_ok=True)
         df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
