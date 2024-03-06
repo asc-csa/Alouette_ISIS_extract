@@ -242,7 +242,6 @@ def read_metadata(prediction_groups, subdir_path, img):
     else:
             df_notread_temp['Filename'] = None
             df_notread_temp.loc[0,'Filename'] = img.replace(subdir_path, '')
-            print(df_notread_temp)
     
     return df_read_temp, df_notread_temp
 
@@ -260,7 +259,6 @@ def draw_random_subdir():
             try:
                 full_dir_df = pd.read_csv(my_path)
                 ind = randrange(len(full_dir_df))
-            #   for ind in full_dir_df.index: #instead of a for loop, i'm trying a randomized ind
                 directory = full_dir_df['Directory'][ind]
                 subdir = full_dir_df['Subdirectory'][ind]
 
