@@ -8,9 +8,14 @@ import time
 from datetime import datetime
 from optparse import OptionParser
 
-#from Ag_Keras_Ocr import *
+#Required imports for KERAS
+import string 
+from PIL import Image
+import string
+import tempfile
 
-sys.path.insert(0,"V:\jpyneeandee\envs\my_env\Lib\site-packages") #change to add the path to your virtual env
+## CHANGE PATH BELOW TO YOUR VIRTUAL ENVIRONMENT
+sys.path.insert(0,"V:\jpyneeandee\envs\my_env\Lib\site-packages") 
 
 import tensorflow as tf
 import keras_ocr
@@ -20,7 +25,6 @@ if len(tf.config.list_physical_devices('GPU')) != 0:
     print('GPU in use for tensorflow')
 else:
     print('CPU in use for tensorflow')
-
 
 #To run this script : e.g Af_Full_Metadata_Analysis_ISIS.py --username jpyneeandee --isis 1 (for ISIS batch 1 run by Jeyshinee)
 #Script defaults to ISIS Batch 1 
@@ -80,13 +84,6 @@ cropped_too_soon_df = pd.read_csv(cropped_too_soon)
 
 #KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
 #This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
-
-#Required imports 
-import os
-import string 
-from PIL import Image
-import string
-import tempfile
 
 #Loading trained recognizer model
 recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits) 
