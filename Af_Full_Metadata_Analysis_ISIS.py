@@ -266,11 +266,15 @@ def draw_random_subdir():
 
                 elif (full_dir_df['Status'][ind]) == "In Progress":
                     print('Current subdirectory', subdir, 'being processed already, moving on to the next one')
-                    draw_random_subdir()
+                    directory, subdir, ind = draw_random_subdir()
+                    return directory, subdir, ind
+                    
                     
                 elif (full_dir_df['Status'][ind]) == "Processed":
                     print("Current subdirectory", subdir, "already processed, moving on to the next one")
-                    draw_random_subdir()
+                    directory, subdir, ind = draw_random_subdir()
+                    return directory, subdir, ind
+                    
 
             except (OSError, PermissionError) as e:
                 print(my_path, 'currently being used, pausing for 30 seconds before another attempt')
@@ -366,10 +370,11 @@ while stop_condition == False:
     #Get all images from chosen directory and subdirectory path
     img_fns = []
     for file in os.listdir(directory_path + subdir_path_end):
-        if (flagged_subdir['filename'] == file).any():
-            continue #Cross reference images that were flagged as cropped too soon & remove them
-        img_fns.append(directory_path + subdir_path_end + file)
-        num_images = len(img_fns)
+        if file.endswith('.png'):
+            if (flagged_subdir['filename'] == file).any():
+                continue #Cross reference images that were flagged as cropped too soon & remove them
+            img_fns.append(directory_path + subdir_path_end + file)
+            num_images = len(img_fns)
 
     df_read = pd.DataFrame()
     df_notread = pd.DataFrame()
