@@ -325,8 +325,8 @@ def get_station_info(ind):
             return station_location, station_lat, station_lon, station_ID
         else:
             station_ID = station_location = station_lon = station_lat = 0
-            return station_location, station_lat, station_lon, station_ID
-
+    
+    return station_location, station_lat, station_lon, station_ID
 
 #Start processing 
 stop_condition = False
