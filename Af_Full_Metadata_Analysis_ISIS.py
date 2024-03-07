@@ -14,8 +14,11 @@ from PIL import Image
 import string
 import tempfile
 
+# should be L: for most people but if that gives you an err try this
+L_drive = '//SAQCJ3YWVDCP003.csa.space.gc.ca/L-DFS/'
+
 ## CHANGE PATH BELOW TO YOUR VIRTUAL ENVIRONMENT
-sys.path.insert(0,"V:\jpyneeandee\envs\my_env\Lib\site-packages") 
+sys.path.insert(0,"V:\\aferreira\Python\envs\\tensorflow210\Lib\site-packages") 
 
 import tensorflow as tf
 import keras_ocr
@@ -44,42 +47,42 @@ parser.add_option('--isis', dest='isis',
         
 if options.isis == '2':
      #ISIS BATCH 2 CHOSEN
-     directory_path = 'L:/DATA/ISIS/ISIS_102000056114/'
+     directory_path = L_drive + 'DATA/ISIS/ISIS_102000056114/'
      batch_size = 801
 
     #Log Directory, do not change
-     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/04_log/'
+     logDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/04_log/'
      #Path to save results, do not change
-     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/05_results/'
+     resultDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_2/05_results/'
      my_path = logDir + 'ISIS_2_Directory_Subdirectory_List.csv'
 
 elif options.isis == '3':
      #ISIS BATCH 3/RAW UPLOAD CHOSEN
-     directory_path = 'L:/DATA/ISIS/raw_upload_20230421/'
+     directory_path = L_drive + '/DATA/ISIS/raw_upload_20230421/'
      batch_size = 359
 
     #Log Directory, do not change
-     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/04_log/'
+     logDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/04_log/'
      #Path to save results, do not change
-     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/05_results/'
+     resultDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_3/05_results/'
      my_path = logDir + 'ISIS_Raw_Upload_Directory_Subdirectory_List.csv'
 
 else:
      #ISIS BATCH 1 
-     directory_path = 'L:/DATA/ISIS/ISIS_101300030772/'
+     directory_path = L_drive + '/DATA/ISIS/ISIS_101300030772/'
      batch_size = 1720
 
     #Log Directory, do not change
-     logDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/04_log/'
+     logDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/04_log/'
      #Path to save results, do not change
-     resultDir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/05_results/'
+     resultDir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/BATCH_1/05_results/'
      my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
 
 #station names and location 
-station_log_dir = 'L:/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
+station_log_dir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Number_Name_Location.csv'
 station_df = pd.read_csv(station_log_dir)
 
-cropped_too_soon = "L:/DATA/ISIS/contractor_error_reports/CSA-AMS Comparison/CSAnotAMS_allmerged.csv"
+cropped_too_soon = L_drive + "/DATA/ISIS/contractor_error_reports/CSA-AMS Comparison/CSAnotAMS_allmerged.csv"
 cropped_too_soon_df = pd.read_csv(cropped_too_soon)
 
 #KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
@@ -87,7 +90,7 @@ cropped_too_soon_df = pd.read_csv(cropped_too_soon)
 
 #Loading trained recognizer model
 recognizer = keras_ocr.recognition.Recognizer(alphabet= string.digits) 
-recognizer.model.load_weights('L:/DATA/ISIS/keras_ocr_training/ISIS_reading_final.h5')  
+recognizer.model.load_weights(L_drive + '/DATA/ISIS/keras_ocr_training/ISIS_reading_final.h5')  
 recognizer.compile()  
 pipeline = keras_ocr.pipeline.Pipeline(recognizer=recognizer)
 
