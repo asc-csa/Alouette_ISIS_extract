@@ -18,7 +18,7 @@ import tempfile
 L_drive = '//SAQCJ3YWVDCP003.csa.space.gc.ca/L-DFS/'
 
 ## CHANGE PATH BELOW TO YOUR VIRTUAL ENVIRONMENT
-sys.path.insert(0,"V:\\aferreira\Python\envs\\tensorflow210\Lib\site-packages") 
+sys.path.insert(0,"V:\jpyneeandee\envs\my_env\Lib\site-packages") 
 
 import tensorflow as tf
 import keras_ocr
@@ -244,6 +244,16 @@ def read_metadata(prediction_groups, subdir_path, img):
             df_notread_temp.loc[0,'Filename'] = img.replace(subdir_path, '')
     
     return df_read_temp, df_notread_temp
+class recursionlimit:
+    def __init__(self, limit):
+        self.limit = limit
+
+    def __enter__(self):
+        self.old_limit = sys.getrecursionlimit()
+        sys.setrecursionlimit(self.limit)
+
+    def __exit__(self, type, value, tb):
+        sys.setrecursionlimit(self.old_limit)
 
 def draw_random_subdir():
     '''
@@ -359,8 +369,9 @@ while stop_condition == False:
 
    
     #Get directory and subdirectory path to process and current row index
-    directory, subdirectory, curr_row_index = draw_random_subdir()
-    subdir_path_end = directory + '/' + subdirectory + '/'
+    with recursionlimit(1721):
+        directory, subdirectory, curr_row_index = draw_random_subdir()
+        subdir_path_end = directory + '/' + subdirectory + '/'
 
     print('')
     print('Processing ' + subdir_path_end + ' subdirectory')
@@ -439,3 +450,4 @@ while stop_condition == False:
         os.makedirs(logDir + 'backups/', exist_ok=True)
         df_log.to_csv(logDir + 'backups/' + 'process_log_OCR-' + datetime_str + '.csv', index=False)
         gc.collect()
+
