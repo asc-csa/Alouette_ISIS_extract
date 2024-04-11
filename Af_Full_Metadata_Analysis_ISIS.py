@@ -83,7 +83,7 @@ station_log_dir = L_drive + '/DATA/ISIS/ISIS_Test_Metadata_Analysis/Station_Numb
 station_df = pd.read_csv(station_log_dir)
 
 cropped_too_soon = L_drive + "/DATA/ISIS/contractor_error_reports/CSA-AMS Comparison/CSAnotAMS_allmerged.csv"
-cropped_too_soon_df = pd.read_csv(cropped_too_soon)
+cropped_too_soon_df = pd.read_csv(cropped_too_soon, engine = 'python')
 
 #KERAS OCR script to crop the metadata part of the ionogram, remove noise and white line
 #This script also applies KERAS OCR to read the metadata and uses a recognizer trained on denoised ISIS ionograms. 
