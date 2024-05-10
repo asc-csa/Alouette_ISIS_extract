@@ -1,4 +1,4 @@
-#ISIS Full MetaData Analysis - Jeyshinee Pyneeandee February 2024
+#ISIS Full MetaData Analysis - Jose Pasillas May 2024
 
 #Required imports 
 import pandas as pd
@@ -48,7 +48,6 @@ parser.add_option('--isis', dest='isis',
 
 (options, args) = parser.parse_args()
 
-        
 if options.isis == '2':
      #ISIS BATCH 2 CHOSEN
      directory_path = L_drive + 'DATA/ISIS/ISIS_102000056114/'
@@ -81,7 +80,6 @@ else:
      #Path to save results, do not change
      resultDir = L_drive + '/DATA/ISIS/ISIS_Test_Data_Analysis/BATCH_1/05_results/'
      my_path = logDir + 'ISIS_1_Directory_Subdirectory_List.csv'
-
 
 cropped_too_soon = L_drive + "/DATA/ISIS/contractor_error_reports/CSA-AMS Comparison/CSAnotAMS_allmerged.csv"
 cropped_too_soon_df = pd.read_csv(cropped_too_soon)
@@ -130,8 +128,7 @@ def draw_random_subdir():
             except (OSError, PermissionError) as e:
                 print(my_path, 'currently being used, pausing for 30 seconds before another attempt')
                 time.sleep(30)
-
-                
+               
 def update_my_log_file(ind):
     '''
     Definition: Updates the status of the given index row for dir and subdir as "Processed"
@@ -155,7 +152,6 @@ def update_my_log_file(ind):
         except (OSError, PermissionError) as e:
                 print(my_path, 'currently being used, pausing for 30 seconds before another attempt')
                 time.sleep(30)
-
 
 def get_station_info(ind):
     '''
@@ -429,7 +425,6 @@ def detect_single_rightmost_point(image, gaussian_blur_size=5, canny_thresholds=
     # Return the location of the rightmost detected pixel
     return rightmost_point
 
-
 def preprocess_lines(common_lines, proximity_threshold):
     """
     Combines any duplicate lines
@@ -543,7 +538,6 @@ def analyze_point_against_lines(point, common_lines, proximity_threshold):
 
     return df
 
-
 # helper function for visual accuarcy assesment
 def visualize_and_save(image, common_lines, point, image_path, detection=True, output_folder='results_testing_jp'):
     """
@@ -590,7 +584,6 @@ def visualize_and_save(image, common_lines, point, image_path, detection=True, o
 
     print(f"Image saved to {output_image_path}")
     
-
 def process_images(full_paths, img_crop_path, minimum_correlation=0.5, size_increase=0.25, threshold=0.8, line_width=3):
     """
     Process a list of image paths to extract, analyze, and visualize ROIs based on template matching.
@@ -625,15 +618,11 @@ def process_images(full_paths, img_crop_path, minimum_correlation=0.5, size_incr
         else:
             img_format = False 
                 
-    
         cropped_image, crop_size = crop_image_by_threshold(img_test, threshold=threshold)
-
         
         if cropped_image.shape[0] <= img_crop.shape[0]:
             cropped_image = img_test
             
-
-        
         roi, bbox, max_val = extract_roi_with_template_matching(cropped_image, img_crop, minimum_correlation, size_increase)
         
         if roi is not False:
@@ -671,7 +660,6 @@ def process_images(full_paths, img_crop_path, minimum_correlation=0.5, size_incr
     final_df = pd.concat(results, ignore_index=True)
     return final_df
 
-
 #Start processing 
 stop_condition = False
 
@@ -696,7 +684,6 @@ while stop_condition == False:
         if subdir_rem < 2:
             print('Stop!')
             stop_condition = True
-
    
     #Get directory and subdirectory path to process and current row index
     directory, subdirectory, curr_row_index = draw_random_subdir()
