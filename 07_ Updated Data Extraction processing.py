@@ -1,4 +1,4 @@
-#ISIS Full MetaData Analysis - Jose Pasillas May 2024
+#ISIS Full Data Analysis - Jose Pasillas May 2024
 
 #Required imports 
 import pandas as pd
