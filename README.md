@@ -1,119 +1,97 @@
 
-![alouette satellite](alouette.jpg)
+# Alouette-1, ISIS - 1 and ISIS -2 - Ionogram Data Extraction - Data from Canada's First Satellites Over 60 Years In the Making
+
+> In this project, the film rolls from the Alouette and ISIS satellites were scanned, digitized, and made accessible to the public. The primary aim was to establish a centralized data repository, facilitating access for researchers to utilize both the data and metadata derived from the satellites for future research.
+
+Alouette -1 was the first topside ionospheric satellite and the first Canadian satellite launched in 1962 in collaboration with the United States through NASA. Alouette – 1 was known for its swept frequency topside sounder experiment with the goal to investigate the geographic and diurnal variation of the topside ionosphere at altitudes up to 1000 km. One of the most important scientific results from Alouette-1 was that it provided the first global picture of electron-density distribution in the topside ionosphere. With the success of Alouette -1, Canada and the United States formally agreed on December 23rd, 1963, to extend their collaboration to a program called International Satellites for Ionospheric studies (ISIS). As part of this program, Canada designed and built an additional family of ionospheric satellites: Alouette – 2, ISIS -1 and ISIS – 2. The ISIS - 1 and ISIS - 2 satellites had a more complex navigational systems and larger data collection capabilities than Alouette- 1 and 2 satellites. For instance, ISIS – 1 was the first in the series to contain a swept and fixed frequency sounder technique combined with a complete set of direct measurements.
+
+The output from the topside sounders were a video signal that contained the ionospheric echo pulses, but also pulses that depicted frequency markers and when a new frame started. A system was built to read the 7-track reel-to-reel magnetic tapes displayed on a cathode ray tube in ‘B-scan’ form. This product was called an ionogram, which depicted the reflections of radio waves emitted from the satellite off the top side of the ionosphere, across a range of frequencies. The scanning of the ionograms as the first step of the historical data restoration of the Alouette and ISIS satellites began in 2017. The processing of the Alouette 
+ and ISIS data was concluded in 2023 and 2024 respectively. 
+
+> Canadian Space Agency has created a centralized repository, facilitating easy access for researchers to utilize both the data and metadata derived from the Alouette and ISIS satellites. This includes but is not limited to open-source code on the processing of the data, raw images, data dictionaries, detailed methodology and a micro application that provides users the ability to select, download and visualize Alouette and ISIS data.
 
 
-- [En Français](#logiciel-de-traitement-de-l-ensemble-des-donn-es-alouette-i)
-- [In English](#software-to-process-the-alouette-i-dataset)
+## How to Get Started
+**To learn how to access, work and re-process the data, read:**
 
-# Logiciel de traitement de l'ensemble des données Alouette-I
-## Contexte
-Le satellite [Alouette-I](https://www.asc-csa.gc.ca/fra/satellites/alouette.asp)  a été le premier satellite canadien lancé dans l'espace. Le but de son expérience principale était de comprendre la structure de la haute ionosphère.
+- [**Alouette-1 – Ionogram Data Extraction Methodology**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
+- ISIS – Ionogram Data Extraction Methodology
+  
+---
 
-Les données ont été enregistrées sur un film de 35 mm. L'ASC a numérisé 884952 (44,25\%) des 2 000 000 d'images d'ionogrammes brutes estimées.
+# Alouette-1, ISIS-1 et ISIS-2 - Extraction de Données d'Ionogrammes - Données des Premiers Satellites Canadiens depuis Plus de 60 Ans en Cours de Réalisation
 
- ![ionogram](ionogram.png)
+> Dans ce projet, les rouleaux de film des satellites Alouette et ISIS ont été scannés, numérisés et rendus accessibles au public. L'objectif principal était d'établir un dépôt centralisé de données, facilitant l'accès aux chercheurs pour utiliser à la fois les données et les métadonnées dérivées des satellites pour de futures recherches.
 
-Ce code sert à extraire les données et les métadonnées des ionogrammes numérisés.
+Alouette-1 était le premier satellite ionosphérique à haute altitude et le premier satellite canadien lancé en 1962 en collaboration avec les États-Unis par l'intermédiaire de la NASA. Alouette-1 était connu pour son expérience de sondeur ionosphérique à fréquence variable, ayant pour objectif d'étudier la variation géographique et diurne de l'ionosphère à haute altitude jusqu'à 1000 km. L'un des résultats scientifiques les plus importants d'Alouette-1 a été qu'il a fourni la première image globale de la distribution de la densité électronique dans la haute ionosphère. Avec le succès d'Alouette-1, le Canada et les États-Unis ont convenu formellement, le 23 décembre 1963, de prolonger leur collaboration dans le cadre d'un programme appelé Satellites Internationaux pour les Études Ionosphériques (ISIS). Dans le cadre de ce programme, le Canada a conçu et construit une famille supplémentaire de satellites ionosphériques : Alouette-2, ISIS-1 et ISIS-2. Les satellites ISIS-1 et ISIS-2 avaient des systèmes de navigation plus complexes et des capacités de collecte de données plus importantes que les satellites Alouette-1 et Alouette-2. Par exemple, ISIS-1 a été le premier de la série à contenir une technique de sondeur à fréquence variable et fixe, combinée à un ensemble complet de mesures directes.
 
-## Démarrage rapide
-```python
-pip install -r pip-requirements.txt
-cd scan2data
-run user_input.py 
-```
+Les sorties des sondeurs à haute altitude étaient un signal vidéo contenant les impulsions d'écho ionosphérique, mais aussi des impulsions représentant les marqueurs de fréquence et le début d'une nouvelle trame. Un système a été construit pour lire les bandes magnétiques à 7 pistes de bobine à bobine affichées sur un tube cathodique sous forme de « B-scan ». Ce produit était appelé un ionogramme, qui représentait les réflexions des ondes radio émises par le satellite à partir de la haute ionosphère, sur une gamme de fréquences. La numérisation des ionogrammes, en tant que première étape de la restauration des données historiques des satellites Alouette et ISIS, a commencé en 2017. Le traitement des données d'Alouette et d'ISIS a été conclu en 2023 et 2024 respectivement.
 
-## Navigation
-
- - /docs contient la documentation pertinente sur les sous-modules et les sous-ensembles de scan2data
-	 - La documentation peut être consultée dans un navigateur en cliquant sur /docs/_build/html/index
- - /scan2data est un progiciel basé sur Python3 qui permet de transformer les scans bruts en informations
-	 - process_directory.py contient du code pour parcourir l'ensemble du processus de traitement d'un répertoire
-	 - user_input.py est un moyen d'exécuter rapidement le code
- - /output-analysis contient des scripts R pour analyser et visualiser les sorties générées en CSV de /scan2data
- - /pickle stocke la trame de données finale générée par le code process_directory avec l'étiquetage du répertoire et du sous-répertoire associés
- - /feature_detection utilise le fichier pickle stocké dans /pickle pour effectuer l'extraction de traces, le nettoyage et pour extraire les paramètres d'intérêt
- - /saved_results contient les sorties d'images de feature_detection.py
-
-## Détection de caractéristiques
-Pour exécuter le code de détection des caractéristiques :
-1) Exécutez /scan2data/process_directory.py sur le répertoire d'ionogrammes souhaité (spécifié dans "main")
-2) Dans /feature_detection/feature_detection_main.py, indiquez le nom de fichier du fichier .pkl généré à l'étape précédente (enregistré dans /pickle)
-3) Exécutez le fichier feature_detection_main.py. Les images de sortie seront sauvegardées dans /saved_results. Notez que pour le traitement à grande échelle des ionogrammes, il peut être préférable de ne pas enregistrer les images afin d'accélérer le traitement.
-
-La détection des caractéristiques fonctionne en quelques étapes. La sortie de process_directory contient toutes les coordonnées auxquelles un point est détecté. Afin de rendre la trace plus facile à analyser scientifiquement, elle est rééchantillonnée, filtrée et lissée. Diverses méthodes peuvent être utilisées sur la trace nettoyée pour tenter d'extraire des points de données d'intérêt majeur, bien que cela nécessite un travail supplémentaire pour être généralisable.
-
-### Conventions d'appellation des modules dans les sous-ensembles
-- les modules commençant par test_ sont des modules permettant de tester la fonctionnalité du sous-paquet
-- les modules commençant par draft_ sont des codes de départ qui nécessitent encore beaucoup de travail
- 
-## Pipeline de traitement
-- Les scans bruts ont été traités par sous-répertoire
-	- Chaque image brute dans le sous-répertoire a été segmentée en son ionogramme brut et en métadonnées ajustées (voir /scan2data/image_segmentation)
-	- S'il était déterminé que les métadonnées se trouvaient à gauche des ionogrammes, les métadonnées de tous les ionogrammes étaient traduites en informations (voir /scan2data/metadata_translation)
-		- La grille de métadonnées du point de gauche, qui fait correspondre les coordonnées des pixels de l'image des métadonnées du point de gauche au numéro, à la catégorie, a été déterminée à partir de toutes les métadonnées du point
-		- La grille de métadonnées du chiffre de gauche, qui associe les coordonnées des pixels de l'image des métadonnées du chiffre de gauche au numéro, à la catégorie, a été déterminée à partir de toutes les métadonnées du chiffre
-	- À partir de tous les ionogrammes extraits, on a déterminé la grille d'ionogrammes, qui permet de cartographier les coordonnées des pixels de l'image en Hz, en km (voir /scan2data/ionogram_grid_determination)
-	- La trace de l'ionogramme (noir) a été extraite et mise en correspondance avec des valeurs (Hz, km) (voir /scan2data/ionogram_content_extraction)
-	- Les paramètres sélectionnés ont été extraits, c'est-à-dire fmin (voir /scan2data/ionogram_content_extraction
+> L'Agence spatiale canadienne a créé un dépôt centralisé, facilitant l'accès des chercheurs pour utiliser à la fois les données et les métadonnées dérivées des satellites Alouette et ISIS. Cela inclut, mais ne se limite pas à, du code open source pour le traitement des données, des images brutes, des dictionnaires de données, une méthodologie détaillée et une micro-application qui permet aux utilisateurs de sélectionner, télécharger et visualiser les données d'Alouette et d'ISIS.
 
 
+## Comment démarrer
 
-# Software to process the Alouette-I dataset
+**Pour savoir comment accéder aux données, les utiliser et les retraiter, lisez le document suivant :**
 
-## Background
-The [Alouette-I satellite](https://www.asc-csa.gc.ca/eng/satellites/alouette.asp) was the first Canadian satellite launched into space. The goal of its main experiment was to understand the structure of the upper ionosphere. The data was recorded on 35-mm film. The CSA has scanned 884952 (44.25\%) of  the 2 000 000 estimated raw images.
+- [**Alouette-1 - Méthodologie d'extraction des données d'ionogrammes (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
+- ISIS – Méthodologie d'extraction des données d'ionogrammes
 
-![ionogram](ionogram.png)
+---
 
-This code is an effort to extract data and metadata from the scanned ionogram images.
+## Special Thank You / Un Gros Merci
+Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research Telecommunications Establishment of Canada
+<br>
+<br>
 
-## Quick start
-```python
-pip install -r pip-requirements.txt
-cd scan2data
-run user_input.py
-```
+---
 
-## Navigation
+## Credits
+### Data and Emerging Technologies (CSA) / Données et technologies émergentes (ASC) 
+- Roksana Sheikholmolouki (Technical Lead of Alouette and ISIS)
+- Jose Pasillas Diaz
+- Jeyshinee Pyneeandee
+- Jackson Cooper
+- Adam Koziak
+- Anna Boukina
+- Émiline Filion
+- Natasha Fee
 
- - /docs contains relevant documentation on the submodules and the subpackages of scan2data
-	 - The documentation can be viewed in a browser by clicking on /docs/_build/html/index
- - /scan2data is a Python3-based package to transform raw scans into information
-	 - process_directory.py contains code to through the entire processing pipeline for a directory
-	 - user_input.py is a way to quickly run the code
- - /output-analysis contains R scripts to analyze and visualize CSV-generated outputs of /scan2data
- - /pickle stores the final dataframe generated by the process_directory code with the associated directory and subdirectory labeling
- - /feature_detection uses the pickle file stored in /pickle to perform trace extraction, cleaning, and to extract parameters of interest
- - /saved_results contains the image outputs from feature_detection.py
+### Past Data Science Team (CSA) / Ancienne équipe de science des données (ASC)
+- Ravendra Naidoo (Former Technical Lead of Alouette-1)
+- Ashley Ferreira
+- Marianne Fortier
+- Salini Punchiwickrama
+- Benjamin ('JJ') Cannings
+-  Etienne Low-Décarie 
+- Jenisha Patel  
+- Wasiq Mohammad
+- Hansen Liu
 
-## Feature detection
-To run the feature detection code:
-1) Run /scan2data/process_directory.py on the desired ionograms directory (specified in 'main')
-2) In /feature_detection/feature_detection_main.py, specify the file_name of the .pkl file generated in the previous step (saved in /pickle)
-3) Run feature_detection_main.py. Output images will be saved to /saved_results. Note that for large-scale processing of ionograms, it may be preferable not to save the images in order to speed up the processing.
+### Open Government (CSA) / Gouvernement ouvert (ASC)
+- Natalina Mariani
+- Jean-Sebastien Hunter
 
-The feature detection works using a few steps. The output from process_directory contains all the coordinates at which a point is detected. In order to make the trace more amenable to scientific analysis, it is resampled, filtered, and smoothed. Various methods can be used on the cleaned trace to attempt to extract data points of key interest, although this needs further work to be generalizable.
+### Infrastructure Operations (CSA) / Opérations d'infrastructure (ASC)
+- Mateusz Gola
 
-### Naming conventions for modules in subpackages
-- modules starting with test_ are modules to test the subpackage's functionality
-- modules starting with draft_ are starting code that still needs a lot of work
- 
-## Processing pipeline
-- The raw scans were processed by subdirectory
-	- Each raw image in the subdirectory was segmented into its raw ionogram and trimmed metadata (see /scan2data/image_segmentation)
-	- If the metadata was determined to be located on the left of ionograms, the metadata of all the ionograms was translated into information (see /scan2data/metadata_translation)
-		- The leftside dot metadata grid, which maps image pixel coordinates of leftside dot metadata to number, category, was determined  from all the dot metadata
-		- The leftside digit metadata grid, which maps image pixel coordinates of leftside digit metadata to number, category, was determined  from all the digit metadata
-	- From all the extracted ionograms, the ionogram grid, which maps image pixel coordinates to Hz, km mappings,  was determined (see /scan2data/ionogram_grid_determination)
-	- The ionogram trace (black) was extracted and mapped to (Hz, km) values (see /scan2data/ionogram_content_extraction)
-	- Select parameters were extracted i.e. fmin (see /scan2data/ionogram_content_extraction
+### Chief Information Officer (CSA) / Chef du bureau d'information (ASC)
+- Josée Saint-Marseille
 
+### Space Utilization (CSA) / Utilisation de l'espace (ASC)
+- Taryn Tomlinson
+- Pierre Langlois
+- John Manuel
+- Kyle Murphy
 
-## Créateur | Creators
-Jenisha Patel  
-Etienne Low-Décarie  
-Wasiq Mohammad  
+### Space Exploration (CSA) / Exploration spatiale (ASC)
+- Louis-Paul Bédard
 
+<br>
+<br>
+
+![Alouette-1 mounting on Thor-Agena B rocket](multimedia/Alouette-1_mounting.jpg)
+<b>Figure 4:</b> Alouette-1 being installed on its Thor-Agena B rocket. Credit: Communications Research Center Canada (CRC) / Alouette-1 installée sur la fusée Thor-Agena B. Crédit : Centre de recherches sur les communications Canada (CRC)
 
 
 
