@@ -52,7 +52,6 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 - Jose Pasillas Diaz
 - Jeyshinee Pyneeandee
 - Jackson Cooper
-- Adam Koziak
 - Anna Boukina
 - Émiline Filion
 - Natasha Fee
@@ -63,6 +62,7 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 - Marianne Fortier
 - Salini Punchiwickrama
 - Benjamin ('JJ') Cannings
+- Adam Koziak
 -  Etienne Low-Décarie 
 - Jenisha Patel  
 - Wasiq Mohammad
