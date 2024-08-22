@@ -11,7 +11,8 @@ from data_loader import load_data
 
 def eval():
     train_loader, val_loader, test_loader = load_data(batch_size=1)
-
+    
+    # Load model and checkpoint to cuda if possible, otherwise cpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = SimpleCNN().to(device)
     print(device)
@@ -45,8 +46,8 @@ def eval():
             all_losses.extend([criterion(pred_labels, top_points).item()])
 
             all_paths.extend(labels["image_path"])
-            # if i > 100:
-            #     break
+            if i > 50:
+                break
             i+=1
     images = np.array(all_images)
     labels = np.array(all_labels)

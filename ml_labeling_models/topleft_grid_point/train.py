@@ -14,6 +14,7 @@ class SimpleCNN(nn.Module):
         self.conv3 = nn.Conv2d(32, 32, kernel_size=3, padding=1)
         self.conv4 = nn.Conv2d(32, 32, kernel_size=3, padding=1)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Note, the input size of the linear layer depends on the input size of the model and all parameters of the conv layers. Must be adjusted after any changes.
         self.fc1 = nn.Linear(59520, 2)
         self.dropout = nn.Dropout(0.3)
 
@@ -28,6 +29,7 @@ class SimpleCNN(nn.Module):
         return x
 
 def train():
+    # Load the model to the GPU if available  
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
 
@@ -38,8 +40,10 @@ def train():
     pytorch_total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print('Params:', pytorch_total_params)
 
+    # Mean Squared Error loss for a regression problem
     criterion = nn.MSELoss()
 
+    # ADAM optimizer with learning rate parameter
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     num_epochs = 100

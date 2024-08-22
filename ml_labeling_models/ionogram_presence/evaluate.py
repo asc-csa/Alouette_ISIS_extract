@@ -9,6 +9,7 @@ from data_loader import load_data
 def eval():
     train_loader, val_loader, test_loader = load_data(batch_size=1)
 
+    # Load model and checkpoint to cuda if possible, otherwise cpu
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model = SimpleCNN().to(device)
     print(device)
@@ -38,12 +39,6 @@ def eval():
             all_predictions.extend(np.round(pred_labels.numpy(), 0))
             all_images.extend(images.numpy())
             
-            # for i in range(len(pred_labels)):
-            #     img = images[i].permute(1,2,0).numpy()
-            #     print(labels[i], pred_labels[i])
-            #     plt.imshow(img, cmap='gray')
-            #     plt.show()
-            # break
     images = np.array(all_images)
     labels = np.array(all_labels)
     predictions = np.array(all_predictions)
@@ -56,6 +51,7 @@ def eval():
 
     plt.figure()
     for i in range(len(predictions)):   
+        # Visualize cases where the predicted label is incorrect
         if predictions[i][0] == labels[i]:
             continue
         img = images[i].transpose(1,2,0)

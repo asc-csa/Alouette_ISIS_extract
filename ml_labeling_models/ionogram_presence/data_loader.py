@@ -13,20 +13,25 @@ class ResizeWithPadding:
         self.crop_top = crop_top
 
     def __call__(self, image):
+        # Crop the image to get rid of metadata
         width, height = image.size
         image = image.crop((0, self.crop_top, width, height - self.crop_bottom))
-
         original_size = image.size
+
+        # Resize the image to 1400x350 and store the ratio
         ratio = min(self.output_size[0] / original_size[0], self.output_size[1] / original_size[1])
         new_size = (int(original_size[0] * ratio), int(original_size[1] * ratio))
         image = image.resize(new_size, Image.LANCZOS)
         delta_w = self.output_size[0] - new_size[0]
         delta_h = self.output_size[1] - new_size[1]
         padding = (0, 0, delta_w, delta_h)
+        
+        # Pad the image with 0 and return alongside the scale ratio
         return ImageOps.expand(image, padding, fill=0), ratio
 
 class IonogramDataset(Dataset):
     def __init__(self, dataframe):
+        # Reset index with drop=True gets rid of gaps in the case of any previous filtering
         self.dataframe = dataframe.reset_index(drop=True)
         self.resize = ResizeWithPadding((1400,350))
     
@@ -47,12 +52,14 @@ class IonogramDataset(Dataset):
         labels = {
             "image_path": image_path,
             "ionogram_present": torch.tensor(ionogram_present, dtype=torch.float32),
+            # Multiply coordinates by the scaling ratio so they make sense
             "top_point": top_point * ratio,
             "ratio": ratio,
         }
         return image, labels
 
 def convert_grid_points(df, column_name):
+    # Regex to extract coordinates from string in the form (x,y)
     df[['x', 'y']] = df[column_name].str.extract(r'\((.*),(.*)\)')
 
     df['x'] = pd.to_numeric(df['x'], errors='coerce')
@@ -60,6 +67,7 @@ def convert_grid_points(df, column_name):
 
     sentinel = torch.tensor([-1, -1])
 
+    # Find all instances without a number and replace with a sentinel value
     return df.apply(lambda row: torch.tensor([row['x'], row['y']]) if pd.notnull(row['x']) and pd.notnull(row['y']) else sentinel, axis=1)
 
 def load_data(path = 'L:\DATA\ISIS\Phase 3 - QA &Microapp& Media\labeled_data\combined_observer_results - Copy.csv', 
@@ -75,7 +83,10 @@ def load_data(path = 'L:\DATA\ISIS\Phase 3 - QA &Microapp& Media\labeled_data\co
     # Convert coordinate labels to tensors
     df['top_point'] = convert_grid_points(df, 'grid_point')
 
+    # Split off test_df with a FIXED random value. This will be a consistent subset across all instances/iterations. Only to be evaluated on once many model variations are trained.
     train_df, test_df = train_test_split(df, test_size=test_size, random_state=42)
+    
+    # Split off a validation set from the training set.
     train_df, val_df = train_test_split(train_df, test_size=val_size, random_state=random_state_val)
 
     train_dataset = IonogramDataset(train_df)
