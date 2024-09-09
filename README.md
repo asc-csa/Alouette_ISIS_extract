@@ -1,75 +1,41 @@
 
-![Alouette-1](multimedia/Alouette-1.jpg)
-<br>
-<br>
+# Alouette-1, ISIS - 1 and ISIS -2 - Ionogram Data Extraction - Data from Canada's First Satellites Over 60 Years In the Making
 
-- [En Français](https://github.com/asc-csa/Alouette_extract/blob/working/README.md#alouette-1---extraction-de-donn%C3%A9es-dionogrammes---donn%C3%A9es-du-premier-satellite-canadien-en-d%C3%A9veloppement-depuis-plus-de-60-ans)
+> In this project, the film rolls from the Alouette and ISIS satellites were scanned, digitized, and made accessible to the public. The primary aim was to establish a centralized data repository, facilitating access for researchers to utilize both the data and metadata derived from the satellites for future research.
 
-# Alouette-1 - Ionogram Data Extraction - Data from Canada's First Satellite Over 60 Years In the Making
+Alouette -1 was the first topside ionospheric satellite and the first Canadian satellite launched in 1962 in collaboration with the United States through NASA. Alouette – 1 was known for its swept frequency topside sounder experiment with the goal to investigate the geographic and diurnal variation of the topside ionosphere at altitudes up to 1000 km. One of the most important scientific results from Alouette-1 was that it provided the first global picture of electron-density distribution in the topside ionosphere. With the success of Alouette -1, Canada and the United States formally agreed on December 23rd, 1963, to extend their collaboration to a program called International Satellites for Ionospheric studies (ISIS). As part of this program, Canada designed and built an additional family of ionospheric satellites: Alouette – 2, ISIS -1 and ISIS – 2. The ISIS - 1 and ISIS - 2 satellites had a more complex navigational systems and larger data collection capabilities than Alouette- 1 and 2 satellites. For instance, ISIS – 1 was the first in the series to contain a swept and fixed frequency sounder technique combined with a complete set of direct measurements.
 
-Alouette-1 is the swept-frequency topside sounder experiment that initiated Canada’s participation in space. At a time when satellites were designed and expected to last only a few months, Alouette-1 transmitted data over 10 years to a growing international network of telemetry stations from 1962 – 72. Over this period of time the telemetry data were processed over thousands of hours by the DRTE data processing facility  at Shirleys Bay, Ottawa – leading to hundreds of scientific publications in its time, and a family of ionospheric satellites (Alouette-2, Explorer-31, ISIS-1 and ISIS-2).
+The output from the topside sounders were a video signal that contained the ionospheric echo pulses, but also pulses that depicted frequency markers and when a new frame started. A system was built to read the 7-track reel-to-reel magnetic tapes displayed on a cathode ray tube in ‘B-scan’ form. This product was called an ionogram, which depicted the reflections of radio waves emitted from the satellite off the top side of the ionosphere, across a range of frequencies. The scanning of the ionograms as the first step of the historical data restoration of the Alouette and ISIS satellites began in 2017. The processing of the Alouette 
+ and ISIS data was concluded in 2023 and 2024 respectively. 
 
-> The efforts of the unusually competent and dedicated members of the Canadian team…led to Canada’s spectacular entry into the space age with Alouette 1 on September 29, 1962.
+> Canadian Space Agency has created a centralized repository, facilitating easy access for researchers to utilize both the data and metadata derived from the Alouette and ISIS satellites. This includes but is not limited to open-source code on the processing of the data, raw images, data dictionaries, detailed methodology and a micro application that provides users the ability to select, download and visualize Alouette and ISIS data.
 
-Yet, decades later the data was nearly lost, if not for the foresight and effort to save it. Now, the data has been digitized, processed and extracted, and could be used with today’s computational methods to produce a more comprehensive model of Earth’s topside ionosphere in the 1960s - or for any other scientific or creative purposes not thought of yet.
 
 ## How to Get Started
-
-![Alouette-1 extracted ionogram](multimedia/extracted_ionogram.png)<br>
-<b>Figure 1:</b> (left) Extracted datapoints mapped to a depth-frequency space; (right) the corresponding scanned image of the
-ionogram. / (à gauche) Points de données extraits cartographiés dans un espace de fréquence de profondeur ; (à droite) l'image scannée correspondante de l'ionogramme.
-<br>
-<br>
-
-**To learn how to access, work with and even re-process the data, read:**
+**To learn how to access, work and re-process the data, read:**
 
 - [**Alouette-1 – Ionogram Data Extraction Methodology**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
-
-**There are important details about the historical context of the Alouette-1 mission and its data. You will benefit from reading:**
-
-- [**Alouette-1 – A History of The Data from Canada’s First Satellite Over 60 Years (Naidoo, 2023) (not for public availability, yet)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
-	- A historical account of Alouette-1's data from early design decisions that affected the data, to how the data was first recorded, to the data restoration efforts of today.
-
-- [**Alouette-1 - 2017 Data Restoration (Lessard, 2017**)](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
-	- Initial documentation of the CSA's 35 mm film mass digitization effort, that started in 2017. 
-<br>
-<br>
-
-![Alouette-1 data availability](multimedia/Alouette-1_data_availability.png)<br>
-<b>Figure 2:</b> Current availability in days of Alouette-1 extracted data, by ground station. / Disponibilité actuelle en jours des données extraites d'Alouette-1, par station au sol.
-<br>
-<br>
-
-![num_metadata](multimedia/num_output.gif)<br>
-<b>Figure 3:</b> Animation of scanned ionograms ('num' metadata type) from 35 mm negative film roll. / Animation d'ionogrammes numérisés (type de métadonnées "num") à partir d'un rouleau de film négatif de 35 mm.
-<br>
-<br>
-
+- ISIS – Ionogram Data Extraction Methodology
+  
 ---
 
-# Alouette-1 - Extraction de données d'ionogrammes - Données du premier satellite canadien en développement depuis plus de 60 ans
+# Alouette-1, ISIS-1 et ISIS-2 - Extraction de Données d'Ionogrammes - Données des Premiers Satellites Canadiens depuis Plus de 60 Ans en Cours de Réalisation
 
-Alouette-1 a marqué le début de la participation du Canada à l'exploration de l'espace grâce à son expérience de sondeur de surface à fréquence balayée. À une époque où les satellites étaient conçus pour ne durer que quelques mois, Alouette-1 a transmis des données pendant 10 ans, de 1962 à 1972, à un réseau international croissant de stations de télémétrie. Pendant cette période, les données de télémétrie furent traitées pendant des milliers d'heures par l'installation de traitement des données du DRTE à Shirley's Bay, Ottawa, ce qui a donné lieu à des centaines de publications scientifiques et à une famille de satellites ionosphériques (Alouette-2, Explorer-31, ISIS-1 et ISIS-2).
+> Dans ce projet, les rouleaux de film des satellites Alouette et ISIS ont été scannés, numérisés et rendus accessibles au public. L'objectif principal était d'établir un dépôt centralisé de données, facilitant l'accès aux chercheurs pour utiliser à la fois les données et les métadonnées dérivées des satellites pour de futures recherches.
 
-> Les efforts des membres exceptionnellement compétents et dévoués de l'équipe canadienne ont conduit à l'entrée spectaculaire du Canada dans l'ère spatiale avec Alouette 1, le 29 septembre 1962.
+Alouette-1 était le premier satellite ionosphérique à haute altitude et le premier satellite canadien lancé en 1962 en collaboration avec les États-Unis par l'intermédiaire de la NASA. Alouette-1 était connu pour son expérience de sondeur ionosphérique à fréquence variable, ayant pour objectif d'étudier la variation géographique et diurne de l'ionosphère à haute altitude jusqu'à 1000 km. L'un des résultats scientifiques les plus importants d'Alouette-1 a été qu'il a fourni la première image globale de la distribution de la densité électronique dans la haute ionosphère. Avec le succès d'Alouette-1, le Canada et les États-Unis ont convenu formellement, le 23 décembre 1963, de prolonger leur collaboration dans le cadre d'un programme appelé Satellites Internationaux pour les Études Ionosphériques (ISIS). Dans le cadre de ce programme, le Canada a conçu et construit une famille supplémentaire de satellites ionosphériques : Alouette-2, ISIS-1 et ISIS-2. Les satellites ISIS-1 et ISIS-2 avaient des systèmes de navigation plus complexes et des capacités de collecte de données plus importantes que les satellites Alouette-1 et Alouette-2. Par exemple, ISIS-1 a été le premier de la série à contenir une technique de sondeur à fréquence variable et fixe, combinée à un ensemble complet de mesures directes.
 
-Pourtant, des décennies plus tard, ces données précieuses ont failli être perdues, sans la prévoyance et les efforts déployés pour les sauvegarder. Aujourd'hui, les données ont été numérisées, traitées et extraites. Elles pourraient, entre autre, être utilisées avec les méthodes informatiques actuelles pour produire un modèle plus complet de l'ionosphère de la surface de la Terre dans les années 1960.
+Les sorties des sondeurs à haute altitude étaient un signal vidéo contenant les impulsions d'écho ionosphérique, mais aussi des impulsions représentant les marqueurs de fréquence et le début d'une nouvelle trame. Un système a été construit pour lire les bandes magnétiques à 7 pistes de bobine à bobine affichées sur un tube cathodique sous forme de « B-scan ». Ce produit était appelé un ionogramme, qui représentait les réflexions des ondes radio émises par le satellite à partir de la haute ionosphère, sur une gamme de fréquences. La numérisation des ionogrammes, en tant que première étape de la restauration des données historiques des satellites Alouette et ISIS, a commencé en 2017. Le traitement des données d'Alouette et d'ISIS a été conclu en 2023 et 2024 respectivement.
+
+> L'Agence spatiale canadienne a créé un dépôt centralisé, facilitant l'accès des chercheurs pour utiliser à la fois les données et les métadonnées dérivées des satellites Alouette et ISIS. Cela inclut, mais ne se limite pas à, du code open source pour le traitement des données, des images brutes, des dictionnaires de données, une méthodologie détaillée et une micro-application qui permet aux utilisateurs de sélectionner, télécharger et visualiser les données d'Alouette et d'ISIS.
+
 
 ## Comment démarrer
 
-**Pour savoir comment accéder aux données, les utiliser et même les retraiter, lisez le document suivant :**
+**Pour savoir comment accéder aux données, les utiliser et les retraiter, lisez le document suivant :**
 
 - [**Alouette-1 - Méthodologie d'extraction des données d'ionogrammes (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
-
-**Il y a des détails importants sur le contexte historique de la mission Alouette-1 et de ses données. La lecture de ce document vous sera utile :**
-
-- [**Alouette-1 - Une histoire des données du premier satellite canadien sur 60 ans (Naidoo, 2023) (en Anglais, et pas encore disponible pour le public)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20A%20History%20of%20The%20Data%20from%20Canadas%20First%20Satellite%20Over%2060%20Years.pdf)
-	- Un historique des données d'Alouette-1, depuis les premières décisions de conception jusqu'aux efforts actuels de restauration des données, en passant par l'enregistrement initial des données.
-
-- [**Alouette-1 - Restauration des données 2017 (Lessard, 2017) (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%202017%20Data%20Restoration.pdf)
-	- Documentation initiale de l'effort de numérisation de masse des films 35 mm de l'ASC, qui a débuté en 2017. 
-<br>
-<br>
+- ISIS – Méthodologie d'extraction des données d'ionogrammes
 
 ---
 
@@ -82,17 +48,22 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 
 ## Credits
 ### Data and Emerging Technologies (CSA) / Données et technologies émergentes (ASC) 
-- Ravendra Naidoo
-- Roksana Sheikholmolouki
-- Ashley Ferreira
+- Roksana Sheikholmolouki (Technical Lead of Alouette and ISIS)
+- Jose Pasillas Diaz
+- Jeyshinee Pyneeandee
 - Jackson Cooper
-- Marianne Fortier
-- Benjamin ('JJ') Cannings
+- Anna Boukina
 - Émiline Filion
 - Natasha Fee
 
 ### Past Data Science Team (CSA) / Ancienne équipe de science des données (ASC)
-- Etienne Low-Décarie 
+- Ravendra Naidoo (Former Technical Lead of Alouette-1)
+- Ashley Ferreira
+- Marianne Fortier
+- Salini Punchiwickrama
+- Benjamin ('JJ') Cannings
+- Adam Koziak
+-  Etienne Low-Décarie 
 - Jenisha Patel  
 - Wasiq Mohammad
 - Hansen Liu
@@ -108,16 +79,14 @@ Dr. Colin A Franklin, Chief Electrical Engineer for Alouette-1, Defence Research
 - Josée Saint-Marseille
 
 ### Space Utilization (CSA) / Utilisation de l'espace (ASC)
+- Taryn Tomlinson
 - Pierre Langlois
+- John Manuel
+- Parshati Patel
+- Kyle Murphy
 
 ### Space Exploration (CSA) / Exploration spatiale (ASC)
 - Louis-Paul Bédard
-
-<br>
-<br>
-
-![Alouette-1 mounting on Thor-Agena B rocket](multimedia/Alouette-1_mounting.jpg)
-<b>Figure 4:</b> Alouette-1 being installed on its Thor-Agena B rocket. Credit: Communications Research Center Canada (CRC) / Alouette-1 installée sur la fusée Thor-Agena B. Crédit : Centre de recherches sur les communications Canada (CRC)
 
 
 
