@@ -15,7 +15,7 @@ The output from the topside sounders were a video signal that contained the iono
 **To learn how to access, work and re-process the data, read:**
 
 - [**Alouette-1 – Ionogram Data Extraction Methodology**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
-- ISIS – Ionogram Data Extraction Methodology
+- ISIS – Ionogram Data Extraction Methodology (Posted Soon!)
   
 ---
 
@@ -35,7 +35,7 @@ Les sorties des sondeurs à haute altitude étaient un signal vidéo contenant l
 **Pour savoir comment accéder aux données, les utiliser et les retraiter, lisez le document suivant :**
 
 - [**Alouette-1 - Méthodologie d'extraction des données d'ionogrammes (en Anglais)**](https://github.com/asc-csa/Alouette_extract/blob/working/documentation/Alouette-1%20-%20Ionogram%20Data%20Extraction%20Methodology-latest_ver.pdf)
-- ISIS – Méthodologie d'extraction des données d'ionogrammes
+- ISIS – Méthodologie d'extraction des données d'ionogrammes (Bientôt disponible!)
 
 ---
 
