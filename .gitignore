@@ -1,0 +1,64 @@
+# =========================
+# Python cache/ bytecode
+# =========================
+__pycache__/
+
+# =========================
+# Environments
+# =========================
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# =========================
+# Conda
+# =========================
+conda-meta/
+*.conda
+
+# =========================
+# Jupyter Notebooks
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Classifier debug output
+# =========================
+classifier/debug_crops/
+
+# =========================
+# TensorFlow / Keras
+# =========================
+*.h5
+*.keras
+*.ckpt
+*.pb
+saved_model/
+checkpoints/
+logs/
+tensorboard_logs/
+
+# =========================
+# Temporary files
+# =========================
+tmp/
+temp/
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
